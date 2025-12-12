@@ -89,19 +89,20 @@
 
 ---
 
-### Faz 4: Authentication
-> **Hedef:** JWT tabanlı basit auth sistemi
+### Faz 4: Authentication (Güvenlik) ✅
+> **Hedef:** Basit JWT tabanlı kimlik doğrulama
 
-- [ ] **4.1 Backend Auth**
-  - [ ] AuthModule
-  - [ ] JWT stratejisi
-  - [ ] Login/Register endpoints
-  - [ ] Guards
+- [x] **4.1 Backend Auth**
+  - [x] User Entity (bcrypt hash)
+  - [x] AuthModule (JWT Strategy)
+  - [x] Login Endpoint (Zod validated)
+  - [x] Register Endpoint (Zod validated)
 
-- [ ] **4.2 Frontend Auth**
-  - [ ] Login sayfası
-  - [ ] Register sayfası
-  - [ ] Auth context/store
+- [x] **4.2 Frontend Auth**
+  - [x] AuthContext/Store
+  - [x] Login Page
+  - [x] Register Page
+  - [x] ProtectedRoute Componentext/store
 
 ---
 
@@ -130,14 +131,14 @@
 | Faz 1 - Kurulum | ✅ Tamamlandı | 100% |
 | Faz 2 - Backend | ✅ Tamamlandı | 100% |
 | Faz 3 - Frontend | ✅ Tamamlandı | 100% |
-| Faz 4 - Auth | ⏳ Bekliyor | 0% |
+| Faz 4 - Auth | ✅ Tamamlandı | 100% |
 | Faz 5 - Release | ⏳ Bekliyor | 0% |
 
 ---
 
 ## 🔖 Aktif Görev
 
-**Şu anki görev:** Faz 3 tamamlandı! Faz 4 (Authentication) bekleniyor.
+**Şu anki görev:** Faz 4 tamamlandı! Faz 5 (Polish & Release) bekleniyor.
 
 ---
 
