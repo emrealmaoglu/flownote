@@ -1,0 +1,6 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Pre-commit hook - lint kontrolü
+# TODO: Faz 2'de lint ve test eklenecek
+echo "🔍 Running pre-commit checks..."

@@ -1,0 +1,87 @@
+# FlowNote Docker Compose
+# Tek komutla tüm sistemi ayağa kaldır: docker-compose up
+# @DevOps owned
+
+version: '3.8'
+
+services:
+  # ============================================
+  # PostgreSQL Database
+  # ============================================
+  db:
+    image: postgres:16-alpine
+    container_name: flownote-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-flownote}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-flownote_secret_password}
+      POSTGRES_DB: ${POSTGRES_DB:-flownote_db}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ============================================
+  # NestJS Backend API
+  # ============================================
+  backend:
+    build:
+      context: ./backend
+      target: development
+    container_name: flownote-backend
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      DATABASE_HOST: db
+      DATABASE_PORT: 5432
+      DATABASE_USER: ${POSTGRES_USER:-flownote}
+      DATABASE_PASSWORD: ${POSTGRES_PASSWORD:-flownote_secret_password}
+      DATABASE_NAME: ${POSTGRES_DB:-flownote_db}
+      JWT_SECRET: ${JWT_SECRET:-dev-jwt-secret-change-in-production}
+      JWT_EXPIRES_IN: 7d
+      FRONTEND_URL: http://localhost:5173
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ============================================
+  # React Frontend (Vite Dev Server)
+  # ============================================
+  frontend:
+    build:
+      context: ./frontend
+      target: development
+    container_name: flownote-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    environment:
+      VITE_API_URL: http://localhost:3000/api
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+
+# ============================================
+# Volumes - Persistent Data
+# ============================================
+volumes:
+  postgres_data:
+    name: flownote_postgres_data

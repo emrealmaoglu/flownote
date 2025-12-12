@@ -1,0 +1,152 @@
+# FlowNote CI/CD Pipeline
+# GitHub Actions workflow for automated testing, building, and releasing
+# @DevOps owned - Pipeline initialized!
+
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main, 'feature/**', 'fix/**']
+  pull_request:
+    branches: [main]
+
+env:
+  NODE_VERSION: '20.x'
+
+jobs:
+  # ============================================
+  # Lint - Code Quality Check
+  # ============================================
+  lint:
+    name: 🔍 Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run linter (Backend)
+        run: npm run lint --workspace=backend --if-present
+
+      - name: Run linter (Frontend)
+        run: npm run lint --workspace=frontend --if-present
+
+  # ============================================
+  # Test - Unit & Integration Tests
+  # ============================================
+  test:
+    name: 🧪 Test
+    runs-on: ubuntu-latest
+    needs: lint
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: flownote
+          POSTGRES_PASSWORD: flownote_test_password
+          POSTGRES_DB: flownote_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U flownote"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run backend tests
+        run: npm run test --workspace=backend
+        env:
+          DATABASE_HOST: localhost
+          DATABASE_PORT: 5432
+          DATABASE_USER: flownote
+          DATABASE_PASSWORD: flownote_test_password
+          DATABASE_NAME: flownote_test
+          JWT_SECRET: test-secret
+
+      - name: Run frontend tests
+        run: npm run test --workspace=frontend --if-present
+
+  # ============================================
+  # Build - Docker Image Build
+  # ============================================
+  build:
+    name: 🏗️ Build
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build backend
+        run: npm run build --workspace=backend
+
+      - name: Build frontend
+        run: npm run build --workspace=frontend
+
+      - name: Build Docker images (dry-run)
+        run: |
+          docker build -t flownote-backend:test ./backend --target production
+          docker build -t flownote-frontend:test ./frontend --target production
+
+  # ============================================
+  # Release - Semantic Versioning
+  # ============================================
+  release:
+    name: 🚀 Release
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Semantic Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npx semantic-release

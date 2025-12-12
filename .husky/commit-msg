@@ -1,0 +1,6 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Commitlint - Conventional Commits kontrolü
+# @DevOps - Semantic Versioning depends on this!
+npx --no -- commitlint --edit "$1"
