@@ -3,6 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { NotesModule } from './notes/notes.module';
 
 /**
  * FlowNote Ana Modül
@@ -33,11 +34,11 @@ import { AppService } from './app.service';
             }),
         }),
 
-        // TODO: Feature modules will be added here
-        // NotesModule,
-        // AuthModule,
+        // Feature modules
+        NotesModule,
     ],
     controllers: [AppController],
     providers: [AppService],
 })
 export class AppModule { }
+
