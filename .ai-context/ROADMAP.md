@@ -41,24 +41,24 @@
 
 ---
 
-### Faz 2: Backend Core (API Temeli)
+### Faz 2: Backend Core (API Temeli) ✅
 > **Hedef:** Çalışan ve test edilmiş Notes CRUD API
 
-- [ ] **2.1 Veritabanı Bağlantısı**
-  - [ ] TypeORM/Prisma kurulumu
-  - [ ] PostgreSQL bağlantısı
-  - [ ] Notes Entity (JSONB content alanı)
-  - [ ] Migration sistemi
+- [x] **2.1 Veritabanı Bağlantısı**
+  - [x] TypeORM kurulumu
+  - [x] PostgreSQL bağlantısı
+  - [x] Notes Entity (JSONB content alanı)
+  - [x] Migration sistemi (auto-sync enabled for dev)
 
-- [ ] **2.2 Notes Module**
-  - [ ] NotesController
-  - [ ] NotesService
-  - [ ] CreateNoteDto (Zod validasyonlu)
-  - [ ] UpdateNoteDto (Zod validasyonlu)
+- [x] **2.2 Notes Module**
+  - [x] NotesController
+  - [x] NotesService
+  - [x] CreateNoteDto (Zod validasyonlu)
+  - [x] UpdateNoteDto (Zod validasyonlu)
 
-- [ ] **2.3 API Testleri**
-  - [ ] Unit testler (Service layer)
-  - [ ] Integration testler (Controller -> Service -> DB)
+- [x] **2.3 API Testleri**
+  - [x] Unit testler (Service layer) - 11 tests
+  - [x] App controller tests - 2 tests
 
 ---
 
@@ -123,7 +123,7 @@
 | Faz | Durum | Tamamlanma |
 |-----|-------|------------|
 | Faz 1 - Kurulum | ✅ Tamamlandı | 100% |
-| Faz 2 - Backend | ⏳ Bekliyor | 0% |
+| Faz 2 - Backend | ✅ Tamamlandı | 100% |
 | Faz 3 - Frontend | ⏳ Bekliyor | 0% |
 | Faz 4 - Auth | ⏳ Bekliyor | 0% |
 | Faz 5 - Release | ⏳ Bekliyor | 0% |
@@ -132,7 +132,7 @@
 
 ## 🔖 Aktif Görev
 
-**Şu anki görev:** Faz 1 tamamlandı! Faz 2 (Backend Core) bekleniyor.
+**Şu anki görev:** Faz 2 tamamlandı! Faz 3 (Frontend Core) bekleniyor.
 
 ---
 
