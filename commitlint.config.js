@@ -50,5 +50,7 @@ module.exports = {
         'subject-full-stop': [2, 'never', '.'],
         // Header max 100 karakter
         'header-max-length': [2, 'always', 100],
+        // Body line length - disabled for semantic-release
+        'body-max-line-length': [0, 'always', Infinity],
     },
 };
