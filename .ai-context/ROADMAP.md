@@ -62,25 +62,30 @@
 
 ---
 
-### Faz 3: Frontend Core (UI Temeli)
+### Faz 3: Frontend Core (UI Temeli) ✅
 > **Hedef:** Basit ama şık Note listesi ve block editor
 
-- [ ] **3.1 Proje Yapısı**
-  - [ ] TailwindCSS konfigürasyonu
-  - [ ] API client (Axios/TanStack Query)
-  - [ ] Router yapısı
+- [x] **3.1 Proje Yapısı**
+  - [x] TailwindCSS konfigürasyonu
+  - [x] API client (Axios + TanStack Query)
+  - [x] Router yapısı (React Router)
 
-- [ ] **3.2 Note Listesi**
-  - [ ] NoteList component
-  - [ ] NoteCard component
-  - [ ] Empty state
+- [x] **3.2 Note Listesi**
+  - [x] NoteList component
+  - [x] NoteCard component
+  - [x] Empty state
 
-- [ ] **3.3 Block Editor**
-  - [ ] BlockEditor component
-  - [ ] TextBlock
-  - [ ] HeadingBlock
-  - [ ] CheckboxBlock
-  - [ ] ImageBlock (URL)
+- [x] **3.3 Block Editor**
+  - [x] BlockRenderer component
+  - [x] TextBlock
+  - [x] HeadingBlock
+  - [x] CheckboxBlock
+  - [x] ImageBlock (URL)
+
+- [x] **3.4 Sayfalar**
+  - [x] HomePage
+  - [x] NoteDetailPage
+  - [x] NewNotePage (block editor)
 
 ---
 
@@ -124,7 +129,7 @@
 |-----|-------|------------|
 | Faz 1 - Kurulum | ✅ Tamamlandı | 100% |
 | Faz 2 - Backend | ✅ Tamamlandı | 100% |
-| Faz 3 - Frontend | ⏳ Bekliyor | 0% |
+| Faz 3 - Frontend | ✅ Tamamlandı | 100% |
 | Faz 4 - Auth | ⏳ Bekliyor | 0% |
 | Faz 5 - Release | ⏳ Bekliyor | 0% |
 
@@ -132,7 +137,7 @@
 
 ## 🔖 Aktif Görev
 
-**Şu anki görev:** Faz 2 tamamlandı! Faz 3 (Frontend Core) bekleniyor.
+**Şu anki görev:** Faz 3 tamamlandı! Faz 4 (Authentication) bekleniyor.
 
 ---
 

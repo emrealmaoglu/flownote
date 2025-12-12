@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { NotesModule } from './notes/notes.module';
+import { AuthModule } from './auth/auth.module';
 
 /**
  * FlowNote Ana Modül
@@ -35,10 +36,12 @@ import { NotesModule } from './notes/notes.module';
         }),
 
         // Feature modules
+        AuthModule,
         NotesModule,
     ],
     controllers: [AppController],
     providers: [AppService],
 })
 export class AppModule { }
+
 

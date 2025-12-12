@@ -4,7 +4,10 @@ import {
     Column,
     CreateDateColumn,
     UpdateDateColumn,
+    ManyToOne,
+    JoinColumn,
 } from 'typeorm';
+import { User } from '../../auth/entities/user.entity';
 
 /**
  * Note Entity - JSONB content ile block-based yapı
@@ -39,9 +42,17 @@ export class Note {
         }>;
     };
 
+    @ManyToOne(() => User, (user) => user.notes, { nullable: true })
+    @JoinColumn({ name: 'user_id' })
+    user: User;
+
+    @Column({ name: 'user_id', nullable: true })
+    userId: string;
+
     @CreateDateColumn({ name: 'created_at' })
     createdAt: Date;
 
     @UpdateDateColumn({ name: 'updated_at' })
     updatedAt: Date;
 }
+

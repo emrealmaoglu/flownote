@@ -10,16 +10,19 @@ import {
     HttpStatus,
     ParseUUIDPipe,
     UsePipes,
+    UseGuards,
 } from '@nestjs/common';
 import { NotesService } from './notes.service';
 import { CreateNoteDto } from './dto/create-note.dto';
 import { UpdateNoteDto } from './dto/update-note.dto';
 import { ZodValidationPipe } from '../common/pipes/zod-validation.pipe';
 import { CreateNoteSchema, UpdateNoteSchema } from './dto/note.schemas';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 /**
  * Notes Controller
  * API endpoint'leri - @Dev tarafından implemente edildi
+ * @SecOps - Tüm endpointler JWT ile korunuyor!
  * 
  * Endpoints:
  * - POST   /api/notes      - Yeni not oluştur
@@ -29,6 +32,7 @@ import { CreateNoteSchema, UpdateNoteSchema } from './dto/note.schemas';
  * - DELETE /api/notes/:id  - Not sil
  */
 @Controller('notes')
+@UseGuards(JwtAuthGuard)
 export class NotesController {
     constructor(private readonly notesService: NotesService) { }
 
