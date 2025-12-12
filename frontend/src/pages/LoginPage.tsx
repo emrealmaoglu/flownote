@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Loader2, Mail, Lock, AlertCircle } from 'lucide-react';
 import { cn } from '../lib/utils';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../contexts/useAuth';
 
 /**
  * LoginPage Component

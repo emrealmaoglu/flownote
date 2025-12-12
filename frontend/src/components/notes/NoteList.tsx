@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Plus, FileText, Loader2, AlertCircle } from 'lucide-react';
 import { cn } from '../../lib/utils';
@@ -24,11 +24,7 @@ export function NoteList({ onNotesLoaded }: NoteListProps) {
     // Get current note ID from URL
     const currentNoteId = location.pathname.match(/\/notes\/(.+)/)?.[1];
 
-    useEffect(() => {
-        loadNotes();
-    }, []);
-
-    async function loadNotes() {
+    const loadNotes = useCallback(async () => {
         try {
             setLoading(true);
             setError(null);
@@ -41,7 +37,11 @@ export function NoteList({ onNotesLoaded }: NoteListProps) {
         } finally {
             setLoading(false);
         }
-    }
+    }, [onNotesLoaded]);
+
+    useEffect(() => {
+        loadNotes();
+    }, [loadNotes]);
 
     // Loading state
     if (loading) {
