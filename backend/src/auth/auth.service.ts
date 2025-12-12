@@ -52,7 +52,8 @@ export class AuthService {
         const accessToken = this.jwtService.sign(payload);
 
         // passwordHash'i çıkar
-        const { passwordHash: _, ...userWithoutPassword } = savedUser;
+        const { passwordHash: _ph1, ...userWithoutPassword } = savedUser;
+        void _ph1;
 
         return {
             accessToken,
@@ -84,7 +85,8 @@ export class AuthService {
         const accessToken = this.jwtService.sign(payload);
 
         // passwordHash'i çıkar
-        const { passwordHash: _, ...userWithoutPassword } = user;
+        const { passwordHash: _ph2, ...userWithoutPassword } = user;
+        void _ph2;
 
         return {
             accessToken,

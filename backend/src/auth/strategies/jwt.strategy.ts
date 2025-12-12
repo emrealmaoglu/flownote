@@ -38,7 +38,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         }
 
         // passwordHash'i çıkar
-        const { passwordHash: _, ...userWithoutPassword } = user;
+        const { passwordHash: _ph, ...userWithoutPassword } = user;
+        void _ph;
         return userWithoutPassword;
     }
 }

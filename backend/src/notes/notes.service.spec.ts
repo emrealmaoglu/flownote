@@ -11,7 +11,6 @@ import { NotFoundException } from '@nestjs/common';
  */
 describe('NotesService', () => {
     let service: NotesService;
-    let repository: Repository<Note>;
 
     // Mock note data
     const mockNote: Partial<Note> = {
@@ -52,7 +51,6 @@ describe('NotesService', () => {
         }).compile();
 
         service = module.get<NotesService>(NotesService);
-        repository = module.get<Repository<Note>>(getRepositoryToken(Note));
 
         // Reset mocks
         jest.clearAllMocks();
