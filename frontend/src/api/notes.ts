@@ -85,6 +85,24 @@ export const notesApi = {
         });
         return response.data;
     },
+
+    /**
+     * Bu nota link veren notları getir (Backlinks)
+     * Sprint 2 - Bi-directional Linking
+     */
+    async getBacklinks(noteId: string): Promise<NoteSummary[]> {
+        const response = await apiClient.get<{ backlinks: NoteSummary[] }>(`/notes/${noteId}/backlinks`);
+        return response.data.backlinks;
+    },
+
+    /**
+     * Bu notun link verdiği notları getir (Outlinks)
+     * Sprint 2 - Bi-directional Linking
+     */
+    async getOutlinks(noteId: string): Promise<NoteSummary[]> {
+        const response = await apiClient.get<{ outlinks: NoteSummary[] }>(`/notes/${noteId}/outlinks`);
+        return response.data.outlinks;
+    },
 };
 
 export default notesApi;

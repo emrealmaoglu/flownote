@@ -153,6 +153,42 @@ export class NotesController {
   }
 
   /**
+   * GET /notes/:id/backlinks - Bu nota link veren notlar
+   * Sprint 2 - Bi-directional Linking
+   */
+  @Get(":id/backlinks")
+  async getBacklinks(@Param("id", ParseUUIDPipe) id: string) {
+    const backlinks = await this.notesService.getBacklinks(id);
+    return {
+      noteId: id,
+      backlinks: backlinks.map((note) => ({
+        id: note.id,
+        title: note.title,
+        updatedAt: note.updatedAt.toISOString(),
+      })),
+      count: backlinks.length,
+    };
+  }
+
+  /**
+   * GET /notes/:id/outlinks - Bu notun link verdiği notlar
+   * Sprint 2 - Bi-directional Linking
+   */
+  @Get(":id/outlinks")
+  async getOutlinks(@Param("id", ParseUUIDPipe) id: string) {
+    const outlinks = await this.notesService.getOutlinks(id);
+    return {
+      noteId: id,
+      outlinks: outlinks.map((note) => ({
+        id: note.id,
+        title: note.title,
+        updatedAt: note.updatedAt.toISOString(),
+      })),
+      count: outlinks.length,
+    };
+  }
+
+  /**
    * DELETE /notes/:id - Not sil
    */
   @Delete(":id")

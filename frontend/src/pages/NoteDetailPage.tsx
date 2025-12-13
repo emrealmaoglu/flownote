@@ -4,6 +4,7 @@ import { ArrowLeft, Trash2, Edit3, Loader2, AlertCircle, Calendar } from 'lucide
 import { cn, formatDate } from '../lib/utils';
 import { notesApi } from '../api';
 import { SortableBlockList } from '../components/blocks';
+import { BacklinksPanel } from '../components/links';
 import type { Note, Block } from '../types';
 
 /**
@@ -199,6 +200,9 @@ export function NoteDetailPage() {
                         </div>
                     )}
                 </div>
+
+                {/* Backlinks Panel - Sprint 2 */}
+                {id && <BacklinksPanel noteId={id} className="mt-8" />}
             </main>
         </div>
     );
