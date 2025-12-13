@@ -30,13 +30,13 @@ export class Note {
 
     /**
      * KRITIK: JSONB tipinde content
-     * Block dizisi içerir: text, heading, checkbox, image
+     * Block dizisi içerir: text, heading, checkbox, image, code
      */
     @Column({ type: 'jsonb', default: { blocks: [] } })
     content: {
         blocks: Array<{
             id: string;
-            type: 'text' | 'heading' | 'checkbox' | 'image';
+            type: 'text' | 'heading' | 'checkbox' | 'image' | 'code';
             order: number;
             data: Record<string, unknown>;
         }>;

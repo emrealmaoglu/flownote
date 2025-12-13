@@ -2,6 +2,24 @@ import { apiClient } from './client';
 import type { Note, NoteSummary, CreateNoteRequest, UpdateNoteRequest } from '../types';
 
 /**
+ * Search Result Types (Sprint 1)
+ */
+export interface SearchResult {
+    id: string;
+    title: string;
+    snippet: string;
+    matchType: 'title' | 'content';
+    score: number;
+    updatedAt: string;
+}
+
+export interface SearchResponse {
+    query: string;
+    results: SearchResult[];
+    totalCount: number;
+}
+
+/**
  * Notes API
  * Backend Notes endpoints ile iletişim
  */
@@ -44,6 +62,18 @@ export const notesApi = {
     async delete(id: string): Promise<void> {
         await apiClient.delete(`/notes/${id}`);
     },
+
+    /**
+     * Not ara (Command Palette için)
+     * Sprint 1 - Global Search
+     */
+    async search(query: string, limit = 10): Promise<SearchResponse> {
+        const response = await apiClient.get<SearchResponse>('/notes/search', {
+            params: { q: query, limit },
+        });
+        return response.data;
+    },
 };
 
 export default notesApi;
+

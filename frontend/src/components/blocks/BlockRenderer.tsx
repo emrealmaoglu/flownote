@@ -1,11 +1,16 @@
+import { lazy, Suspense } from 'react';
 import { CheckSquare, Square } from 'lucide-react';
 import { cn } from '../../lib/utils';
-import type { Block, TextBlock, HeadingBlock, CheckboxBlock, ImageBlock } from '../../types';
+import type { Block, TextBlock, HeadingBlock, CheckboxBlock, ImageBlock, CodeBlock } from '../../types';
+
+// Lazy load CodeBlockRenderer for bundle optimization
+const CodeBlockRenderer = lazy(() => import('./CodeBlockRenderer'));
 
 /**
  * BlockRenderer - Projenin Kalbi
  * Block tipine göre doğru HTML render eden bileşen
  * @Dev - TECH_SPEC.md'ye uygun olarak tasarlandı
+ * Sprint 1: CodeBlock desteği eklendi
  */
 
 interface BlockRendererProps {
@@ -101,6 +106,22 @@ function ImageBlockRenderer({ block }: { block: ImageBlock }) {
 }
 
 /**
+ * Code Block Loading Skeleton
+ */
+function CodeBlockSkeleton() {
+    return (
+        <div className="rounded-lg border border-dark-700 bg-dark-900 p-4 animate-pulse my-2">
+            <div className="h-4 bg-dark-800 rounded w-1/4 mb-3" />
+            <div className="space-y-2">
+                <div className="h-3 bg-dark-800 rounded w-full" />
+                <div className="h-3 bg-dark-800 rounded w-3/4" />
+                <div className="h-3 bg-dark-800 rounded w-5/6" />
+            </div>
+        </div>
+    );
+}
+
+/**
  * Ana BlockRenderer Component
  * Block tipine göre doğru renderer'ı seçer
  */
@@ -111,8 +132,14 @@ export function BlockRenderer({ block, className }: BlockRendererProps) {
             {block.type === 'heading' && <HeadingBlockRenderer block={block as HeadingBlock} />}
             {block.type === 'checkbox' && <CheckboxBlockRenderer block={block as CheckboxBlock} />}
             {block.type === 'image' && <ImageBlockRenderer block={block as ImageBlock} />}
+            {block.type === 'code' && (
+                <Suspense fallback={<CodeBlockSkeleton />}>
+                    <CodeBlockRenderer block={block as CodeBlock} />
+                </Suspense>
+            )}
         </div>
     );
 }
 
 export default BlockRenderer;
+

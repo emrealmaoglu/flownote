@@ -6,6 +6,7 @@ import {
     Delete,
     Body,
     Param,
+    Query,
     HttpCode,
     HttpStatus,
     ParseUUIDPipe,
@@ -25,11 +26,12 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
  * @SecOps - Tüm endpointler JWT ile korunuyor!
  * 
  * Endpoints:
- * - POST   /api/notes      - Yeni not oluştur
- * - GET    /api/notes      - Tüm notları listele
- * - GET    /api/notes/:id  - Tek not getir
- * - PUT    /api/notes/:id  - Not güncelle
- * - DELETE /api/notes/:id  - Not sil
+ * - POST   /api/notes         - Yeni not oluştur
+ * - GET    /api/notes         - Tüm notları listele
+ * - GET    /api/notes/search  - Not ara (Command Palette)
+ * - GET    /api/notes/:id     - Tek not getir
+ * - PUT    /api/notes/:id     - Not güncelle
+ * - DELETE /api/notes/:id     - Not sil
  */
 @Controller('notes')
 @UseGuards(JwtAuthGuard)
@@ -68,6 +70,27 @@ export class NotesController {
                 createdAt: note.createdAt.toISOString(),
                 updatedAt: note.updatedAt.toISOString(),
             })),
+        };
+    }
+
+    /**
+     * GET /notes/search - Full-text search
+     * Sprint 1 - Command Palette için optimize edildi
+     * @param q - Arama sorgusu (min 2 karakter)
+     * @param limit - Sonuç limiti (default: 10, max: 50)
+     */
+    @Get('search')
+    async search(
+        @Query('q') query: string,
+        @Query('limit') limit?: string,
+    ) {
+        const parsedLimit = Math.min(parseInt(limit || '10', 10) || 10, 50);
+        const results = await this.notesService.search(query || '', parsedLimit);
+
+        return {
+            query: query || '',
+            results,
+            totalCount: results.length,
         };
     }
 
