@@ -73,6 +73,18 @@ export const notesApi = {
         });
         return response.data;
     },
+
+    /**
+     * Block sırasını güncelle (Drag & Drop için)
+     * Sprint 2 - Drag & Drop Block Management
+     */
+    async reorderBlock(noteId: string, blockId: string, newOrder: number): Promise<Note> {
+        const response = await apiClient.patch<Note>(`/notes/${noteId}/blocks/reorder`, {
+            blockId,
+            newOrder,
+        });
+        return response.data;
+    },
 };
 
 export default notesApi;
