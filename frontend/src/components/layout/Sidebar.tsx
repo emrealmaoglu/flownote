@@ -1,7 +1,8 @@
 import { Link } from 'react-router-dom';
-import { Plus, Settings, Home } from 'lucide-react';
+import { Plus, Settings, Home, Focus } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { NoteList } from '../notes';
+import { useFocusMode } from '../../contexts';
 
 /**
  * Sidebar Component
@@ -13,10 +14,12 @@ interface SidebarProps {
 }
 
 export function Sidebar({ className }: SidebarProps) {
+    const { toggleFocusMode } = useFocusMode();
+
     return (
         <aside
             className={cn(
-                'w-72 h-screen flex flex-col',
+                'sidebar w-72 h-screen flex flex-col',
                 'bg-dark-900 border-r border-dark-800',
                 className,
             )}
@@ -70,7 +73,19 @@ export function Sidebar({ className }: SidebarProps) {
             </div>
 
             {/* Footer */}
-            <div className="p-4 border-t border-dark-800">
+            <div className="p-4 border-t border-dark-800 space-y-2">
+                <button
+                    onClick={toggleFocusMode}
+                    className={cn(
+                        'flex items-center gap-2 w-full px-3 py-2 rounded-lg',
+                        'text-dark-400 hover:text-dark-200 hover:bg-dark-800',
+                        'transition-colors text-sm',
+                    )}
+                    title="Focus Mode (F11)"
+                >
+                    <Focus className="w-4 h-4" />
+                    Focus Mode
+                </button>
                 <button
                     className={cn(
                         'flex items-center gap-2 w-full px-3 py-2 rounded-lg',
