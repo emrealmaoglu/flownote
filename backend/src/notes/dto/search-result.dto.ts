@@ -4,16 +4,16 @@
  * Sprint 1 - Global Search Feature
  */
 export interface SearchResultDto {
-    id: string;
-    title: string;
-    snippet: string;
-    matchType: 'title' | 'content';
-    score: number;
-    updatedAt: string;
+  id: string;
+  title: string;
+  snippet: string;
+  matchType: "title" | "content";
+  score: number;
+  updatedAt: string;
 }
 
 export interface SearchResponseDto {
-    query: string;
-    results: SearchResultDto[];
-    totalCount: number;
+  query: string;
+  results: SearchResultDto[];
+  totalCount: number;
 }

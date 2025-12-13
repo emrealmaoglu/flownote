@@ -1,14 +1,15 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Trash2, Edit3, Loader2, AlertCircle, Calendar } from 'lucide-react';
 import { cn, formatDate } from '../lib/utils';
 import { notesApi } from '../api';
-import { BlockRenderer } from '../components';
-import type { Note } from '../types';
+import { SortableBlockList } from '../components/blocks';
+import type { Note, Block } from '../types';
 
 /**
  * NoteDetailPage Component
  * Not detay sayfası - Block'ları render eder
+ * Sprint 2: Drag & Drop Block Management eklendi
  */
 export function NoteDetailPage() {
     const { id } = useParams<{ id: string }>();
@@ -52,6 +53,35 @@ export function NoteDetailPage() {
             setDeleting(false);
         }
     }
+
+    /**
+     * Handle block reorder from drag & drop
+     * Sprint 2 - Drag & Drop Block Management
+     */
+    const handleReorder = useCallback(
+        async (blockId: string, newOrder: number, reorderedBlocks: Block[]) => {
+            if (!id || !note) return;
+
+            // Optimistic update
+            setNote((prev) => {
+                if (!prev) return prev;
+                return {
+                    ...prev,
+                    content: { blocks: reorderedBlocks },
+                };
+            });
+
+            // API call
+            try {
+                await notesApi.reorderBlock(id, blockId, newOrder);
+            } catch (err) {
+                console.error('Failed to reorder block:', err);
+                // Revert on error
+                loadNote(id);
+            }
+        },
+        [id, note]
+    );
 
     // Loading state
     if (loading) {
@@ -156,14 +186,13 @@ export function NoteDetailPage() {
                     <span>{note.content?.blocks?.length || 0} block</span>
                 </div>
 
-                {/* Blocks */}
-                <div className="space-y-4">
+                {/* Blocks - Sortable */}
+                <div className="space-y-2">
                     {note.content?.blocks?.length > 0 ? (
-                        note.content.blocks
-                            .sort((a, b) => a.order - b.order)
-                            .map((block) => (
-                                <BlockRenderer key={block.id} block={block} />
-                            ))
+                        <SortableBlockList
+                            blocks={note.content.blocks}
+                            onReorder={handleReorder}
+                        />
                     ) : (
                         <div className="text-center py-12 text-dark-500">
                             <p>Bu not boş. Henüz block eklenmemiş.</p>
@@ -176,3 +205,4 @@ export function NoteDetailPage() {
 }
 
 export default NoteDetailPage;
+
