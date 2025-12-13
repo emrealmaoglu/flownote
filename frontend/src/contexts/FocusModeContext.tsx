@@ -1,13 +1,5 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-
-interface FocusModeContextType {
-    isFocusMode: boolean;
-    toggleFocusMode: () => void;
-    enterFocusMode: () => void;
-    exitFocusMode: () => void;
-}
-
-const FocusModeContext = createContext<FocusModeContextType | null>(null);
+import { useState, useEffect, ReactNode } from 'react';
+import { FocusModeContext, FocusModeContextType } from './FocusModeContext.types';
 
 interface FocusModeProviderProps {
     children: ReactNode;
@@ -59,16 +51,4 @@ export function FocusModeProvider({ children }: FocusModeProviderProps) {
             {children}
         </FocusModeContext.Provider>
     );
-}
-
-/**
- * useFocusMode Hook
- * Focus mode state ve actions erişimi
- */
-export function useFocusMode(): FocusModeContextType {
-    const context = useContext(FocusModeContext);
-    if (!context) {
-        throw new Error('useFocusMode must be used within a FocusModeProvider');
-    }
-    return context;
 }
