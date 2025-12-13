@@ -1,3 +1,22 @@
+## [1.1.0](https://github.com/emrealmaoglu/flownote/compare/v1.0.0...v1.1.0) (2025-12-13)
+
+
+### 🚀 Features
+
+* **backend:** add pg_trgm migration and codeblock schema ([a4b200f](https://github.com/emrealmaoglu/flownote/commit/a4b200fc48dc91f3795e0ce27950823265ebc1e3))
+* **backend:** add pg_trgm search indexes and code block schema ([f2aa7aa](https://github.com/emrealmaoglu/flownote/commit/f2aa7aabc23bdec979eccaa0c25aad0a0f8e450a))
+* **backend:** add search service and endpoint for command palette ([087bc40](https://github.com/emrealmaoglu/flownote/commit/087bc40292075f2063eee8d5003f077e04fcbcd9))
+* **frontend:** add code block renderer with syntax highlighting ([43c2f01](https://github.com/emrealmaoglu/flownote/commit/43c2f01b37b6f19c7a6e47cfdd15f9d072992232))
+* **frontend:** add command palette with global search ([cb21470](https://github.com/emrealmaoglu/flownote/commit/cb21470125c6c43050a836bedc648f5d42406e79))
+* **frontend:** add focus mode for distraction-free writing ([4d5a032](https://github.com/emrealmaoglu/flownote/commit/4d5a032f66359f9206372cd599ca18840e965043))
+* **notes:** add codeblock support and pg_trgm search indexes ([8e2a132](https://github.com/emrealmaoglu/flownote/commit/8e2a1323adf9a766bed76a4d4d649eaee2df12b7))
+* **notes:** add search service and endpoint for command palette ([507c241](https://github.com/emrealmaoglu/flownote/commit/507c241a255f65100bafad8a639efec7490007ff))
+
+
+### 🐛 Bug Fixes
+
+* **frontend:** separate focus mode context files for react-refresh ([df75383](https://github.com/emrealmaoglu/flownote/commit/df75383576bad12eba5533bc782e8c01f25691a6))
+
 ## 1.0.0 (2025-12-12)
 
 
