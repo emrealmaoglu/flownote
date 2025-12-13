@@ -7,7 +7,20 @@
 // Block Types
 // ============================================
 
-export type BlockType = 'text' | 'heading' | 'checkbox' | 'image';
+export type BlockType = 'text' | 'heading' | 'checkbox' | 'image' | 'code';
+
+// Code Language Types (10 dil desteği - TDD uyumlu)
+export type CodeLanguage =
+    | 'javascript'
+    | 'typescript'
+    | 'python'
+    | 'sql'
+    | 'bash'
+    | 'json'
+    | 'html'
+    | 'css'
+    | 'markdown'
+    | 'plaintext';
 
 export interface BaseBlock {
     id: string;
@@ -47,7 +60,20 @@ export interface ImageBlock extends BaseBlock {
     };
 }
 
-export type Block = TextBlock | HeadingBlock | CheckboxBlock | ImageBlock;
+/**
+ * CodeBlock - Sprint 1 eklentisi
+ * Syntax highlighting destekli kod bloğu
+ */
+export interface CodeBlock extends BaseBlock {
+    type: 'code';
+    data: {
+        code: string;
+        language: CodeLanguage;
+        filename?: string;
+    };
+}
+
+export type Block = TextBlock | HeadingBlock | CheckboxBlock | ImageBlock | CodeBlock;
 
 export interface NoteContent {
     blocks: Block[];

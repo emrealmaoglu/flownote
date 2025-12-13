@@ -16,7 +16,7 @@ import { User } from '../../auth/entities/user.entity';
  * content sütunu JSONB tipinde ve şu yapıda:
  * {
  *   blocks: [
- *     { id, type: 'text'|'heading'|'checkbox'|'image', order, data }
+ *     { id, type: 'text'|'heading'|'checkbox'|'image'|'code', order, data }
  *   ]
  * }
  */
@@ -30,13 +30,13 @@ export class Note {
 
     /**
      * KRITIK: JSONB tipinde content
-     * Block dizisi içerir: text, heading, checkbox, image
+     * Block dizisi içerir: text, heading, checkbox, image, code (Sprint 1)
      */
     @Column({ type: 'jsonb', default: { blocks: [] } })
     content: {
         blocks: Array<{
             id: string;
-            type: 'text' | 'heading' | 'checkbox' | 'image';
+            type: 'text' | 'heading' | 'checkbox' | 'image' | 'code';
             order: number;
             data: Record<string, unknown>;
         }>;

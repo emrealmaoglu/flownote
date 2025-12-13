@@ -6,7 +6,6 @@ import {
     Delete,
     Body,
     Param,
-    Query,
     HttpCode,
     HttpStatus,
     ParseUUIDPipe,
@@ -69,35 +68,6 @@ export class NotesController {
                 createdAt: note.createdAt.toISOString(),
                 updatedAt: note.updatedAt.toISOString(),
             })),
-        };
-    }
-
-    /**
-     * GET /notes/search - Full-text search
-     * Command Palette için optimize edildi
-     * @param q - Arama sorgusu (min 2 karakter)
-     * @param limit - Sonuç limiti (default: 10, max: 50)
-     */
-    @Get('search')
-    async search(
-        @Query('q') q: string,
-        @Query('limit') limit?: string,
-    ) {
-        if (!q || q.trim().length < 2) {
-            return {
-                query: q || '',
-                results: [],
-                totalCount: 0,
-            };
-        }
-
-        const parsedLimit = Math.min(parseInt(limit || '10', 10) || 10, 50);
-        const results = await this.notesService.search(q, parsedLimit);
-
-        return {
-            query: q,
-            results,
-            totalCount: results.length,
         };
     }
 

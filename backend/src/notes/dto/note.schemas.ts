@@ -3,12 +3,13 @@ import { z } from 'zod';
 /**
  * Zod Validation Schemas - Notes
  * @SecOps approved - Tüm input'lar validate edilmeli!
- * @Arch - Sprint 1 TDD'ye uygun olarak CodeBlock eklendi
+ * @Arch - TECH_SPEC.md ve TDD'ye uygun Block tanımları
  */
 
 // ============================================
 // Code Language Enum (10 dil desteği)
 // ============================================
+
 export const CodeLanguageSchema = z.enum([
     'javascript',
     'typescript',
@@ -69,8 +70,8 @@ const ImageBlockSchema = z.object({
 });
 
 /**
- * CodeBlock Schema - Sprint 1 TDD
- * Syntax highlighted kod blokları için
+ * CodeBlockSchema - YENİ (Sprint 1)
+ * Syntax highlighting destekli kod bloğu
  */
 const CodeBlockSchema = z.object({
     id: z.string().uuid(),
@@ -87,20 +88,28 @@ const CodeBlockSchema = z.object({
 // Combined Block Schema (Discriminated Union)
 // ============================================
 
-const BlockSchema = z.discriminatedUnion('type', [
+export const BlockSchema = z.discriminatedUnion('type', [
     TextBlockSchema,
     HeadingBlockSchema,
     CheckboxBlockSchema,
     ImageBlockSchema,
-    CodeBlockSchema, // ← YENİ
+    CodeBlockSchema, // Sprint 1 eklentisi
 ]);
 
-const NoteContentSchema = z.object({
+export type Block = z.infer<typeof BlockSchema>;
+
+// ============================================
+// Note Content Schema
+// ============================================
+
+export const NoteContentSchema = z.object({
     blocks: z.array(BlockSchema).default([]),
 });
 
+export type NoteContent = z.infer<typeof NoteContentSchema>;
+
 // ============================================
-// Note CRUD Schemas
+// Create & Update Note Schemas
 // ============================================
 
 /**
@@ -122,31 +131,8 @@ export const UpdateNoteSchema = z.object({
 });
 
 // ============================================
-// Search Schemas - Sprint 1 TDD
-// ============================================
-
-/**
- * Search Query Schema
- * GET /notes/search için validation
- */
-export const SearchQuerySchema = z.object({
-    q: z.string().min(2, 'Query must be at least 2 characters'),
-    limit: z.coerce.number().int().min(1).max(50).default(10),
-});
-
-// ============================================
 // Type Inference Exports
 // ============================================
 
 export type CreateNoteInput = z.infer<typeof CreateNoteSchema>;
 export type UpdateNoteInput = z.infer<typeof UpdateNoteSchema>;
-export type SearchQueryInput = z.infer<typeof SearchQuerySchema>;
-export type Block = z.infer<typeof BlockSchema>;
-export type NoteContent = z.infer<typeof NoteContentSchema>;
-
-// Block type exports for external use
-export type TextBlock = z.infer<typeof TextBlockSchema>;
-export type HeadingBlock = z.infer<typeof HeadingBlockSchema>;
-export type CheckboxBlock = z.infer<typeof CheckboxBlockSchema>;
-export type ImageBlock = z.infer<typeof ImageBlockSchema>;
-export type CodeBlock = z.infer<typeof CodeBlockSchema>;
