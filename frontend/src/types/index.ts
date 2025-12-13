@@ -9,7 +9,7 @@
 
 export type BlockType = 'text' | 'heading' | 'checkbox' | 'image' | 'code';
 
-// Code Language Types (10 dil desteği - TDD uyumlu)
+// Code Language Types (Sprint 1)
 export type CodeLanguage =
     | 'javascript'
     | 'typescript'
@@ -60,10 +60,7 @@ export interface ImageBlock extends BaseBlock {
     };
 }
 
-/**
- * CodeBlock - Sprint 1 eklentisi
- * Syntax highlighting destekli kod bloğu
- */
+// Sprint 1: CodeBlock for syntax highlighting
 export interface CodeBlock extends BaseBlock {
     type: 'code';
     data: {

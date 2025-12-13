@@ -2,14 +2,13 @@ import { z } from 'zod';
 
 /**
  * Zod Validation Schemas - Notes
+ * Sprint 1 - CodeBlock desteği eklendi
  * @SecOps approved - Tüm input'lar validate edilmeli!
- * @Arch - TECH_SPEC.md ve TDD'ye uygun Block tanımları
  */
 
 // ============================================
 // Code Language Enum (10 dil desteği)
 // ============================================
-
 export const CodeLanguageSchema = z.enum([
     'javascript',
     'typescript',
@@ -26,7 +25,7 @@ export const CodeLanguageSchema = z.enum([
 export type CodeLanguage = z.infer<typeof CodeLanguageSchema>;
 
 // ============================================
-// Block Schemas
+// Block Schemas (TECH_SPEC.md + TDD uyumlu)
 // ============================================
 
 const TextBlockSchema = z.object({
@@ -70,8 +69,8 @@ const ImageBlockSchema = z.object({
 });
 
 /**
- * CodeBlockSchema - YENİ (Sprint 1)
- * Syntax highlighting destekli kod bloğu
+ * CodeBlock Schema - YENİ (Sprint 1)
+ * Syntax highlighting için dil desteği
  */
 const CodeBlockSchema = z.object({
     id: z.string().uuid(),
@@ -85,15 +84,14 @@ const CodeBlockSchema = z.object({
 });
 
 // ============================================
-// Combined Block Schema (Discriminated Union)
+// Birleşik Block Schema (Discriminated Union)
 // ============================================
-
 export const BlockSchema = z.discriminatedUnion('type', [
     TextBlockSchema,
     HeadingBlockSchema,
     CheckboxBlockSchema,
     ImageBlockSchema,
-    CodeBlockSchema, // Sprint 1 eklentisi
+    CodeBlockSchema, // ← Sprint 1 eklendi
 ]);
 
 export type Block = z.infer<typeof BlockSchema>;
@@ -101,7 +99,6 @@ export type Block = z.infer<typeof BlockSchema>;
 // ============================================
 // Note Content Schema
 // ============================================
-
 export const NoteContentSchema = z.object({
     blocks: z.array(BlockSchema).default([]),
 });
@@ -109,7 +106,7 @@ export const NoteContentSchema = z.object({
 export type NoteContent = z.infer<typeof NoteContentSchema>;
 
 // ============================================
-// Create & Update Note Schemas
+// CRUD Schemas
 // ============================================
 
 /**
@@ -133,6 +130,12 @@ export const UpdateNoteSchema = z.object({
 // ============================================
 // Type Inference Exports
 // ============================================
-
 export type CreateNoteInput = z.infer<typeof CreateNoteSchema>;
 export type UpdateNoteInput = z.infer<typeof UpdateNoteSchema>;
+
+// Block type exports for frontend sync
+export type TextBlock = z.infer<typeof TextBlockSchema>;
+export type HeadingBlock = z.infer<typeof HeadingBlockSchema>;
+export type CheckboxBlock = z.infer<typeof CheckboxBlockSchema>;
+export type ImageBlock = z.infer<typeof ImageBlockSchema>;
+export type CodeBlock = z.infer<typeof CodeBlockSchema>;
