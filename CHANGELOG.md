@@ -1,3 +1,11 @@
+## [1.2.0](https://github.com/emrealmaoglu/flownote/compare/v1.1.0...v1.2.0) (2025-12-13)
+
+
+### 🚀 Features
+
+* complete drag and drop block management feature ([ebbcca3](https://github.com/emrealmaoglu/flownote/commit/ebbcca39d3461851770ec463f2855332ffcdff00))
+* **frontend:** add drag and drop block management components ([23131d6](https://github.com/emrealmaoglu/flownote/commit/23131d6afdd4082e96fbceb7c1e17478042c8f14))
+
 ## [1.1.0](https://github.com/emrealmaoglu/flownote/compare/v1.0.0...v1.1.0) (2025-12-13)
 
 
