@@ -10,8 +10,10 @@
   ],
   "scripts": {
     "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:local": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
     "dev:backend": "npm run start:dev --workspace=backend",
     "dev:frontend": "npm run dev --workspace=frontend",
+    "db:reset": "rm -f backend/flownote.sqlite && echo 'Database reset. It will be recreated on next start.'",
     "build": "npm run build --workspaces",
     "test": "npm run test --workspaces --if-present",
     "lint": "npm run lint --workspaces --if-present",
