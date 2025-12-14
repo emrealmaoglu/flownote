@@ -1,3 +1,21 @@
+## [1.4.0](https://github.com/emrealmaoglu/flownote/compare/v1.3.0...v1.4.0) (2025-12-14)
+
+
+### 🚀 Features
+
+* **templates:** implement templates system with builtin templates ([7b1c695](https://github.com/emrealmaoglu/flownote/commit/7b1c695990aa9e57852288973bbd40ddbf579e2f))
+
+
+### 🐛 Bug Fixes
+
+* **ci:** configure git remote with pat for semantic-release push ([709a24d](https://github.com/emrealmaoglu/flownote/commit/709a24d209cd07d6d86f22fcf56e638d96d0b0a4))
+* **ci:** use persist-credentials with pat for semantic-release ([54fe320](https://github.com/emrealmaoglu/flownote/commit/54fe320f2ffcae60785bcd1237ef14f46398fce4))
+
+
+### 📚 Documentation
+
+* **roadmap:** add sprint 1-2 features and v1.3.0 release info ([38b8007](https://github.com/emrealmaoglu/flownote/commit/38b8007b424eab62ab5d0adcc2ddb233756720f4))
+
 ## [1.3.0](https://github.com/emrealmaoglu/flownote/compare/v1.2.0...v1.3.0) (2025-12-14)
 
 
