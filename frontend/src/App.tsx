@@ -1,8 +1,8 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider, FocusModeProvider } from './contexts';
-import { MainLayout, ProtectedRoute } from './components';
-import { HomePage, NoteDetailPage, NewNotePage, LoginPage, RegisterPage } from './pages';
+import { MainLayout, ProtectedRoute, AdminRoute } from './components';
+import { HomePage, NoteDetailPage, NewNotePage, LoginPage, RegisterPage, AdminPage } from './pages';
 
 // TanStack Query client
 const queryClient = new QueryClient({
@@ -17,7 +17,7 @@ const queryClient = new QueryClient({
 /**
  * FlowNote Ana Uygulama
  * Block-based not tutma uygulaması
- * Sprint 1: Focus Mode ve Command Palette eklendi
+ * Sprint 4: Admin panel eklendi
  */
 function App() {
     return (
@@ -42,6 +42,16 @@ function App() {
                                 <Route path="/notes/:id" element={<NoteDetailPage />} />
                                 <Route path="/new" element={<NewNotePage />} />
                             </Route>
+
+                            {/* Admin routes - Admin only */}
+                            <Route
+                                path="/admin"
+                                element={
+                                    <AdminRoute>
+                                        <AdminPage />
+                                    </AdminRoute>
+                                }
+                            />
                         </Routes>
                     </Router>
                     {/* Focus Mode Exit Hint */}
@@ -55,4 +65,3 @@ function App() {
 }
 
 export default App;
-

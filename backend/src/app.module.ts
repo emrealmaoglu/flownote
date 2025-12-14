@@ -6,6 +6,7 @@ import { AppService } from "./app.service";
 import { NotesModule } from "./notes/notes.module";
 import { AuthModule } from "./auth/auth.module";
 import { TemplatesModule } from "./templates/templates.module";
+import { AdminModule } from "./admin/admin.module";
 
 /**
  * FlowNote Ana Modül
@@ -63,6 +64,7 @@ import { TemplatesModule } from "./templates/templates.module";
     AuthModule,
     NotesModule,
     TemplatesModule,
+    AdminModule,
   ],
   controllers: [AppController],
   providers: [AppService],
