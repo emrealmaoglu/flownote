@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Loader2, Mail, Lock, User, AlertCircle } from 'lucide-react';
+import { Loader2, Mail, Lock, User, AlertCircle, AtSign } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { useAuth } from '../contexts/useAuth';
 
@@ -12,6 +12,7 @@ export function RegisterPage() {
     const navigate = useNavigate();
     const { register, isLoggedIn } = useAuth();
 
+    const [username, setUsername] = useState('');
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -30,13 +31,23 @@ export function RegisterPage() {
         setError(null);
 
         // Validasyon
-        if (!name || !email || !password || !confirmPassword) {
+        if (!username || !name || !email || !password || !confirmPassword) {
             setError('Lütfen tüm alanları doldurun');
             return;
         }
 
-        if (password.length < 8) {
-            setError('Şifre en az 8 karakter olmalı');
+        if (username.length < 3) {
+            setError('Kullanıcı adı en az 3 karakter olmalı');
+            return;
+        }
+
+        if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+            setError('Kullanıcı adı sadece harf, rakam ve alt çizgi içerebilir');
+            return;
+        }
+
+        if (password.length < 6) {
+            setError('Şifre en az 6 karakter olmalı');
             return;
         }
 
@@ -47,7 +58,7 @@ export function RegisterPage() {
 
         try {
             setLoading(true);
-            await register(email, password, name);
+            await register(username, email, password, name);
             navigate('/', { replace: true });
         } catch (err: unknown) {
             const error = err as { response?: { data?: { message?: string } } };
@@ -78,6 +89,28 @@ export function RegisterPage() {
                             {error}
                         </div>
                     )}
+
+                    {/* Username */}
+                    <div>
+                        <label className="block text-sm font-medium text-dark-300 mb-2">
+                            Kullanıcı Adı
+                        </label>
+                        <div className="relative">
+                            <AtSign className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-dark-500" />
+                            <input
+                                type="text"
+                                value={username}
+                                onChange={(e) => setUsername(e.target.value.toLowerCase())}
+                                placeholder="kullanici_adi"
+                                className={cn(
+                                    'w-full pl-10 pr-4 py-3 rounded-lg',
+                                    'bg-dark-800 border border-dark-700',
+                                    'text-dark-100 placeholder:text-dark-500',
+                                    'focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500',
+                                )}
+                            />
+                        </div>
+                    </div>
 
                     {/* Name */}
                     <div>
@@ -134,7 +167,7 @@ export function RegisterPage() {
                                 type="password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
-                                placeholder="En az 8 karakter"
+                                placeholder="En az 6 karakter"
                                 className={cn(
                                     'w-full pl-10 pr-4 py-3 rounded-lg',
                                     'bg-dark-800 border border-dark-700',

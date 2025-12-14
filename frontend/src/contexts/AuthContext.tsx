@@ -2,12 +2,19 @@ import { createContext, useState, useEffect, ReactNode } from 'react';
 import { apiClient } from '../api';
 
 /**
+ * User Role Type
+ */
+export type UserRole = 'admin' | 'user';
+
+/**
  * Auth Types
  */
 interface AuthUser {
     id: string;
-    email: string;
+    username: string;
+    email: string | null;
     name: string;
+    role: UserRole;
 }
 
 interface AuthContextType {
@@ -15,8 +22,9 @@ interface AuthContextType {
     token: string | null;
     isLoggedIn: boolean;
     isLoading: boolean;
-    login: (email: string, password: string) => Promise<void>;
-    register: (email: string, password: string, name: string) => Promise<void>;
+    isAdmin: boolean;
+    login: (identifier: string, password: string) => Promise<void>;
+    register: (username: string, email: string, password: string, name: string) => Promise<void>;
     logout: () => void;
 }
 
@@ -47,11 +55,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     /**
      * Kullanıcı girişi
+     * @param identifier - username veya email
+     * @param password - şifre
      */
-    async function login(email: string, password: string) {
+    async function login(identifier: string, password: string) {
         const response = await apiClient.post<{ accessToken: string; user: AuthUser }>(
             '/auth/login',
-            { email, password },
+            { identifier, password },
         );
 
         const { accessToken, user: userData } = response.data;
@@ -71,10 +81,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     /**
      * Kullanıcı kaydı
      */
-    async function register(email: string, password: string, name: string) {
+    async function register(username: string, email: string, password: string, name: string) {
         const response = await apiClient.post<{ accessToken: string; user: AuthUser }>(
             '/auth/register',
-            { email, password, name },
+            { username, email, password, name },
         );
 
         const { accessToken, user: userData } = response.data;
@@ -107,6 +117,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         token,
         isLoggedIn: !!token,
         isLoading,
+        isAdmin: user?.role === 'admin',
         login,
         register,
         logout,
