@@ -117,7 +117,6 @@ jobs:
         run: |
           docker build -t flownote-backend:test ./backend --target production
           docker build -t flownote-frontend:test ./frontend --target production
-
   # ============================================
   # Release - Semantic Versioning
   # ============================================
@@ -136,8 +135,6 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
-          # Use PAT for checkout to allow push with branch protection bypass
-          token: ${{ secrets.GH_TOKEN }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -148,10 +145,14 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Configure Git for release
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git remote set-url origin https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/${{ github.repository }}.git
+
       - name: Semantic Release
         env:
-          # Use PAT instead of GITHUB_TOKEN to bypass branch protection
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: npx semantic-release
-
