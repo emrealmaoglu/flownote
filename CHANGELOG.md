@@ -1,3 +1,15 @@
+## [1.3.0](https://github.com/emrealmaoglu/flownote/compare/v1.2.0...v1.3.0) (2025-12-14)
+
+
+### 🚀 Features
+
+* add bi-directional linking feature ([05ede59](https://github.com/emrealmaoglu/flownote/commit/05ede59e79139f64e3c72383e59ccf7793f31a38))
+
+
+### 🐛 Bug Fixes
+
+* **backend:** add notelink repository mock to service tests ([6550cd7](https://github.com/emrealmaoglu/flownote/commit/6550cd76c6e4c97fe3c1eea96c072137d1171db1))
+
 ## [1.2.0](https://github.com/emrealmaoglu/flownote/compare/v1.1.0...v1.2.0) (2025-12-13)
 
 
