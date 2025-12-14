@@ -1,3 +1,13 @@
+## [1.5.0](https://github.com/emrealmaoglu/flownote/compare/v1.4.0...v1.5.0) (2025-12-14)
+
+
+### 🚀 Features
+
+* **admin:** add admin module and user management page ([c742e12](https://github.com/emrealmaoglu/flownote/commit/c742e1232d5516610e91119d72ab658da3521a7b))
+* **auth:** add username, role and identifier-based login ([942671c](https://github.com/emrealmaoglu/flownote/commit/942671c581298ff8100786db8f625257b9182553))
+* **config:** add sqlite support for local development ([e2728f4](https://github.com/emrealmaoglu/flownote/commit/e2728f4f522d6b91fbc03e600de2464112a238a9))
+* **ui:** update auth pages with username and role support ([8a6e48b](https://github.com/emrealmaoglu/flownote/commit/8a6e48b8c4d8438a3a7434b2c121b07efdaf10dd))
+
 ## [1.4.0](https://github.com/emrealmaoglu/flownote/compare/v1.3.0...v1.4.0) (2025-12-14)
 
 
