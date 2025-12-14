@@ -1,21 +1,25 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Loader2, Type, Heading1, CheckSquare, Image } from 'lucide-react';
+import { ArrowLeft, Loader2, Type, Heading1, CheckSquare, Image, LayoutTemplate } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { cn, generateId } from '../lib/utils';
 import { notesApi } from '../api';
 import { BlockRenderer } from '../components';
+import { TemplateModal } from '../components/templates';
+import { templatesApi } from '../api/templates';
 import type { Block, NoteContent } from '../types';
 
 /**
  * NewNotePage Component
  * Yeni not oluşturma sayfası
+ * Sprint 3: Template desteği eklendi
  */
 export function NewNotePage() {
     const navigate = useNavigate();
     const [title, setTitle] = useState('');
     const [blocks, setBlocks] = useState<Block[]>([]);
     const [saving, setSaving] = useState(false);
+    const [showTemplateModal, setShowTemplateModal] = useState(false);
 
     // Block ekleme
     function addBlock(type: Block['type']) {
@@ -74,6 +78,12 @@ export function NewNotePage() {
         }
     }
 
+    // Template'den not oluştur
+    async function handleTemplateSelect(templateId: string, noteTitle: string) {
+        const note = await templatesApi.apply(templateId, { title: noteTitle });
+        navigate(`/notes/${note.id}`);
+    }
+
     return (
         <div className="min-h-screen">
             {/* Header */}
@@ -112,6 +122,23 @@ export function NewNotePage() {
 
             {/* Content */}
             <main className="max-w-4xl mx-auto px-8 py-8">
+                {/* Template Button */}
+                {blocks.length === 0 && !title.trim() && (
+                    <div className="mb-8 p-6 rounded-xl border border-dashed border-dark-700 bg-dark-800/30 text-center">
+                        <LayoutTemplate className="w-12 h-12 mx-auto text-indigo-400 mb-3" />
+                        <h3 className="text-lg font-medium text-white mb-2">Şablondan Başla</h3>
+                        <p className="text-sm text-dark-400 mb-4">
+                            Hazır şablonlardan birini kullanarak hızlıca başlayın
+                        </p>
+                        <button
+                            onClick={() => setShowTemplateModal(true)}
+                            className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg font-medium transition-colors"
+                        >
+                            Şablonları Gör
+                        </button>
+                    </div>
+                )}
+
                 {/* Title Input */}
                 <input
                     type="text"
@@ -254,6 +281,13 @@ export function NewNotePage() {
                     </div>
                 )}
             </main>
+
+            {/* Template Modal */}
+            <TemplateModal
+                isOpen={showTemplateModal}
+                onClose={() => setShowTemplateModal(false)}
+                onSelect={handleTemplateSelect}
+            />
         </div>
     );
 }
