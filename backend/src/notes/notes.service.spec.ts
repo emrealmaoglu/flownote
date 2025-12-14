@@ -2,11 +2,13 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { getRepositoryToken } from "@nestjs/typeorm";
 import { NotesService } from "./notes.service";
 import { Note } from "./entities/note.entity";
+import { NoteLink } from "./entities/note-link.entity";
 import { NotFoundException } from "@nestjs/common";
 
 /**
  * Notes Service Unit Tests
  * @QA - Her service mutlaka test edilmeli!
+ * Sprint 2: NoteLink repository mock eklendi
  */
 describe("NotesService", () => {
   let service: NotesService;
@@ -29,13 +31,23 @@ describe("NotesService", () => {
     updatedAt: new Date(),
   };
 
-  // Mock repository
-  const mockRepository = {
+  // Mock Note repository
+  const mockNoteRepository = {
     create: jest.fn(),
     save: jest.fn(),
     find: jest.fn(),
     findOne: jest.fn(),
     remove: jest.fn(),
+    createQueryBuilder: jest.fn(),
+  };
+
+  // Mock NoteLink repository (Sprint 2)
+  const mockNoteLinkRepository = {
+    create: jest.fn(),
+    save: jest.fn(),
+    find: jest.fn(),
+    findOne: jest.fn(),
+    delete: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -44,7 +56,11 @@ describe("NotesService", () => {
         NotesService,
         {
           provide: getRepositoryToken(Note),
-          useValue: mockRepository,
+          useValue: mockNoteRepository,
+        },
+        {
+          provide: getRepositoryToken(NoteLink),
+          useValue: mockNoteLinkRepository,
         },
       ],
     }).compile();
@@ -69,16 +85,16 @@ describe("NotesService", () => {
         content: { blocks: [] },
       };
 
-      mockRepository.create.mockReturnValue(mockNote);
-      mockRepository.save.mockResolvedValue(mockNote);
+      mockNoteRepository.create.mockReturnValue(mockNote);
+      mockNoteRepository.save.mockResolvedValue(mockNote);
 
       const result = await service.create(createDto);
 
-      expect(mockRepository.create).toHaveBeenCalledWith({
+      expect(mockNoteRepository.create).toHaveBeenCalledWith({
         title: createDto.title,
         content: createDto.content,
       });
-      expect(mockRepository.save).toHaveBeenCalled();
+      expect(mockNoteRepository.save).toHaveBeenCalled();
       expect(result).toEqual(mockNote);
     });
 
@@ -97,8 +113,8 @@ describe("NotesService", () => {
         },
       };
 
-      mockRepository.create.mockReturnValue({ ...mockNote, ...createDto });
-      mockRepository.save.mockResolvedValue({ ...mockNote, ...createDto });
+      mockNoteRepository.create.mockReturnValue({ ...mockNote, ...createDto });
+      mockNoteRepository.save.mockResolvedValue({ ...mockNote, ...createDto });
 
       const result = await service.create(createDto);
 
@@ -116,11 +132,11 @@ describe("NotesService", () => {
         mockNote,
         { ...mockNote, id: "another-id", title: "Another Note" },
       ];
-      mockRepository.find.mockResolvedValue(notes);
+      mockNoteRepository.find.mockResolvedValue(notes);
 
       const result = await service.findAll();
 
-      expect(mockRepository.find).toHaveBeenCalledWith({
+      expect(mockNoteRepository.find).toHaveBeenCalledWith({
         order: { createdAt: "DESC" },
       });
       expect(result).toEqual(notes);
@@ -128,7 +144,7 @@ describe("NotesService", () => {
     });
 
     it("should return empty array when no notes exist", async () => {
-      mockRepository.find.mockResolvedValue([]);
+      mockNoteRepository.find.mockResolvedValue([]);
 
       const result = await service.findAll();
 
@@ -142,18 +158,18 @@ describe("NotesService", () => {
   // ============================================
   describe("findOne", () => {
     it("should return a note by id", async () => {
-      mockRepository.findOne.mockResolvedValue(mockNote);
+      mockNoteRepository.findOne.mockResolvedValue(mockNote);
 
       const result = await service.findOne(mockNote.id as string);
 
-      expect(mockRepository.findOne).toHaveBeenCalledWith({
+      expect(mockNoteRepository.findOne).toHaveBeenCalledWith({
         where: { id: mockNote.id },
       });
       expect(result).toEqual(mockNote);
     });
 
     it("should throw NotFoundException when note not found", async () => {
-      mockRepository.findOne.mockResolvedValue(null);
+      mockNoteRepository.findOne.mockResolvedValue(null);
 
       await expect(service.findOne("non-existent-id")).rejects.toThrow(
         NotFoundException,
@@ -167,8 +183,8 @@ describe("NotesService", () => {
   describe("update", () => {
     it("should update a note title", async () => {
       const updatedNote = { ...mockNote, title: "Updated Title" };
-      mockRepository.findOne.mockResolvedValue(mockNote);
-      mockRepository.save.mockResolvedValue(updatedNote);
+      mockNoteRepository.findOne.mockResolvedValue(mockNote);
+      mockNoteRepository.save.mockResolvedValue(updatedNote);
 
       const result = await service.update(mockNote.id as string, {
         title: "Updated Title",
@@ -180,8 +196,8 @@ describe("NotesService", () => {
     it("should update note content", async () => {
       const newContent = { blocks: [] };
       const updatedNote = { ...mockNote, content: newContent };
-      mockRepository.findOne.mockResolvedValue(mockNote);
-      mockRepository.save.mockResolvedValue(updatedNote);
+      mockNoteRepository.findOne.mockResolvedValue(mockNote);
+      mockNoteRepository.save.mockResolvedValue(updatedNote);
 
       const result = await service.update(mockNote.id as string, {
         content: newContent,
@@ -196,16 +212,16 @@ describe("NotesService", () => {
   // ============================================
   describe("remove", () => {
     it("should remove a note", async () => {
-      mockRepository.findOne.mockResolvedValue(mockNote);
-      mockRepository.remove.mockResolvedValue(mockNote);
+      mockNoteRepository.findOne.mockResolvedValue(mockNote);
+      mockNoteRepository.remove.mockResolvedValue(mockNote);
 
       await service.remove(mockNote.id as string);
 
-      expect(mockRepository.remove).toHaveBeenCalledWith(mockNote);
+      expect(mockNoteRepository.remove).toHaveBeenCalledWith(mockNote);
     });
 
     it("should throw NotFoundException when removing non-existent note", async () => {
-      mockRepository.findOne.mockResolvedValue(null);
+      mockNoteRepository.findOne.mockResolvedValue(null);
 
       await expect(service.remove("non-existent-id")).rejects.toThrow(
         NotFoundException,

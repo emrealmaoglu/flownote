@@ -2,20 +2,25 @@ import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { Note } from "./entities/note.entity";
+import { NoteLink } from "./entities/note-link.entity";
 import { CreateNoteDto } from "./dto/create-note.dto";
 import { UpdateNoteDto } from "./dto/update-note.dto";
 import { SearchResultDto } from "./dto/search-result.dto";
+import { extractLinksFromBlocks } from "./utils/link-parser";
 
 /**
  * Notes Service
  * Business logic katmanı - @Dev tarafından implemente edildi
  * Sprint 1: Search functionality eklendi
+ * Sprint 2: Bi-directional Linking eklendi
  */
 @Injectable()
 export class NotesService {
   constructor(
     @InjectRepository(Note)
     private readonly notesRepository: Repository<Note>,
+    @InjectRepository(NoteLink)
+    private readonly noteLinkRepository: Repository<NoteLink>,
   ) {}
 
   /**
@@ -199,5 +204,73 @@ export class NotesService {
     note.content.blocks.sort((a, b) => a.order - b.order);
 
     return this.notesRepository.save(note);
+  }
+
+  // ============================================
+  // Bi-directional Linking Methods (Sprint 2)
+  // ============================================
+
+  /**
+   * Get notes that link TO this note (backlinks)
+   * @param noteId - Target note UUID
+   */
+  async getBacklinks(noteId: string): Promise<Note[]> {
+    const links = await this.noteLinkRepository.find({
+      where: { targetNoteId: noteId },
+      relations: ["sourceNote"],
+    });
+
+    return links.map((link) => link.sourceNote);
+  }
+
+  /**
+   * Get notes that this note links TO (outlinks)
+   * @param noteId - Source note UUID
+   */
+  async getOutlinks(noteId: string): Promise<Note[]> {
+    const links = await this.noteLinkRepository.find({
+      where: { sourceNoteId: noteId },
+      relations: ["targetNote"],
+    });
+
+    return links.map((link) => link.targetNote);
+  }
+
+  /**
+   * Sync links for a note based on its content
+   * Called after note update to maintain link consistency
+   */
+  async syncLinks(noteId: string): Promise<void> {
+    const note = await this.findOne(noteId);
+
+    if (!note.content?.blocks) {
+      await this.noteLinkRepository.delete({ sourceNoteId: noteId });
+      return;
+    }
+
+    const linkedTitles = extractLinksFromBlocks(note.content.blocks);
+    await this.noteLinkRepository.delete({ sourceNoteId: noteId });
+
+    for (const title of linkedTitles) {
+      const targetNote = await this.notesRepository.findOne({
+        where: { title },
+      });
+
+      if (targetNote && targetNote.id !== noteId) {
+        const link = this.noteLinkRepository.create({
+          sourceNoteId: noteId,
+          targetNoteId: targetNote.id,
+          linkText: title,
+        });
+        await this.noteLinkRepository.save(link);
+      }
+    }
+  }
+
+  /**
+   * Find note by title (for link resolution)
+   */
+  async findByTitle(title: string): Promise<Note | null> {
+    return this.notesRepository.findOne({ where: { title } });
   }
 }
