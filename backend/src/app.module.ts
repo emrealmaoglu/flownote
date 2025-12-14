@@ -5,10 +5,12 @@ import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { NotesModule } from "./notes/notes.module";
 import { AuthModule } from "./auth/auth.module";
+import { TemplatesModule } from "./templates/templates.module";
 
 /**
  * FlowNote Ana Modül
  * Tüm modülleri buradan yönet
+ * Sprint 3: TemplatesModule eklendi
  */
 @Module({
   imports: [
@@ -41,6 +43,7 @@ import { AuthModule } from "./auth/auth.module";
     // Feature modules
     AuthModule,
     NotesModule,
+    TemplatesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
