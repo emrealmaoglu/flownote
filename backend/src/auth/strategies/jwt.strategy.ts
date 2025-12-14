@@ -4,7 +4,17 @@ import { ExtractJwt, Strategy } from "passport-jwt";
 import { ConfigService } from "@nestjs/config";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { User } from "../entities/user.entity";
+import { User, UserRole } from "../entities/user.entity";
+
+/**
+ * JWT Payload Interface
+ */
+interface JwtPayload {
+  sub: string;
+  username: string;
+  email: string | null;
+  role: UserRole;
+}
 
 /**
  * JWT Strategy
@@ -26,9 +36,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
   /**
    * Token doğrulandığında çağrılır
-   * Request'e user bilgisini ekler
+   * Request'e user bilgisini ekler (role dahil)
    */
-  async validate(payload: { sub: string; email: string }) {
+  async validate(payload: JwtPayload) {
     const user = await this.usersRepository.findOne({
       where: { id: payload.sub },
     });
@@ -37,7 +47,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       throw new UnauthorizedException("Geçersiz token");
     }
 
-    // passwordHash'i çıkar
+    // passwordHash'i çıkar, role'ü dahil et
     const { passwordHash: _ph, ...userWithoutPassword } = user;
     void _ph;
     return userWithoutPassword;

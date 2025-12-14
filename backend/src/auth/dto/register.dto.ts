@@ -1,4 +1,8 @@
+/**
+ * Register DTO
+ */
 export class RegisterDto {
+  username: string;
   email: string;
   password: string;
   name: string;

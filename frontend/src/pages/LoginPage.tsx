@@ -1,19 +1,20 @@
 import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Loader2, Mail, Lock, AlertCircle } from 'lucide-react';
+import { Loader2, User, Lock, AlertCircle } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { useAuth } from '../contexts/useAuth';
 
 /**
  * LoginPage Component
  * Kullanıcı giriş sayfası
+ * Username veya email ile giriş yapılabilir
  */
 export function LoginPage() {
     const navigate = useNavigate();
     const location = useLocation();
     const { login, isLoggedIn } = useAuth();
 
-    const [email, setEmail] = useState('');
+    const [identifier, setIdentifier] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
@@ -30,14 +31,14 @@ export function LoginPage() {
         e.preventDefault();
         setError(null);
 
-        if (!email || !password) {
+        if (!identifier || !password) {
             setError('Lütfen tüm alanları doldurun');
             return;
         }
 
         try {
             setLoading(true);
-            await login(email, password);
+            await login(identifier, password);
             navigate(from, { replace: true });
         } catch (err: unknown) {
             const error = err as { response?: { data?: { message?: string } } };
@@ -69,18 +70,18 @@ export function LoginPage() {
                         </div>
                     )}
 
-                    {/* Email */}
+                    {/* Username or Email */}
                     <div>
                         <label className="block text-sm font-medium text-dark-300 mb-2">
-                            Email
+                            Kullanıcı Adı veya Email
                         </label>
                         <div className="relative">
-                            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-dark-500" />
+                            <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-dark-500" />
                             <input
-                                type="email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                placeholder="ornek@email.com"
+                                type="text"
+                                value={identifier}
+                                onChange={(e) => setIdentifier(e.target.value)}
+                                placeholder="kullanici_adi veya email"
                                 className={cn(
                                     'w-full pl-10 pr-4 py-3 rounded-lg',
                                     'bg-dark-800 border border-dark-700',
