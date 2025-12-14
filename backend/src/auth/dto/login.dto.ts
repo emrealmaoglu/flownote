@@ -1,4 +1,7 @@
+/**
+ * Login DTO
+ */
 export class LoginDto {
-  email: string;
+  identifier: string; // username or email
   password: string;
 }

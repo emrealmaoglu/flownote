@@ -31,15 +31,17 @@ export class AuthController {
       accessToken: result.accessToken,
       user: {
         id: result.user.id,
+        username: result.user.username,
         email: result.user.email,
         name: result.user.name,
+        role: result.user.role,
       },
     };
   }
 
   /**
    * POST /auth/login
-   * Kullanıcı girişi
+   * Kullanıcı girişi (username veya email ile)
    */
   @Post("login")
   @HttpCode(HttpStatus.OK)
@@ -50,8 +52,10 @@ export class AuthController {
       accessToken: result.accessToken,
       user: {
         id: result.user.id,
+        username: result.user.username,
         email: result.user.email,
         name: result.user.name,
+        role: result.user.role,
       },
     };
   }

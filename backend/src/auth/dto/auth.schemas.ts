@@ -5,20 +5,30 @@ import { z } from "zod";
  * @SecOps - Tüm auth inputları mutlaka validate edilmeli!
  */
 
+/**
+ * Login Schema
+ * identifier: username veya email olabilir
+ */
 export const LoginSchema = z.object({
-  email: z.string().email("Geçerli bir email adresi girin"),
+  identifier: z.string().min(1, "Kullanıcı adı veya email gerekli"),
   password: z.string().min(1, "Şifre gerekli"),
 });
 
+/**
+ * Register Schema
+ * Yeni kullanıcı kaydı için
+ */
 export const RegisterSchema = z.object({
-  email: z.string().email("Geçerli bir email adresi girin"),
-  password: z
+  username: z
     .string()
-    .min(8, "Şifre en az 8 karakter olmalı")
+    .min(3, "Kullanıcı adı en az 3 karakter olmalı")
+    .max(50, "Kullanıcı adı en fazla 50 karakter olabilir")
     .regex(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
-      "Şifre en az bir büyük harf, bir küçük harf ve bir rakam içermeli",
+      /^[a-zA-Z0-9_]+$/,
+      "Kullanıcı adı sadece harf, rakam ve alt çizgi içerebilir",
     ),
+  email: z.string().email("Geçerli bir email adresi girin"),
+  password: z.string().min(6, "Şifre en az 6 karakter olmalı"),
   name: z
     .string()
     .min(2, "İsim en az 2 karakter olmalı")

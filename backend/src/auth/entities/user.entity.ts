@@ -9,6 +9,11 @@ import {
 import { Note } from "../../notes/entities/note.entity";
 
 /**
+ * User Roles
+ */
+export type UserRole = "admin" | "user";
+
+/**
  * User Entity
  * Kullanıcı bilgilerini tutar
  * @SecOps - Şifre hashlenmeli, plain text asla saklanmamalı!
@@ -18,14 +23,20 @@ export class User {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
-  @Column({ type: "varchar", length: 255, unique: true })
-  email: string;
+  @Column({ type: "varchar", length: 50, unique: true })
+  username: string;
+
+  @Column({ type: "varchar", length: 255, unique: true, nullable: true })
+  email: string | null;
 
   @Column({ type: "varchar", length: 255 })
   passwordHash: string;
 
   @Column({ type: "varchar", length: 100 })
   name: string;
+
+  @Column({ type: "varchar", length: 20, default: "user" })
+  role: UserRole;
 
   @OneToMany(() => Note, (note) => note.user)
   notes: Note[];
