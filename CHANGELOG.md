@@ -1,3 +1,15 @@
+## [1.6.0](https://github.com/emrealmaoglu/flownote/compare/v1.5.0...v1.6.0) (2025-12-15)
+
+
+### 🚀 Features
+
+* **security:** add helmet security headers and rate limiting ([b94e3af](https://github.com/emrealmaoglu/flownote/commit/b94e3afc5a01571ca82d0f116c27d37b16eeae90))
+
+
+### 🐛 Bug Fixes
+
+* **ui:** use import.meta.env for vite compatibility ([85cf93c](https://github.com/emrealmaoglu/flownote/commit/85cf93cd317dac09402a03623ee8e1dca15973aa))
+
 ## [1.5.0](https://github.com/emrealmaoglu/flownote/compare/v1.4.0...v1.5.0) (2025-12-14)
 
 
