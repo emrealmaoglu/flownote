@@ -27,10 +27,11 @@ export class Template {
   description: string | null;
 
   /**
-   * JSONB content - same structure as Note
+   * JSON content - same structure as Note
    * Blocks: text, heading, checkbox, image, code
+   * Uses simple-json for SQLite compatibility
    */
-  @Column({ type: "jsonb", default: { blocks: [] } })
+  @Column({ type: "simple-json", default: JSON.stringify({ blocks: [] }) })
   content: {
     blocks: Array<{
       id: string;

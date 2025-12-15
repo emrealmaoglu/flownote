@@ -29,10 +29,11 @@ export class Note {
   title: string;
 
   /**
-   * KRITIK: JSONB tipinde content
+   * KRITIK: JSONB (PostgreSQL) veya simple-json (SQLite)
    * Block dizisi içerir: text, heading, checkbox, image, code
+   * SQLite için simple-json kullanılır
    */
-  @Column({ type: "jsonb", default: { blocks: [] } })
+  @Column({ type: "simple-json", default: JSON.stringify({ blocks: [] }) })
   content: {
     blocks: Array<{
       id: string;
