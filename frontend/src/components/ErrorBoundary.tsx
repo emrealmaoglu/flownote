@@ -64,7 +64,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
                             Beklenmeyen bir hata oluştu. Lütfen sayfayı yenileyin veya tekrar deneyin.
                         </p>
 
-                        {process.env.NODE_ENV === 'development' && this.state.error && (
+                        {import.meta.env.DEV && this.state.error && (
                             <pre className="text-left text-xs text-red-400 bg-dark-800 p-4 rounded-lg mb-6 overflow-auto max-h-40">
                                 {this.state.error.message}
                             </pre>
