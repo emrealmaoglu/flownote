@@ -1,3 +1,15 @@
+## [1.6.1](https://github.com/emrealmaoglu/flownote/compare/v1.6.0...v1.6.1) (2025-12-15)
+
+
+### 🐛 Bug Fixes
+
+* **test:** exclude e2e folder from vitest ([5ca2d3c](https://github.com/emrealmaoglu/flownote/commit/5ca2d3c6c74d02bd4603d93f15039c03cdf28b26))
+
+
+### 📚 Documentation
+
+* add roadmap and lessons learned ([e000e7b](https://github.com/emrealmaoglu/flownote/commit/e000e7bde74f0665293dc4111554f469c7079129))
+
 ## [1.6.0](https://github.com/emrealmaoglu/flownote/compare/v1.5.0...v1.6.0) (2025-12-15)
 
 
