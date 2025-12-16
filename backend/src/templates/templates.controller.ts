@@ -39,7 +39,7 @@ import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
 @Controller("templates")
 @UseGuards(JwtAuthGuard)
 export class TemplatesController {
-  constructor(private readonly templatesService: TemplatesService) {}
+  constructor(private readonly templatesService: TemplatesService) { }
 
   /**
    * GET /templates - List all templates
@@ -139,10 +139,9 @@ export class TemplatesController {
    */
   @Post(":id/apply")
   @HttpCode(HttpStatus.CREATED)
-  @UsePipes(new ZodValidationPipe(ApplyTemplateSchema))
   async apply(
     @Param("id", ParseUUIDPipe) id: string,
-    @Body() applyDto: ApplyTemplateDto,
+    @Body(new ZodValidationPipe(ApplyTemplateSchema)) applyDto: ApplyTemplateDto,
   ) {
     const note = await this.templatesService.applyTemplate(id, applyDto.title);
     return {

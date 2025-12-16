@@ -1,8 +1,8 @@
 import { Link } from 'react-router-dom';
-import { Plus, Settings, Home, Focus } from 'lucide-react';
+import { Plus, Settings, Home, Focus, LogOut, User } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { NoteList } from '../notes';
-import { useFocusMode } from '../../contexts';
+import { useFocusMode, useAuth } from '../../contexts';
 
 /**
  * Sidebar Component
@@ -15,6 +15,7 @@ interface SidebarProps {
 
 export function Sidebar({ className }: SidebarProps) {
     const { toggleFocusMode } = useFocusMode();
+    const { user, logout } = useAuth();
 
     return (
         <aside
@@ -72,8 +73,20 @@ export function Sidebar({ className }: SidebarProps) {
                 <NoteList />
             </div>
 
-            {/* Footer */}
+            {/* User Info & Footer */}
             <div className="p-4 border-t border-dark-800 space-y-2">
+                {/* User Info */}
+                {user && (
+                    <div className="flex items-center gap-2 px-3 py-2 mb-2">
+                        <div className="w-8 h-8 bg-primary-600 rounded-full flex items-center justify-center">
+                            <User className="w-4 h-4 text-white" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium text-dark-100 truncate">{user.name || user.username}</p>
+                            <p className="text-xs text-dark-500 truncate">{user.role}</p>
+                        </div>
+                    </div>
+                )}
                 <button
                     onClick={toggleFocusMode}
                     className={cn(
@@ -95,6 +108,18 @@ export function Sidebar({ className }: SidebarProps) {
                 >
                     <Settings className="w-4 h-4" />
                     Ayarlar
+                </button>
+                {/* Logout Button */}
+                <button
+                    onClick={logout}
+                    className={cn(
+                        'flex items-center gap-2 w-full px-3 py-2 rounded-lg',
+                        'text-red-400 hover:text-red-300 hover:bg-red-900/20',
+                        'transition-colors text-sm',
+                    )}
+                >
+                    <LogOut className="w-4 h-4" />
+                    Çıkış Yap
                 </button>
             </div>
         </aside>
