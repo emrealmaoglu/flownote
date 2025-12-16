@@ -15,11 +15,11 @@ export const apiClient = axios.create({
 // Request interceptor - Auth token ekleme (Faz 4'te aktif edilecek)
 apiClient.interceptors.request.use(
     (config) => {
-        // TODO: Faz 4'te JWT token eklenecek
-        // const token = localStorage.getItem('accessToken');
-        // if (token) {
-        //   config.headers.Authorization = `Bearer ${token}`;
-        // }
+        // Faz 4 tamamlandı: JWT token ekleniyor
+        const token = localStorage.getItem('accessToken');
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
         return config;
     },
     (error) => Promise.reject(error),

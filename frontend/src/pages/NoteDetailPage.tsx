@@ -71,7 +71,7 @@ export function NoteDetailPage() {
             navigate('/');
         } catch (err) {
             console.error('Failed to delete note:', err);
-            alert('Not silinemedi');
+            alert(`Not silinemedi: ${(err as any).message || 'Bilinmeyen hata'}`);
         } finally {
             setDeleting(false);
         }
