@@ -42,7 +42,7 @@ const HeadingBlockSchema = z.object({
   type: z.literal("heading"),
   order: z.number().int().min(0),
   data: z.object({
-    text: z.string().min(1),
+    text: z.string(), // Removed .min(1) to allow empty headers in draft
     level: z.union([z.literal(1), z.literal(2), z.literal(3)]),
   }),
 });
@@ -62,7 +62,7 @@ const ImageBlockSchema = z.object({
   type: z.literal("image"),
   order: z.number().int().min(0),
   data: z.object({
-    url: z.string().url(),
+    url: z.string(), // Removed .url() validation for initial empty state, or use .url().or(z.literal(''))
     alt: z.string().optional(),
     caption: z.string().optional(),
   }),
