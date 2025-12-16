@@ -1,3 +1,10 @@
+## [1.6.2](https://github.com/emrealmaoglu/flownote/compare/v1.6.1...v1.6.2) (2025-12-16)
+
+
+### 🐛 Bug Fixes
+
+* sprint 7 critical bug fixes ([2a4c6c2](https://github.com/emrealmaoglu/flownote/commit/2a4c6c26e968651129fa69d915517d860d7b7f29))
+
 ## [1.6.1](https://github.com/emrealmaoglu/flownote/compare/v1.6.0...v1.6.1) (2025-12-15)
 
 
