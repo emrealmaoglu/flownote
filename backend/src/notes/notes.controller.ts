@@ -11,7 +11,6 @@ import {
   HttpCode,
   HttpStatus,
   ParseUUIDPipe,
-  UsePipes,
   UseGuards,
 } from "@nestjs/common";
 import { NotesService } from "./notes.service";
@@ -135,7 +134,8 @@ export class NotesController {
   @Patch(":id/blocks/reorder")
   async reorderBlock(
     @Param("id", ParseUUIDPipe) id: string,
-    @Body(new ZodValidationPipe(ReorderBlockSchema)) reorderDto: ReorderBlockDto,
+    @Body(new ZodValidationPipe(ReorderBlockSchema))
+    reorderDto: ReorderBlockDto,
   ) {
     const note = await this.notesService.reorderBlock(
       id,

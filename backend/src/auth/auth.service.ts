@@ -28,7 +28,7 @@ export class AuthService implements OnModuleInit {
     private readonly usersRepository: Repository<User>,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
-  ) { }
+  ) {}
 
   /**
    * Module başlatıldığında default kullanıcıları oluştur

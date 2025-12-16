@@ -79,23 +79,10 @@ body.focus-mode .sidebar {
 }
 
 /* Focus mode: Expand and center main content */
-body.focus-mode main {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 4rem 3rem;
-  transition: all 0.3s ease-in-out;
-  min-height: 100vh;
-}
+/* Main max-width handled by NoteDetailPage.tsx specific classes */
 
 /* Focus mode: Header fade on hover */
-body.focus-mode header {
-  opacity: 0.3;
-  transition: opacity 0.3s ease-in-out;
-}
-
-body.focus-mode header:hover {
-  opacity: 1;
-}
+/* Header visibility handled by NoteDetailPage logic */
 
 /* Focus mode: Subtle vignette effect for immersion */
 body.focus-mode::after {
