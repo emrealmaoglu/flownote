@@ -2,3 +2,8 @@ export * from './BlockRenderer';
 export * from './DragHandle';
 export * from './DraggableBlock';
 export * from './SortableBlockList';
+export * from './EditableBlock';
+export * from './BlockEditor';
+export * from './EditableTitle';
+export * from './AddBlockButton';
+export * from './EmptyNoteState';
