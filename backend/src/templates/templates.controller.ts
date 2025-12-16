@@ -11,6 +11,7 @@ import {
   ParseUUIDPipe,
   UsePipes,
   UseGuards,
+  Req,
 } from "@nestjs/common";
 import { TemplatesService } from "./templates.service";
 import {
@@ -46,8 +47,8 @@ export class TemplatesController {
    * Returns builtin templates + user's own templates
    */
   @Get()
-  async findAll() {
-    const templates = await this.templatesService.findAll();
+  async findAll(@Req() req: any) {
+    const templates = await this.templatesService.findAll(req.user?.id);
     return {
       templates: templates.map((template) => ({
         id: template.id,
@@ -67,9 +68,11 @@ export class TemplatesController {
    */
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  @UsePipes(new ZodValidationPipe(CreateTemplateSchema))
-  async create(@Body() createTemplateDto: CreateTemplateDto) {
-    const template = await this.templatesService.create(createTemplateDto);
+  async create(
+    @Body(new ZodValidationPipe(CreateTemplateSchema)) createTemplateDto: CreateTemplateDto,
+    @Req() req: any,
+  ) {
+    const template = await this.templatesService.create(createTemplateDto, req.user?.id);
     return {
       id: template.id,
       name: template.name,
@@ -105,12 +108,12 @@ export class TemplatesController {
    * Cannot update builtin templates
    */
   @Put(":id")
-  @UsePipes(new ZodValidationPipe(UpdateTemplateSchema))
   async update(
     @Param("id", ParseUUIDPipe) id: string,
-    @Body() updateTemplateDto: UpdateTemplateDto,
+    @Body(new ZodValidationPipe(UpdateTemplateSchema)) updateTemplateDto: UpdateTemplateDto,
+    @Req() req: any,
   ) {
-    const template = await this.templatesService.update(id, updateTemplateDto);
+    const template = await this.templatesService.update(id, updateTemplateDto, req.user?.id);
     return {
       id: template.id,
       name: template.name,
@@ -129,8 +132,8 @@ export class TemplatesController {
    */
   @Delete(":id")
   @HttpCode(HttpStatus.NO_CONTENT)
-  async remove(@Param("id", ParseUUIDPipe) id: string) {
-    await this.templatesService.remove(id);
+  async remove(@Param("id", ParseUUIDPipe) id: string, @Req() req: any) {
+    await this.templatesService.remove(id, req.user?.id);
   }
 
   /**
@@ -142,8 +145,9 @@ export class TemplatesController {
   async apply(
     @Param("id", ParseUUIDPipe) id: string,
     @Body(new ZodValidationPipe(ApplyTemplateSchema)) applyDto: ApplyTemplateDto,
+    @Req() req: any,
   ) {
-    const note = await this.templatesService.applyTemplate(id, applyDto.title);
+    const note = await this.templatesService.applyTemplate(id, applyDto.title, req.user?.id);
     return {
       id: note.id,
       title: note.title,

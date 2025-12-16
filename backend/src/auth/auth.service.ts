@@ -28,7 +28,7 @@ export class AuthService implements OnModuleInit {
     private readonly usersRepository: Repository<User>,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
-  ) {}
+  ) { }
 
   /**
    * Module başlatıldığında default kullanıcıları oluştur
@@ -72,8 +72,9 @@ export class AuthService implements OnModuleInit {
       const passwordHash = await bcrypt.hash("emre", 10);
 
       const emre = this.usersRepository.create({
+        id: "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11", // Fixed ID to prevent token invalidation on DB reset
         username: "emre",
-        email: "emrealmaogluu@gmail.com",
+        email: "emrealmaogluu@gmail.com", // Corrected typo in logic if needed, but keeping existing email
         passwordHash,
         name: "Emre",
         role: "user" as UserRole,
