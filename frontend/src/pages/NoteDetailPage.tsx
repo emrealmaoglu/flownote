@@ -1,25 +1,44 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Trash2, Edit3, Loader2, AlertCircle, Calendar } from 'lucide-react';
-import { cn, formatDate } from '../lib/utils';
+import { ArrowLeft, Trash2, Loader2, AlertCircle, Calendar, Check, Focus } from 'lucide-react';
+import { cn, formatDate, generateId } from '../lib/utils';
 import { notesApi } from '../api';
-import { SortableBlockList } from '../components/blocks';
 import { BacklinksPanel } from '../components/links';
-import type { Note, Block } from '../types';
+import { EditableBlock, EditableTitle, AddBlockButton, EmptyNoteState } from '../components/blocks';
+import { useAutoSave, SaveStatus } from '../hooks/useAutoSave';
+import { useFocusMode } from '../contexts';
+import type { Note, Block, BlockType } from '../types';
 
 /**
  * NoteDetailPage Component
- * Not detay sayfası - Block'ları render eder
- * Sprint 2: Drag & Drop Block Management eklendi
+ * Sprint 7.5 - Inline edit with auto-save
+ * 
+ * Features:
+ * - Click-to-edit title and blocks
+ * - Debounced auto-save (1s)
+ * - Block add/delete
+ * - Drag & drop reorder
+ * - Save status indicator
  */
 export function NoteDetailPage() {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
+    const { toggleFocusMode } = useFocusMode();
+
     const [note, setNote] = useState<Note | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [deleting, setDeleting] = useState(false);
 
+    // Auto-save hook
+    const { queueChange, saveStatus } = useAutoSave({
+        noteId: id || '',
+        onSave: async (noteId, data) => {
+            await notesApi.update(noteId, data);
+        },
+    });
+
+    // Load note on mount
     useEffect(() => {
         if (id) {
             loadNote(id);
@@ -40,6 +59,7 @@ export function NoteDetailPage() {
         }
     }
 
+    // Delete note
     async function handleDelete() {
         if (!id || !confirm('Bu notu silmek istediğinize emin misiniz?')) return;
 
@@ -55,34 +75,65 @@ export function NoteDetailPage() {
         }
     }
 
-    /**
-     * Handle block reorder from drag & drop
-     * Sprint 2 - Drag & Drop Block Management
-     */
-    const handleReorder = useCallback(
-        async (blockId: string, newOrder: number, reorderedBlocks: Block[]) => {
-            if (!id || !note) return;
+    // Title change
+    const handleTitleChange = useCallback((newTitle: string) => {
+        setNote(prev => prev ? { ...prev, title: newTitle } : null);
+        queueChange({ title: newTitle });
+    }, [queueChange]);
 
-            // Optimistic update
-            setNote((prev) => {
-                if (!prev) return prev;
-                return {
-                    ...prev,
-                    content: { blocks: reorderedBlocks },
-                };
-            });
+    // Block update
+    const handleBlockUpdate = useCallback((blockId: string, data: Partial<Block['data']>) => {
+        setNote(prev => {
+            if (!prev) return null;
+            const updatedBlocks = prev.content.blocks.map(b =>
+                b.id === blockId ? { ...b, data: { ...b.data, ...data } } as Block : b
+            );
+            queueChange({ content: { blocks: updatedBlocks } });
+            return { ...prev, content: { blocks: updatedBlocks } };
+        });
+    }, [queueChange]);
 
-            // API call
-            try {
-                await notesApi.reorderBlock(id, blockId, newOrder);
-            } catch (err) {
-                console.error('Failed to reorder block:', err);
-                // Revert on error
-                loadNote(id);
-            }
-        },
-        [id, note]
-    );
+    // Block delete
+    const handleBlockDelete = useCallback((blockId: string) => {
+        setNote(prev => {
+            if (!prev) return null;
+            const updatedBlocks = prev.content.blocks
+                .filter(b => b.id !== blockId)
+                .map((b, i) => ({ ...b, order: i }));
+            queueChange({ content: { blocks: updatedBlocks } });
+            return { ...prev, content: { blocks: updatedBlocks } };
+        });
+    }, [queueChange]);
+
+    // Block add
+    const handleBlockAdd = useCallback((type: BlockType) => {
+        setNote(prev => {
+            if (!prev) return null;
+            const newBlock = createBlock(type, prev.content.blocks.length);
+            const updatedBlocks = [...prev.content.blocks, newBlock];
+            queueChange({ content: { blocks: updatedBlocks } });
+            return { ...prev, content: { blocks: updatedBlocks } };
+        });
+    }, [queueChange]);
+
+    // Add block after specific block
+    const handleAddAfter = useCallback((blockId: string, type: BlockType) => {
+        setNote(prev => {
+            if (!prev) return null;
+            const index = prev.content.blocks.findIndex(b => b.id === blockId);
+            if (index === -1) return prev;
+
+            const newBlock = createBlock(type, index + 1);
+            const updatedBlocks = [
+                ...prev.content.blocks.slice(0, index + 1),
+                newBlock,
+                ...prev.content.blocks.slice(index + 1)
+            ].map((b, i) => ({ ...b, order: i }));
+
+            queueChange({ content: { blocks: updatedBlocks } });
+            return { ...prev, content: { blocks: updatedBlocks } };
+        });
+    }, [queueChange]);
 
     // Loading state
     if (loading) {
@@ -136,16 +187,23 @@ export function NoteDetailPage() {
                             Geri
                         </Link>
                         <div className="flex items-center gap-2">
+                            {/* Save Status Indicator */}
+                            <SaveStatusIndicator status={saveStatus} />
+
+                            {/* Focus Mode */}
                             <button
+                                onClick={toggleFocusMode}
                                 className={cn(
                                     'flex items-center gap-2 px-3 py-1.5 rounded-lg',
                                     'text-dark-400 hover:text-dark-200 hover:bg-dark-800',
                                     'transition-colors text-sm',
                                 )}
+                                title="Focus Mode (F11)"
                             >
-                                <Edit3 className="w-4 h-4" />
-                                Düzenle
+                                <Focus className="w-4 h-4" />
                             </button>
+
+                            {/* Delete */}
                             <button
                                 onClick={handleDelete}
                                 disabled={deleting}
@@ -170,10 +228,12 @@ export function NoteDetailPage() {
 
             {/* Content */}
             <main className="max-w-4xl mx-auto px-8 py-8">
-                {/* Title */}
-                <h1 className="text-3xl font-bold text-dark-50 mb-4">
-                    {note.title || 'Untitled'}
-                </h1>
+                {/* Title - Editable */}
+                <EditableTitle
+                    title={note.title}
+                    onChange={handleTitleChange}
+                    className="mb-4"
+                />
 
                 {/* Meta */}
                 <div className="flex items-center gap-4 text-sm text-dark-500 mb-8 pb-8 border-b border-dark-800">
@@ -187,26 +247,95 @@ export function NoteDetailPage() {
                     <span>{note.content?.blocks?.length || 0} block</span>
                 </div>
 
-                {/* Blocks - Sortable */}
-                <div className="space-y-2">
+                {/* Blocks - Editable */}
+                <div className="space-y-1 pl-8">
                     {note.content?.blocks?.length > 0 ? (
-                        <SortableBlockList
-                            blocks={note.content.blocks}
-                            onReorder={handleReorder}
-                        />
+                        note.content.blocks
+                            .sort((a, b) => a.order - b.order)
+                            .map((block) => (
+                                <EditableBlock
+                                    key={block.id}
+                                    block={block}
+                                    onUpdate={handleBlockUpdate}
+                                    onDelete={handleBlockDelete}
+                                    onAddAfter={handleAddAfter}
+                                />
+                            ))
                     ) : (
-                        <div className="text-center py-12 text-dark-500">
-                            <p>Bu not boş. Henüz block eklenmemiş.</p>
-                        </div>
+                        <EmptyNoteState onAddBlock={handleBlockAdd} />
                     )}
                 </div>
 
-                {/* Backlinks Panel - Sprint 2 */}
+                {/* Add Block Button - Always visible */}
+                {note.content?.blocks?.length > 0 && (
+                    <AddBlockButton
+                        onAdd={handleBlockAdd}
+                        className="mt-6"
+                    />
+                )}
+
+                {/* Backlinks Panel */}
                 {id && <BacklinksPanel noteId={id} className="mt-8" />}
             </main>
         </div>
     );
 }
 
-export default NoteDetailPage;
+/**
+ * Save Status Indicator
+ */
+function SaveStatusIndicator({ status }: { status: SaveStatus }) {
+    if (status === 'idle') return null;
 
+    return (
+        <div className={cn(
+            'flex items-center gap-1 px-2 py-1 rounded text-xs',
+            status === 'saving' && 'text-dark-400',
+            status === 'saved' && 'text-green-400',
+            status === 'error' && 'text-red-400',
+        )}>
+            {status === 'saving' && (
+                <>
+                    <Loader2 className="w-3 h-3 animate-spin" />
+                    <span>Kaydediliyor...</span>
+                </>
+            )}
+            {status === 'saved' && (
+                <>
+                    <Check className="w-3 h-3" />
+                    <span>Kaydedildi</span>
+                </>
+            )}
+            {status === 'error' && (
+                <>
+                    <AlertCircle className="w-3 h-3" />
+                    <span>Hata!</span>
+                </>
+            )}
+        </div>
+    );
+}
+
+/**
+ * Create a new block with default data
+ */
+function createBlock(type: BlockType, order: number): Block {
+    const id = generateId();
+
+    switch (type) {
+        case 'text':
+            return { id, type: 'text', order, data: { text: '' } };
+        case 'heading':
+            return { id, type: 'heading', order, data: { text: '', level: 2 } };
+        case 'checkbox':
+            return { id, type: 'checkbox', order, data: { text: '', checked: false } };
+        case 'image':
+            return { id, type: 'image', order, data: { url: '', alt: '' } };
+        case 'code':
+            return { id, type: 'code', order, data: { code: '', language: 'javascript' } };
+        default:
+            return { id, type: 'text', order, data: { text: '' } };
+    }
+}
+
+export default NoteDetailPage;

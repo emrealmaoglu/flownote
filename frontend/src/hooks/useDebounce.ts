@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 
 /**
  * useDebounce Hook
@@ -51,4 +51,43 @@ export function useKeyboardShortcut(
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, [key, modifiers]);
+}
+
+/**
+ * debounce utility function
+ * Sprint 7.5 - Auto-save için
+ */
+export function debounce<T extends (...args: unknown[]) => unknown>(
+    fn: T,
+    delay: number
+): (...args: Parameters<T>) => void {
+    let timeoutId: ReturnType<typeof setTimeout> | null = null;
+
+    return (...args: Parameters<T>) => {
+        if (timeoutId) {
+            clearTimeout(timeoutId);
+        }
+        timeoutId = setTimeout(() => {
+            fn(...args);
+            timeoutId = null;
+        }, delay);
+    };
+}
+
+/**
+ * useDebouncedCallback Hook
+ * Callback'i debounce eder - auto-save için ideal
+ */
+export function useDebouncedCallback(
+    callback: (...args: unknown[]) => void,
+    delay: number
+): (...args: unknown[]) => void {
+    const callbackRef = useRef(callback);
+    callbackRef.current = callback;
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    return useCallback(
+        debounce((...args: unknown[]) => callbackRef.current(...args), delay),
+        [delay]
+    );
 }
