@@ -31,12 +31,11 @@ async function bootstrap() {
   );
 
   // Global validation pipe
-  // Note: forbidNonWhitelisted=false because we use Zod for strict validation
-  // Zod already rejects unknown properties where needed
+  // Note: whitelist=false because we use Zod for validation, not class-validator
+  // ValidationPipe whitelist runs BEFORE our Zod pipes and strips all undecorated properties
   app.useGlobalPipes(
     new ValidationPipe({
-      whitelist: true,
-      forbidNonWhitelisted: false, // Zod handles this
+      whitelist: false, // Zod handles validation
       transform: true,
     }),
   );
