@@ -86,6 +86,10 @@ export interface Note {
     content: NoteContent;
     createdAt: string;
     updatedAt: string;
+    // Sprint 8: Identity Fields
+    iconEmoji?: string;
+    coverType?: 'none' | 'gradient' | 'color' | 'image';
+    coverValue?: string;
 }
 
 export interface NoteSummary {
@@ -94,6 +98,7 @@ export interface NoteSummary {
     blockCount: number;
     createdAt: string;
     updatedAt: string;
+    iconEmoji?: string;
 }
 
 // ============================================
@@ -103,9 +108,15 @@ export interface NoteSummary {
 export interface CreateNoteRequest {
     title: string;
     content: NoteContent;
+    iconEmoji?: string;
+    coverType?: 'none' | 'gradient' | 'color' | 'image';
+    coverValue?: string;
 }
 
 export interface UpdateNoteRequest {
     title?: string;
     content?: NoteContent;
+    iconEmoji?: string;
+    coverType?: 'none' | 'gradient' | 'color' | 'image';
+    coverValue?: string;
 }

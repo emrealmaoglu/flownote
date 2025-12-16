@@ -53,6 +53,17 @@ export class Note {
   @CreateDateColumn({ name: "created_at" })
   createdAt: Date;
 
-  @UpdateDateColumn({ name: "updated_at" })
+  @Column({ name: "updated_at" })
   updatedAt: Date;
+
+  // --- Identity Fields (Sprint 8) ---
+
+  @Column({ name: "icon_emoji", type: "text", nullable: true })
+  iconEmoji: string | null;
+
+  @Column({ name: "cover_type", type: "text", default: "none" })
+  coverType: string; // 'none' | 'gradient' | 'color' | 'image'
+
+  @Column({ name: "cover_value", type: "text", nullable: true })
+  coverValue: string | null;
 }

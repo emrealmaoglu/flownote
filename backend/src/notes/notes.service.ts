@@ -21,7 +21,43 @@ export class NotesService {
     private readonly notesRepository: Repository<Note>,
     @InjectRepository(NoteLink)
     private readonly noteLinkRepository: Repository<NoteLink>,
-  ) {}
+  ) { }
+
+  /**
+   * Sprint 8: Pragmatic Schema Patch (Migration Strategy A)
+   * App launch sırasında tabloyu control et, eksik kolon varsa ekle.
+   */
+  async onModuleInit() {
+    try {
+      console.log('Checking Note schema for Identity fields...');
+      const runner = this.notesRepository.manager.connection.createQueryRunner();
+
+      // Check icon_emoji
+      const hasIcon = await runner.hasColumn('note', 'icon_emoji');
+      if (!hasIcon) {
+        console.log('Migrating: Adding icon_emoji column');
+        await runner.query(`ALTER TABLE note ADD COLUMN icon_emoji TEXT`);
+      }
+
+      // Check cover_type
+      const hasCoverType = await runner.hasColumn('note', 'cover_type');
+      if (!hasCoverType) {
+        console.log('Migrating: Adding cover_type column');
+        await runner.query(`ALTER TABLE note ADD COLUMN cover_type TEXT DEFAULT 'none'`);
+      }
+
+      // Check cover_value
+      const hasCoverValue = await runner.hasColumn('note', 'cover_value');
+      if (!hasCoverValue) {
+        console.log('Migrating: Adding cover_value column');
+        await runner.query(`ALTER TABLE note ADD COLUMN cover_value TEXT`);
+      }
+
+      console.log('Schema check complete.');
+    } catch (err) {
+      console.error('Schema Migration Error:', err);
+    }
+  }
 
   /**
    * Yeni not oluştur
@@ -73,6 +109,15 @@ export class NotesService {
     }
     if (updateNoteDto.content !== undefined) {
       note.content = updateNoteDto.content;
+    }
+    if (updateNoteDto.iconEmoji !== undefined) {
+      note.iconEmoji = updateNoteDto.iconEmoji;
+    }
+    if (updateNoteDto.coverType !== undefined) {
+      note.coverType = updateNoteDto.coverType;
+    }
+    if (updateNoteDto.coverValue !== undefined) {
+      note.coverValue = updateNoteDto.coverValue;
     }
 
     return this.notesRepository.save(note);

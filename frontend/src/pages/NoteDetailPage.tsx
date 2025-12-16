@@ -5,7 +5,7 @@ import { cn, formatDate, generateId } from '../lib/utils';
 import { notesApi } from '../api';
 import { BacklinksPanel } from '../components/links';
 import { EditableBlock, EditableTitle, AddBlockButton, EmptyNoteState } from '../components/blocks';
-import { NoteHeader, FocusControls } from '../components/notes';
+import { NoteHeader, FocusControls, NoteDetailHeader } from '../components/notes';
 import { DeleteConfirmModal } from '../components/modals/DeleteConfirmModal';
 import { useAutoSave } from '../hooks/useAutoSave';
 import { useFocusMode } from '../contexts';
@@ -14,6 +14,7 @@ import type { Note, Block, BlockType } from '../types';
 /**
  * NoteDetailPage Component
  * Sprint 7.5 - Inline edit with auto-save
+ * Sprint 8 - Note Identity (Icon, Cover)
  * Refactored for modularity and improved Focus Mode UX
  */
 export function NoteDetailPage() {
@@ -78,6 +79,12 @@ export function NoteDetailPage() {
             setDeleting(false);
         }
     }
+
+    // Identity Update (Sprint 8)
+    const handleIdentityUpdate = useCallback((data: Partial<Note>) => {
+        setNote(prev => prev ? { ...prev, ...data } : null);
+        queueChange(data);
+    }, [queueChange]);
 
     // Title change
     const handleTitleChange = useCallback((newTitle: string) => {
@@ -204,63 +211,74 @@ export function NoteDetailPage() {
                 "mx-auto transition-all duration-500 ease-in-out",
                 isFocusMode
                     ? "max-w-[1600px] px-16 py-16" // Focus Mode: Ultra wide for large screens
-                    : "max-w-4xl px-8 py-8"   // Normal: Standard width
+                    : "max-w-4xl min-h-screen"   // Normal: Standard width, remove padding to allow cover to reach top
             )}>
-                {/* Title - Editable */}
-                <EditableTitle
-                    title={note.title}
-                    onChange={handleTitleChange}
-                    className={cn(
-                        "mb-4",
-                        isFocusMode && "text-6xl font-black mb-12 tracking-tight" // Bigger, bolder title in Focus Mode
-                    )}
+                {/* Sprint 8 Identity Header */}
+                <NoteDetailHeader
+                    note={note}
+                    onUpdate={handleIdentityUpdate}
+                    isFocusMode={isFocusMode}
                 />
 
-                {/* Meta */}
-                <div className="flex items-center gap-4 text-sm text-dark-500 mb-8 pb-8 border-b border-dark-800">
-                    <div className="flex items-center gap-1">
-                        <Calendar className="w-4 h-4" />
-                        <span>Oluşturulma: {formatDate(note.createdAt)}</span>
-                    </div>
-                    <span>•</span>
-                    <span>Güncelleme: {formatDate(note.updatedAt)}</span>
-                    <span>•</span>
-                    <span>{note.content?.blocks?.length || 0} block</span>
-                </div>
+                {/* Main Content Area - Add padding here now since main has no padding */}
+                <div className={cn(!isFocusMode && "px-8 pb-8")}>
 
-                {/* Blocks - Editable */}
-                <div className={cn(
-                    "space-y-1 pl-8",
-                    isFocusMode && "pl-0 space-y-6 text-lg md:text-xl text-dark-200 leading-relaxed" // Larger text, more spacing, better color
-                )}>
-                    {note.content?.blocks?.length > 0 ? (
-                        note.content.blocks
-                            .sort((a, b) => a.order - b.order)
-                            .map((block) => (
-                                <EditableBlock
-                                    key={block.id}
-                                    block={block}
-                                    onUpdate={handleBlockUpdate}
-                                    onDelete={handleBlockDelete}
-                                    onAddAfter={handleAddAfter}
-                                // Pass additional props for Focus Mode styling if needed
-                                />
-                            ))
-                    ) : (
-                        <EmptyNoteState onAddBlock={handleBlockAdd} />
-                    )}
-                </div>
-
-                {/* Add Block Button - Always visible */}
-                {note.content?.blocks?.length > 0 && (
-                    <AddBlockButton
-                        onAdd={handleBlockAdd}
-                        className="mt-6"
+                    {/* Title - Editable */}
+                    <EditableTitle
+                        title={note.title}
+                        onChange={handleTitleChange}
+                        className={cn(
+                            "mb-4",
+                            isFocusMode && "text-6xl font-black mb-12 tracking-tight" // Bigger, bolder title in Focus Mode
+                        )}
                     />
-                )}
 
-                {/* Backlinks Panel */}
-                {id && <BacklinksPanel noteId={id} className="mt-8" />}
+                    {/* Meta */}
+                    <div className="flex items-center gap-4 text-sm text-dark-500 mb-8 pb-8 border-b border-dark-800">
+                        <div className="flex items-center gap-1">
+                            <Calendar className="w-4 h-4" />
+                            <span>Oluşturulma: {formatDate(note.createdAt)}</span>
+                        </div>
+                        <span>•</span>
+                        <span>Güncelleme: {formatDate(note.updatedAt)}</span>
+                        <span>•</span>
+                        <span>{note.content?.blocks?.length || 0} block</span>
+                    </div>
+
+                    {/* Blocks - Editable */}
+                    <div className={cn(
+                        "space-y-1 pl-8",
+                        isFocusMode && "pl-0 space-y-6 text-lg md:text-xl text-dark-200 leading-relaxed" // Larger text, more spacing, better color
+                    )}>
+                        {note.content?.blocks?.length > 0 ? (
+                            note.content.blocks
+                                .sort((a, b) => a.order - b.order)
+                                .map((block) => (
+                                    <EditableBlock
+                                        key={block.id}
+                                        block={block}
+                                        onUpdate={handleBlockUpdate}
+                                        onDelete={handleBlockDelete}
+                                        onAddAfter={handleAddAfter}
+                                    // Pass additional props for Focus Mode styling if needed
+                                    />
+                                ))
+                        ) : (
+                            <EmptyNoteState onAddBlock={handleBlockAdd} />
+                        )}
+                    </div>
+
+                    {/* Add Block Button - Always visible */}
+                    {note.content?.blocks?.length > 0 && (
+                        <AddBlockButton
+                            onAdd={handleBlockAdd}
+                            className="mt-6"
+                        />
+                    )}
+
+                    {/* Backlinks Panel */}
+                    {id && <BacklinksPanel noteId={id} className="mt-8" />}
+                </div>
             </main>
         </div>
     );

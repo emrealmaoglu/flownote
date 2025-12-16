@@ -12,4 +12,7 @@ export class UpdateNoteDto {
       data: Record<string, unknown>;
     }>;
   };
+  iconEmoji?: string;
+  coverType?: "none" | "gradient" | "color" | "image";
+  coverValue?: string;
 }

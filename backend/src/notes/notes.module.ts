@@ -16,4 +16,4 @@ import { NoteLink } from "./entities/note-link.entity";
   providers: [NotesService],
   exports: [NotesService],
 })
-export class NotesModule {}
+export class NotesModule { }

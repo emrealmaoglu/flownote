@@ -4,3 +4,6 @@ export * from './NewNotePage';
 export * from './LoginPage';
 export * from './RegisterPage';
 export * from './AdminPage';
+export * from './TasksPage';
+export * from './CalendarPage';
+export * from './InboxPage';

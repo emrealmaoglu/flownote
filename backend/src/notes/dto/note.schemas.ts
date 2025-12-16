@@ -106,6 +106,18 @@ export const NoteContentSchema = z.object({
 export type NoteContent = z.infer<typeof NoteContentSchema>;
 
 // ============================================
+// Identity Schemas (Sprint 8 - MVP+)
+// ============================================
+
+const CoverTypeSchema = z.enum(["none", "color", "gradient", "image"]);
+
+const HexColorSchema = z
+  .string()
+  .regex(/^#([0-9a-fA-F]{6})$/, "coverValue must be #RRGGBB");
+
+const UrlSchema = z.string().url("coverValue must be a valid URL");
+
+// ============================================
 // CRUD Schemas
 // ============================================
 
@@ -113,19 +125,112 @@ export type NoteContent = z.infer<typeof NoteContentSchema>;
  * Create Note Schema
  * POST /notes için validation
  */
-export const CreateNoteSchema = z.object({
-  title: z.string().min(1, "Title is required").max(255, "Title too long"),
-  content: NoteContentSchema,
-});
+export const CreateNoteSchema = z
+  .object({
+    title: z.string().min(1, "Title is required").max(255, "Title too long"),
+    content: NoteContentSchema,
+
+    // NEW (Sprint 8)
+    iconEmoji: z.string().max(32).optional().nullable(),
+    coverType: CoverTypeSchema.optional().default("none"),
+    coverValue: z.string().max(2048).optional().nullable(),
+  })
+  .strict()
+  .superRefine((val, ctx) => {
+    const t = val.coverType ?? "none";
+    const v = val.coverValue;
+
+    if (t === "none") {
+      if (v != null && v !== "") {
+        ctx.addIssue({
+          code: "custom",
+          path: ["coverValue"],
+          message: "coverValue must be null/empty when coverType=none",
+        });
+      }
+      return;
+    }
+
+    if (v == null || v === "") {
+      ctx.addIssue({
+        code: "custom",
+        path: ["coverValue"],
+        message: "coverValue is required when coverType is not none",
+      });
+      return;
+    }
+
+    if (t === "color" && !HexColorSchema.safeParse(v).success) {
+      ctx.addIssue({ code: "custom", path: ["coverValue"], message: "Invalid hex color" });
+    }
+    if (t === "image" && !UrlSchema.safeParse(v).success) {
+      ctx.addIssue({ code: "custom", path: ["coverValue"], message: "Invalid image URL" });
+    }
+    // t === "gradient": MVP’de allowlist yoksa sadece non-empty kabul ediyoruz.
+  });
 
 /**
  * Update Note Schema
  * PUT /notes/:id için validation
  */
-export const UpdateNoteSchema = z.object({
-  title: z.string().min(1).max(255).optional(),
-  content: NoteContentSchema.optional(),
-});
+export const UpdateNoteSchema = z
+  .object({
+    title: z.string().min(1).max(255).optional(),
+    content: NoteContentSchema.optional(),
+
+    // NEW (Sprint 8)
+    iconEmoji: z.string().max(32).optional().nullable(),
+    coverType: CoverTypeSchema.optional(),
+    coverValue: z.string().max(2048).optional().nullable(),
+  })
+  .strict()
+  .superRefine((val, ctx) => {
+    const hasType = "coverType" in val;
+    const hasValue = "coverValue" in val;
+
+    if (!hasType && !hasValue) return;
+
+    // coverValue gönderildiyse coverType da gönderilsin (clobber riskini azaltır)
+    if (!hasType && hasValue) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["coverType"],
+        message: "coverType is required when coverValue is provided",
+      });
+      return;
+    }
+
+    const t = val.coverType ?? "none";
+    const v = val.coverValue;
+
+    if (t === "none") {
+      if (hasValue && v != null && v !== "") {
+        ctx.addIssue({
+          code: "custom",
+          path: ["coverValue"],
+          message: "coverValue must be null/empty when coverType=none",
+        });
+      }
+      return;
+    }
+
+    // coverType none değilse coverValue bekleriz (MVP netliği)
+    if (!hasValue || v == null || v === "") {
+      ctx.addIssue({
+        code: "custom",
+        path: ["coverValue"],
+        message: "coverValue is required when coverType is not none",
+      });
+      return;
+    }
+
+    if (t === "color" && !HexColorSchema.safeParse(v).success) {
+      ctx.addIssue({ code: "custom", path: ["coverValue"], message: "Invalid hex color" });
+    }
+    if (t === "image" && !UrlSchema.safeParse(v).success) {
+      ctx.addIssue({ code: "custom", path: ["coverValue"], message: "Invalid image URL" });
+    }
+  });
 
 // ============================================
 // Type Inference Exports

@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Plus, Settings, Home, Focus, LogOut, User } from 'lucide-react';
+import { Plus, Settings, Home, Focus, LogOut, User, Activity, CalendarDays, Inbox, KanbanSquare, Users } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { NoteList } from '../notes';
 import { useFocusMode, useAuth } from '../../contexts';
@@ -50,27 +50,94 @@ export function Sidebar({ className }: SidebarProps) {
                 </Link>
             </div>
 
-            {/* Navigation */}
-            <nav className="p-2">
-                <Link
-                    to="/"
-                    className={cn(
-                        'flex items-center gap-2 px-3 py-2 rounded-lg',
-                        'text-dark-300 hover:text-dark-100 hover:bg-dark-800',
-                        'transition-colors',
-                    )}
-                >
-                    <Home className="w-4 h-4" />
-                    Ana Sayfa
-                </Link>
-            </nav>
+            {/* Navigation Groups */}
+            <div className="flex-1 overflow-y-auto px-3 py-4 space-y-6">
 
-            {/* Notes List */}
-            <div className="flex-1 overflow-y-auto p-4">
-                <h2 className="text-xs font-semibold text-dark-500 uppercase tracking-wider mb-3">
-                    Notlarım
-                </h2>
-                <NoteList />
+                {/* MY SPACE */}
+                <div>
+                    <h2 className="text-xs font-semibold text-dark-500 uppercase tracking-wider mb-2 px-2">
+                        My Space
+                    </h2>
+                    <nav className="space-y-0.5">
+                        <Link
+                            to="/"
+                            className={cn(
+                                'flex items-center gap-2 px-3 py-2 rounded-lg text-sm',
+                                'text-dark-300 hover:text-dark-100 hover:bg-dark-800',
+                                'transition-colors',
+                            )}
+                        >
+                            <Home className="w-4 h-4" />
+                            Dashboard
+                        </Link>
+                        <Link
+                            to="/inbox"
+                            className={cn(
+                                'flex items-center gap-2 px-3 py-2 rounded-lg text-sm',
+                                'text-dark-300 hover:text-dark-100 hover:bg-dark-800',
+                                'transition-colors',
+                            )}
+                        >
+                            <Inbox className="w-4 h-4" />
+                            Inbox
+                        </Link>
+                        <Link
+                            to="/tasks"
+                            className={cn(
+                                'flex items-center gap-2 px-3 py-2 rounded-lg text-sm',
+                                'text-dark-300 hover:text-dark-100 hover:bg-dark-800',
+                                'transition-colors',
+                            )}
+                        >
+                            <KanbanSquare className="w-4 h-4" />
+                            Tasks
+                        </Link>
+                        <Link
+                            to="/calendar"
+                            className={cn(
+                                'flex items-center gap-2 px-3 py-2 rounded-lg text-sm',
+                                'text-dark-300 hover:text-dark-100 hover:bg-dark-800',
+                                'transition-colors',
+                            )}
+                        >
+                            <CalendarDays className="w-4 h-4" />
+                            Calendar
+                        </Link>
+                    </nav>
+                </div>
+
+                {/* TEAM */}
+                <div>
+                    <h2 className="text-xs font-semibold text-dark-500 uppercase tracking-wider mb-2 px-2">
+                        Team
+                    </h2>
+                    <nav className="space-y-0.5">
+                        <div className={cn(
+                            'flex items-center gap-2 px-3 py-2 rounded-lg text-sm',
+                            'text-dark-400 cursor-not-allowed opacity-50',
+                        )}>
+                            <Users className="w-4 h-4" />
+                            Members
+                        </div>
+                        <div className={cn(
+                            'flex items-center gap-2 px-3 py-2 rounded-lg text-sm',
+                            'text-dark-400 cursor-not-allowed opacity-50',
+                        )}>
+                            <Activity className="w-4 h-4" />
+                            Activity
+                        </div>
+                    </nav>
+                </div>
+
+                {/* NOTES */}
+                <div>
+                    <div className="flex items-center justify-between mb-2 px-2">
+                        <h2 className="text-xs font-semibold text-dark-500 uppercase tracking-wider">
+                            Notes
+                        </h2>
+                    </div>
+                    <NoteList />
+                </div>
             </div>
 
             {/* User Info & Footer */}
