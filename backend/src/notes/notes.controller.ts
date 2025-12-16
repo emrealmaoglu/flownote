@@ -38,7 +38,7 @@ import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
 @Controller("notes")
 @UseGuards(JwtAuthGuard)
 export class NotesController {
-  constructor(private readonly notesService: NotesService) {}
+  constructor(private readonly notesService: NotesService) { }
 
   /**
    * POST /notes - Yeni not oluştur
@@ -46,8 +46,9 @@ export class NotesController {
    */
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  @UsePipes(new ZodValidationPipe(CreateNoteSchema))
-  async create(@Body() createNoteDto: CreateNoteDto) {
+  async create(
+    @Body(new ZodValidationPipe(CreateNoteSchema)) createNoteDto: CreateNoteDto,
+  ) {
     const note = await this.notesService.create(createNoteDto);
     return {
       id: note.id,
@@ -113,10 +114,9 @@ export class NotesController {
    * @SecOps - Zod validation zorunlu!
    */
   @Put(":id")
-  @UsePipes(new ZodValidationPipe(UpdateNoteSchema))
   async update(
     @Param("id", ParseUUIDPipe) id: string,
-    @Body() updateNoteDto: UpdateNoteDto,
+    @Body(new ZodValidationPipe(UpdateNoteSchema)) updateNoteDto: UpdateNoteDto,
   ) {
     const note = await this.notesService.update(id, updateNoteDto);
     return {
@@ -133,10 +133,9 @@ export class NotesController {
    * Sprint 2 - Drag & Drop Block Management
    */
   @Patch(":id/blocks/reorder")
-  @UsePipes(new ZodValidationPipe(ReorderBlockSchema))
   async reorderBlock(
     @Param("id", ParseUUIDPipe) id: string,
-    @Body() reorderDto: ReorderBlockDto,
+    @Body(new ZodValidationPipe(ReorderBlockSchema)) reorderDto: ReorderBlockDto,
   ) {
     const note = await this.notesService.reorderBlock(
       id,
