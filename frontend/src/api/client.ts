@@ -17,7 +17,7 @@ apiClient.interceptors.request.use(
     (config) => {
         // Faz 4 tamamlandı: JWT token ekleniyor
         const token = localStorage.getItem('accessToken');
-        if (token) {
+        if (token && !config.url?.includes('/auth/')) {
             config.headers.Authorization = `Bearer ${token}`;
         }
         return config;
