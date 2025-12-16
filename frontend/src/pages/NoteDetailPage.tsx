@@ -66,6 +66,8 @@ export function NoteDetailPage() {
         try {
             setDeleting(true);
             await notesApi.delete(id);
+            // Refresh sidebar notes list
+            window.dispatchEvent(new CustomEvent('notes:refresh'));
             navigate('/');
         } catch (err) {
             console.error('Failed to delete note:', err);

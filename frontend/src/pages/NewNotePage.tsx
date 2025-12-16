@@ -69,6 +69,8 @@ export function NewNotePage() {
             setSaving(true);
             const content: NoteContent = { blocks };
             const note = await notesApi.create({ title, content });
+            // Refresh sidebar notes list
+            window.dispatchEvent(new CustomEvent('notes:refresh'));
             navigate(`/notes/${note.id}`);
         } catch (err) {
             console.error('Failed to save note:', err);
@@ -81,6 +83,8 @@ export function NewNotePage() {
     // Template'den not oluştur
     async function handleTemplateSelect(templateId: string, noteTitle: string) {
         const note = await templatesApi.apply(templateId, { title: noteTitle });
+        // Refresh sidebar notes list
+        window.dispatchEvent(new CustomEvent('notes:refresh'));
         navigate(`/notes/${note.id}`);
     }
 

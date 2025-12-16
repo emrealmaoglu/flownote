@@ -43,6 +43,15 @@ export function NoteList({ onNotesLoaded }: NoteListProps) {
         loadNotes();
     }, [loadNotes]);
 
+    // Listen for notes refresh events (triggered on create/delete)
+    useEffect(() => {
+        const handleRefresh = () => {
+            loadNotes();
+        };
+        window.addEventListener('notes:refresh', handleRefresh);
+        return () => window.removeEventListener('notes:refresh', handleRefresh);
+    }, [loadNotes]);
+
     // Loading state
     if (loading) {
         return (
