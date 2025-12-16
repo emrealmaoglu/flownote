@@ -9,7 +9,6 @@ import {
   HttpCode,
   HttpStatus,
   ParseUUIDPipe,
-  UsePipes,
   UseGuards,
   Req,
 } from "@nestjs/common";
@@ -69,10 +68,14 @@ export class TemplatesController {
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async create(
-    @Body(new ZodValidationPipe(CreateTemplateSchema)) createTemplateDto: CreateTemplateDto,
+    @Body(new ZodValidationPipe(CreateTemplateSchema))
+    createTemplateDto: CreateTemplateDto,
     @Req() req: any,
   ) {
-    const template = await this.templatesService.create(createTemplateDto, req.user?.id);
+    const template = await this.templatesService.create(
+      createTemplateDto,
+      req.user?.id,
+    );
     return {
       id: template.id,
       name: template.name,
@@ -110,10 +113,15 @@ export class TemplatesController {
   @Put(":id")
   async update(
     @Param("id", ParseUUIDPipe) id: string,
-    @Body(new ZodValidationPipe(UpdateTemplateSchema)) updateTemplateDto: UpdateTemplateDto,
+    @Body(new ZodValidationPipe(UpdateTemplateSchema))
+    updateTemplateDto: UpdateTemplateDto,
     @Req() req: any,
   ) {
-    const template = await this.templatesService.update(id, updateTemplateDto, req.user?.id);
+    const template = await this.templatesService.update(
+      id,
+      updateTemplateDto,
+      req.user?.id,
+    );
     return {
       id: template.id,
       name: template.name,
@@ -144,10 +152,15 @@ export class TemplatesController {
   @HttpCode(HttpStatus.CREATED)
   async apply(
     @Param("id", ParseUUIDPipe) id: string,
-    @Body(new ZodValidationPipe(ApplyTemplateSchema)) applyDto: ApplyTemplateDto,
+    @Body(new ZodValidationPipe(ApplyTemplateSchema))
+    applyDto: ApplyTemplateDto,
     @Req() req: any,
   ) {
-    const note = await this.templatesService.applyTemplate(id, applyDto.title, req.user?.id);
+    const note = await this.templatesService.applyTemplate(
+      id,
+      applyDto.title,
+      req.user?.id,
+    );
     return {
       id: note.id,
       title: note.title,

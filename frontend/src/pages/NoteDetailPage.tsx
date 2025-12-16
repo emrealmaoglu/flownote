@@ -1,24 +1,20 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Trash2, Loader2, AlertCircle, Calendar, Check, Focus, Minimize2 } from 'lucide-react';
+import { ArrowLeft, Loader2, AlertCircle, Calendar } from 'lucide-react';
 import { cn, formatDate, generateId } from '../lib/utils';
 import { notesApi } from '../api';
 import { BacklinksPanel } from '../components/links';
 import { EditableBlock, EditableTitle, AddBlockButton, EmptyNoteState } from '../components/blocks';
-import { useAutoSave, SaveStatus } from '../hooks/useAutoSave';
+import { NoteHeader, FocusControls } from '../components/notes';
+import { DeleteConfirmModal } from '../components/modals/DeleteConfirmModal';
+import { useAutoSave } from '../hooks/useAutoSave';
 import { useFocusMode } from '../contexts';
 import type { Note, Block, BlockType } from '../types';
 
 /**
  * NoteDetailPage Component
  * Sprint 7.5 - Inline edit with auto-save
- * 
- * Features:
- * - Click-to-edit title and blocks
- * - Debounced auto-save (1s)
- * - Block add/delete
- * - Drag & drop reorder
- * - Save status indicator
+ * Refactored for modularity and improved Focus Mode UX
  */
 export function NoteDetailPage() {
     const { id } = useParams<{ id: string }>();
@@ -29,6 +25,9 @@ export function NoteDetailPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [deleting, setDeleting] = useState(false);
+
+    // Modal state
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
     // Auto-save hook
     const { queueChange, saveStatus } = useAutoSave({
@@ -59,9 +58,9 @@ export function NoteDetailPage() {
         }
     }
 
-    // Delete note
-    async function handleDelete() {
-        if (!id || !confirm('Bu notu silmek istediğinize emin misiniz?')) return;
+    // Delete note handler (Triggered by Modal)
+    async function confirmDelete() {
+        if (!id) return;
 
         try {
             setDeleting(true);
@@ -71,6 +70,9 @@ export function NoteDetailPage() {
             navigate('/');
         } catch (err) {
             console.error('Failed to delete note:', err);
+            // Close modal on error so user sees the issue, or keep it open with error state?
+            // For now close and alert/toast
+            setIsDeleteModalOpen(false);
             alert(`Not silinemedi: ${(err as any).message || 'Bilinmeyen hata'}`);
         } finally {
             setDeleting(false);
@@ -137,86 +139,6 @@ export function NoteDetailPage() {
         });
     }, [queueChange]);
 
-    // Component: Header
-    const Header = () => (
-        <header className={cn(
-            "sticky top-0 z-10 bg-dark-950/80 backdrop-blur-sm border-b border-dark-800",
-            isFocusMode && "hidden"
-        )}>
-            <div className="max-w-4xl mx-auto px-8 py-4">
-                <div className="flex items-center justify-between">
-                    <Link
-                        to="/"
-                        className={cn(
-                            'flex items-center gap-2 text-dark-400 hover:text-dark-200',
-                            'transition-colors',
-                        )}
-                    >
-                        <ArrowLeft className="w-4 h-4" />
-                        Geri
-                    </Link>
-                    <div className="flex items-center gap-2">
-                        {/* Save Status Indicator */}
-                        <SaveStatusIndicator status={saveStatus} />
-
-                        {/* Focus Mode */}
-                        <button
-                            onClick={toggleFocusMode}
-                            className={cn(
-                                'flex items-center gap-2 px-3 py-1.5 rounded-lg',
-                                'text-dark-400 hover:text-dark-200 hover:bg-dark-800',
-                                'transition-colors text-sm',
-                            )}
-                            title="Focus Mode (F11)"
-                        >
-                            <Focus className="w-4 h-4" />
-                        </button>
-
-                        {/* Delete */}
-                        <button
-                            onClick={handleDelete}
-                            disabled={deleting}
-                            className={cn(
-                                'flex items-center gap-2 px-3 py-1.5 rounded-lg',
-                                'text-red-400 hover:text-red-300 hover:bg-red-500/10',
-                                'transition-colors text-sm',
-                                deleting && 'opacity-50 cursor-not-allowed',
-                            )}
-                        >
-                            {deleting ? (
-                                <Loader2 className="w-4 h-4 animate-spin" />
-                            ) : (
-                                <Trash2 className="w-4 h-4" />
-                            )}
-                            Sil
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </header>
-    );
-
-    // Component: Focus Controls (Floating)
-    const FocusControls = () => (
-        isFocusMode ? (
-            <>
-                {/* Floating Exit Button */}
-                <button
-                    onClick={toggleFocusMode}
-                    className="fixed top-6 right-8 z-50 p-2 text-dark-400 hover:text-dark-200 bg-dark-950/50 hover:bg-dark-800 rounded-lg backdrop-blur-sm transition-all border border-transparent hover:border-dark-700"
-                    title="Exit Focus Mode (Esc)"
-                >
-                    <Minimize2 className="w-5 h-5" />
-                </button>
-
-                {/* Floating Save Status */}
-                <div className="fixed bottom-6 right-8 z-50 bg-dark-950/50 px-3 py-2 rounded-lg backdrop-blur-sm border border-dark-800/50">
-                    <SaveStatusIndicator status={saveStatus} />
-                </div>
-            </>
-        ) : null
-    );
-
     // Loading state
     if (loading) {
         return (
@@ -254,16 +176,44 @@ export function NoteDetailPage() {
 
     return (
         <div className="min-h-screen">
-            <Header />
-            <FocusControls />
+            <NoteHeader
+                isFocusMode={isFocusMode}
+                toggleFocusMode={toggleFocusMode}
+                saveStatus={saveStatus}
+                handleDelete={() => setIsDeleteModalOpen(true)} // Open modal instead of direct delete
+                deleting={deleting}
+            />
+
+            <FocusControls
+                isFocusMode={isFocusMode}
+                toggleFocusMode={toggleFocusMode}
+                saveStatus={saveStatus}
+            />
+
+            {/* Custom Delete Modal */}
+            <DeleteConfirmModal
+                isOpen={isDeleteModalOpen}
+                onClose={() => setIsDeleteModalOpen(false)}
+                onConfirm={confirmDelete}
+                isDeleting={deleting}
+                title={note.title ? `"${note.title}" Silinsin mi?` : 'Notu Sil'}
+            />
 
             {/* Content */}
-            <main className="max-w-4xl mx-auto px-8 py-8">
+            <main className={cn(
+                "mx-auto transition-all duration-500 ease-in-out",
+                isFocusMode
+                    ? "max-w-[1600px] px-16 py-16" // Focus Mode: Ultra wide for large screens
+                    : "max-w-4xl px-8 py-8"   // Normal: Standard width
+            )}>
                 {/* Title - Editable */}
                 <EditableTitle
                     title={note.title}
                     onChange={handleTitleChange}
-                    className="mb-4"
+                    className={cn(
+                        "mb-4",
+                        isFocusMode && "text-6xl font-black mb-12 tracking-tight" // Bigger, bolder title in Focus Mode
+                    )}
                 />
 
                 {/* Meta */}
@@ -279,7 +229,10 @@ export function NoteDetailPage() {
                 </div>
 
                 {/* Blocks - Editable */}
-                <div className="space-y-1 pl-8">
+                <div className={cn(
+                    "space-y-1 pl-8",
+                    isFocusMode && "pl-0 space-y-6 text-lg md:text-xl text-dark-200 leading-relaxed" // Larger text, more spacing, better color
+                )}>
                     {note.content?.blocks?.length > 0 ? (
                         note.content.blocks
                             .sort((a, b) => a.order - b.order)
@@ -290,6 +243,7 @@ export function NoteDetailPage() {
                                     onUpdate={handleBlockUpdate}
                                     onDelete={handleBlockDelete}
                                     onAddAfter={handleAddAfter}
+                                // Pass additional props for Focus Mode styling if needed
                                 />
                             ))
                     ) : (
@@ -308,41 +262,6 @@ export function NoteDetailPage() {
                 {/* Backlinks Panel */}
                 {id && <BacklinksPanel noteId={id} className="mt-8" />}
             </main>
-        </div>
-    );
-}
-
-/**
- * Save Status Indicator
- */
-function SaveStatusIndicator({ status }: { status: SaveStatus }) {
-    if (status === 'idle') return null;
-
-    return (
-        <div className={cn(
-            'flex items-center gap-1 px-2 py-1 rounded text-xs',
-            status === 'saving' && 'text-dark-400',
-            status === 'saved' && 'text-green-400',
-            status === 'error' && 'text-red-400',
-        )}>
-            {status === 'saving' && (
-                <>
-                    <Loader2 className="w-3 h-3 animate-spin" />
-                    <span>Kaydediliyor...</span>
-                </>
-            )}
-            {status === 'saved' && (
-                <>
-                    <Check className="w-3 h-3" />
-                    <span>Kaydedildi</span>
-                </>
-            )}
-            {status === 'error' && (
-                <>
-                    <AlertCircle className="w-3 h-3" />
-                    <span>Hata!</span>
-                </>
-            )}
         </div>
     );
 }
