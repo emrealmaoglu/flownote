@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Trash2, Loader2, AlertCircle, Calendar, Check, Focus } from 'lucide-react';
+import { ArrowLeft, Trash2, Loader2, AlertCircle, Calendar, Check, Focus, Minimize2 } from 'lucide-react';
 import { cn, formatDate, generateId } from '../lib/utils';
 import { notesApi } from '../api';
 import { BacklinksPanel } from '../components/links';
@@ -23,7 +23,7 @@ import type { Note, Block, BlockType } from '../types';
 export function NoteDetailPage() {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
-    const { toggleFocusMode } = useFocusMode();
+    const { toggleFocusMode, isFocusMode } = useFocusMode();
 
     const [note, setNote] = useState<Note | null>(null);
     const [loading, setLoading] = useState(true);
@@ -137,6 +137,86 @@ export function NoteDetailPage() {
         });
     }, [queueChange]);
 
+    // Component: Header
+    const Header = () => (
+        <header className={cn(
+            "sticky top-0 z-10 bg-dark-950/80 backdrop-blur-sm border-b border-dark-800",
+            isFocusMode && "hidden"
+        )}>
+            <div className="max-w-4xl mx-auto px-8 py-4">
+                <div className="flex items-center justify-between">
+                    <Link
+                        to="/"
+                        className={cn(
+                            'flex items-center gap-2 text-dark-400 hover:text-dark-200',
+                            'transition-colors',
+                        )}
+                    >
+                        <ArrowLeft className="w-4 h-4" />
+                        Geri
+                    </Link>
+                    <div className="flex items-center gap-2">
+                        {/* Save Status Indicator */}
+                        <SaveStatusIndicator status={saveStatus} />
+
+                        {/* Focus Mode */}
+                        <button
+                            onClick={toggleFocusMode}
+                            className={cn(
+                                'flex items-center gap-2 px-3 py-1.5 rounded-lg',
+                                'text-dark-400 hover:text-dark-200 hover:bg-dark-800',
+                                'transition-colors text-sm',
+                            )}
+                            title="Focus Mode (F11)"
+                        >
+                            <Focus className="w-4 h-4" />
+                        </button>
+
+                        {/* Delete */}
+                        <button
+                            onClick={handleDelete}
+                            disabled={deleting}
+                            className={cn(
+                                'flex items-center gap-2 px-3 py-1.5 rounded-lg',
+                                'text-red-400 hover:text-red-300 hover:bg-red-500/10',
+                                'transition-colors text-sm',
+                                deleting && 'opacity-50 cursor-not-allowed',
+                            )}
+                        >
+                            {deleting ? (
+                                <Loader2 className="w-4 h-4 animate-spin" />
+                            ) : (
+                                <Trash2 className="w-4 h-4" />
+                            )}
+                            Sil
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+    );
+
+    // Component: Focus Controls (Floating)
+    const FocusControls = () => (
+        isFocusMode ? (
+            <>
+                {/* Floating Exit Button */}
+                <button
+                    onClick={toggleFocusMode}
+                    className="fixed top-6 right-8 z-50 p-2 text-dark-400 hover:text-dark-200 bg-dark-950/50 hover:bg-dark-800 rounded-lg backdrop-blur-sm transition-all border border-transparent hover:border-dark-700"
+                    title="Exit Focus Mode (Esc)"
+                >
+                    <Minimize2 className="w-5 h-5" />
+                </button>
+
+                {/* Floating Save Status */}
+                <div className="fixed bottom-6 right-8 z-50 bg-dark-950/50 px-3 py-2 rounded-lg backdrop-blur-sm border border-dark-800/50">
+                    <SaveStatusIndicator status={saveStatus} />
+                </div>
+            </>
+        ) : null
+    );
+
     // Loading state
     if (loading) {
         return (
@@ -174,59 +254,8 @@ export function NoteDetailPage() {
 
     return (
         <div className="min-h-screen">
-            {/* Header */}
-            <header className="sticky top-0 z-10 bg-dark-950/80 backdrop-blur-sm border-b border-dark-800">
-                <div className="max-w-4xl mx-auto px-8 py-4">
-                    <div className="flex items-center justify-between">
-                        <Link
-                            to="/"
-                            className={cn(
-                                'flex items-center gap-2 text-dark-400 hover:text-dark-200',
-                                'transition-colors',
-                            )}
-                        >
-                            <ArrowLeft className="w-4 h-4" />
-                            Geri
-                        </Link>
-                        <div className="flex items-center gap-2">
-                            {/* Save Status Indicator */}
-                            <SaveStatusIndicator status={saveStatus} />
-
-                            {/* Focus Mode */}
-                            <button
-                                onClick={toggleFocusMode}
-                                className={cn(
-                                    'flex items-center gap-2 px-3 py-1.5 rounded-lg',
-                                    'text-dark-400 hover:text-dark-200 hover:bg-dark-800',
-                                    'transition-colors text-sm',
-                                )}
-                                title="Focus Mode (F11)"
-                            >
-                                <Focus className="w-4 h-4" />
-                            </button>
-
-                            {/* Delete */}
-                            <button
-                                onClick={handleDelete}
-                                disabled={deleting}
-                                className={cn(
-                                    'flex items-center gap-2 px-3 py-1.5 rounded-lg',
-                                    'text-red-400 hover:text-red-300 hover:bg-red-500/10',
-                                    'transition-colors text-sm',
-                                    deleting && 'opacity-50 cursor-not-allowed',
-                                )}
-                            >
-                                {deleting ? (
-                                    <Loader2 className="w-4 h-4 animate-spin" />
-                                ) : (
-                                    <Trash2 className="w-4 h-4" />
-                                )}
-                                Sil
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </header>
+            <Header />
+            <FocusControls />
 
             {/* Content */}
             <main className="max-w-4xl mx-auto px-8 py-8">
