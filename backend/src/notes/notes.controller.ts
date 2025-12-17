@@ -37,7 +37,7 @@ import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
 @Controller("notes")
 @UseGuards(JwtAuthGuard)
 export class NotesController {
-  constructor(private readonly notesService: NotesService) { }
+  constructor(private readonly notesService: NotesService) {}
 
   /**
    * POST /notes - Yeni not oluştur
@@ -53,6 +53,9 @@ export class NotesController {
       id: note.id,
       title: note.title,
       content: note.content,
+      iconEmoji: note.iconEmoji,
+      coverType: note.coverType,
+      coverValue: note.coverValue,
       createdAt: note.createdAt.toISOString(),
       updatedAt: note.updatedAt.toISOString(),
     };
@@ -69,6 +72,7 @@ export class NotesController {
         id: note.id,
         title: note.title,
         blockCount: note.content?.blocks?.length || 0,
+        iconEmoji: note.iconEmoji,
         createdAt: note.createdAt.toISOString(),
         updatedAt: note.updatedAt.toISOString(),
       })),
@@ -103,6 +107,9 @@ export class NotesController {
       id: note.id,
       title: note.title,
       content: note.content,
+      iconEmoji: note.iconEmoji,
+      coverType: note.coverType,
+      coverValue: note.coverValue,
       createdAt: note.createdAt.toISOString(),
       updatedAt: note.updatedAt.toISOString(),
     };
@@ -122,6 +129,9 @@ export class NotesController {
       id: note.id,
       title: note.title,
       content: note.content,
+      iconEmoji: note.iconEmoji,
+      coverType: note.coverType,
+      coverValue: note.coverValue,
       createdAt: note.createdAt.toISOString(),
       updatedAt: note.updatedAt.toISOString(),
     };

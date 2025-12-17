@@ -27,7 +27,11 @@ export function NoteCard({ note, isActive }: NoteCardProps) {
         >
             {/* Title */}
             <div className="flex items-center gap-2 mb-2">
-                <FileText className="w-4 h-4 text-primary-400 flex-shrink-0" />
+                {note.iconEmoji ? (
+                    <span className="text-base leading-none" data-testid="sidebar-note-icon">{note.iconEmoji}</span>
+                ) : (
+                    <FileText className="w-4 h-4 text-primary-400 flex-shrink-0" data-testid="sidebar-note-default-icon" />
+                )}
                 <h3 className="font-medium text-dark-100 truncate">
                     {note.title || 'Untitled'}
                 </h3>

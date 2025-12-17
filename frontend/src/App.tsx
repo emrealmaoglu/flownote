@@ -2,7 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider, FocusModeProvider } from './contexts';
 import { MainLayout, ProtectedRoute, AdminRoute, ErrorBoundary, ToastProvider } from './components';
-import { HomePage, NoteDetailPage, NewNotePage, LoginPage, RegisterPage, AdminPage } from './pages';
+import { HomePage, NoteDetailPage, NewNotePage, LoginPage, RegisterPage, AdminPage, TasksPage, CalendarPage, InboxPage } from './pages';
 
 // TanStack Query client
 const queryClient = new QueryClient({
@@ -41,6 +41,9 @@ function App() {
                                     }
                                 >
                                     <Route path="/" element={<HomePage />} />
+                                    <Route path="/tasks" element={<TasksPage />} />
+                                    <Route path="/calendar" element={<CalendarPage />} />
+                                    <Route path="/inbox" element={<InboxPage />} />
                                     <Route path="/notes/:id" element={<NoteDetailPage />} />
                                     <Route path="/new" element={<NewNotePage />} />
                                 </Route>
