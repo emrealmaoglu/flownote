@@ -1,3 +1,25 @@
+## [1.7.0](https://github.com/emrealmaoglu/flownote/compare/v1.6.2...v1.7.0) (2025-12-17)
+
+
+### 🚀 Features
+
+* **frontend:** sprint 7.5 inline edit and focus mode ([8bec2df](https://github.com/emrealmaoglu/flownote/commit/8bec2df8a1dd89cbf816ee3bd36b82ec9e7513fb))
+* **sprint-7.5:** complete focus mode, delete flow, and incident fixes ([36df078](https://github.com/emrealmaoglu/flownote/commit/36df0781090fc19b65a04aa93a760f3066585582))
+* **sprint-8:** Trust & Identity MVP+ (DB Safety, Note Icons/Covers, Quality Gates) ([64b9c90](https://github.com/emrealmaoglu/flownote/commit/64b9c90ba00a6f1d135939f716103425771af538))
+
+
+### 🐛 Bug Fixes
+
+* **backend,frontend:** resolve note save and sidebar refresh issues ([458bee0](https://github.com/emrealmaoglu/flownote/commit/458bee032c1c7cd6bc0f434cf04c33c03b91a1ac))
+* **backend:** disable validationpipe whitelist for zod compatibility ([c4d534c](https://github.com/emrealmaoglu/flownote/commit/c4d534c006d23b0410e8851eaecd13ff6371775c))
+* **backend:** relax validation schemas for heading and image blocks ([9115d67](https://github.com/emrealmaoglu/flownote/commit/9115d675811bdd6cb102d326f9e03694a0d79cf2))
+* **backend:** remove unused UpdateDateColumn import ([54d149c](https://github.com/emrealmaoglu/flownote/commit/54d149cdfbec91ee4086cbb833894401a726b77f))
+* **backend:** resolve data loss and save failures ([a33f898](https://github.com/emrealmaoglu/flownote/commit/a33f898f693e2a9fdd492dd1912f1c9f1976f3e9))
+* **frontend:** enable auth token injection in api client interceptor ([e4eabf9](https://github.com/emrealmaoglu/flownote/commit/e4eabf933a4b2838fac0fc6211a585707a864363))
+* **frontend:** exclude auth endpoints from token injection logic ([b0e9d30](https://github.com/emrealmaoglu/flownote/commit/b0e9d30d6e1dfd02a06b35d8309988987eef4403))
+* resolve cors blockage on delete & improve focus mode ux ([210a173](https://github.com/emrealmaoglu/flownote/commit/210a1730e5f6b7a3ea3c73160aaef8ae21924499))
+* resolve lint, test, and build issues for sprint 8 ([4c88e90](https://github.com/emrealmaoglu/flownote/commit/4c88e90cff175129f9ef9a5717456378084355dd))
+
 ## [1.6.2](https://github.com/emrealmaoglu/flownote/compare/v1.6.1...v1.6.2) (2025-12-16)
 
 
