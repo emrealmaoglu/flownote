@@ -74,7 +74,7 @@ export function NoteDetailPage() {
             // Close modal on error so user sees the issue, or keep it open with error state?
             // For now close and alert/toast
             setIsDeleteModalOpen(false);
-            alert(`Not silinemedi: ${(err as any).message || 'Bilinmeyen hata'}`);
+            alert(`Not silinemedi: ${err instanceof Error ? err.message : 'Bilinmeyen hata'}`);
         } finally {
             setDeleting(false);
         }

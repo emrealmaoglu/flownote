@@ -39,7 +39,7 @@ import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
 @Controller("templates")
 @UseGuards(JwtAuthGuard)
 export class TemplatesController {
-  constructor(private readonly templatesService: TemplatesService) { }
+  constructor(private readonly templatesService: TemplatesService) {}
 
   /**
    * GET /templates - List all templates
