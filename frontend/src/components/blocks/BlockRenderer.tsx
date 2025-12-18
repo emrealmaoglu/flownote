@@ -1,7 +1,8 @@
 import { lazy, Suspense } from 'react';
 import { CheckSquare, Square } from 'lucide-react';
 import { cn } from '../../lib/utils';
-import type { Block, TextBlock, HeadingBlock, CheckboxBlock, ImageBlock, CodeBlock } from '../../types';
+import type { Block, TextBlock, HeadingBlock, CheckboxBlock, ImageBlock, CodeBlock, DividerBlock } from '../../types';
+import { DividerBlock as DividerBlockComponent } from './DividerBlock';
 
 // Lazy load CodeBlockRenderer for bundle optimization
 const CodeBlockRenderer = lazy(() => import('./CodeBlockRenderer'));
@@ -11,6 +12,7 @@ const CodeBlockRenderer = lazy(() => import('./CodeBlockRenderer'));
  * Block tipine göre doğru HTML render eden bileşen
  * @Dev - TECH_SPEC.md'ye uygun olarak tasarlandı
  * Sprint 1: CodeBlock desteği eklendi
+ * Sprint 12: DividerBlock ve diğer Quick Wins blokları eklendi
  */
 
 interface BlockRendererProps {
@@ -137,6 +139,7 @@ export function BlockRenderer({ block, className }: BlockRendererProps) {
                     <CodeBlockRenderer block={block as CodeBlock} />
                 </Suspense>
             )}
+            {block.type === 'divider' && <DividerBlockComponent />}
         </div>
     );
 }

@@ -1,6 +1,7 @@
 import { useRef, useEffect } from 'react';
 import { cn } from '../../lib/utils';
 import type { Block, TextBlock, HeadingBlock, CheckboxBlock, ImageBlock, CodeBlock } from '../../types';
+import { DividerBlockEditor } from './DividerBlock';
 
 interface BlockEditorProps {
     block: Block;
@@ -12,6 +13,7 @@ interface BlockEditorProps {
 /**
  * BlockEditor Component
  * Sprint 7.5 - Block type-specific editors
+ * Sprint 12 - Added divider and other Quick Wins block editors
  */
 export function BlockEditor({ block, onUpdate, onBlur, onAddAfter }: BlockEditorProps) {
     switch (block.type) {
@@ -25,6 +27,8 @@ export function BlockEditor({ block, onUpdate, onBlur, onAddAfter }: BlockEditor
             return <ImageEditor block={block} onUpdate={onUpdate} onBlur={onBlur} />;
         case 'code':
             return <CodeEditor block={block} onUpdate={onUpdate} onBlur={onBlur} />;
+        case 'divider':
+            return <DividerBlockEditor onBlur={onBlur} />;
         default:
             return null;
     }
