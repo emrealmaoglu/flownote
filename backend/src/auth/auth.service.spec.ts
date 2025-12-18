@@ -19,8 +19,6 @@ jest.mock("bcrypt");
  */
 describe("AuthService", () => {
   let service: AuthService;
-  let jwtService: JwtService;
-  let configService: ConfigService;
 
   const mockUserRepository = {
     findOne: jest.fn(),
