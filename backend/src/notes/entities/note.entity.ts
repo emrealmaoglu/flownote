@@ -16,7 +16,8 @@ import { User } from "../../auth/entities/user.entity";
  * content sütunu JSONB tipinde ve şu yapıda:
  * {
  *   blocks: [
- *     { id, type: 'text'|'heading'|'checkbox'|'image', order, data }
+ *     { id, type: 'text'|'heading'|'checkbox'|'image'|'code'|
+ *               'divider'|'quote'|'callout'|'bookmark', order, data }
  *   ]
  * }
  */
@@ -31,14 +32,16 @@ export class Note {
 
   /**
    * KRITIK: JSONB (PostgreSQL) veya simple-json (SQLite)
-   * Block dizisi içerir: text, heading, checkbox, image, code
+   * Block dizisi içerir: text, heading, checkbox, image, code,
+   *                      divider, quote, callout, bookmark (Sprint 12)
    * SQLite için simple-json kullanılır
    */
   @Column({ type: "simple-json", default: JSON.stringify({ blocks: [] }) })
   content: {
     blocks: Array<{
       id: string;
-      type: "text" | "heading" | "checkbox" | "image" | "code";
+      type: "text" | "heading" | "checkbox" | "image" | "code"
+           | "divider" | "quote" | "callout" | "bookmark";
       order: number;
       data: Record<string, unknown>;
     }>;

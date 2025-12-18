@@ -7,7 +7,16 @@
 // Block Types
 // ============================================
 
-export type BlockType = 'text' | 'heading' | 'checkbox' | 'image' | 'code';
+export type BlockType =
+    | 'text'
+    | 'heading'
+    | 'checkbox'
+    | 'image'
+    | 'code'
+    | 'divider'    // Sprint 12
+    | 'quote'      // Sprint 12
+    | 'callout'    // Sprint 12
+    | 'bookmark';  // Sprint 12
 
 // Code Language Types (Sprint 1)
 export type CodeLanguage =
@@ -70,7 +79,50 @@ export interface CodeBlock extends BaseBlock {
     };
 }
 
-export type Block = TextBlock | HeadingBlock | CheckboxBlock | ImageBlock | CodeBlock;
+// Sprint 12: New Block Types - Quick Wins
+
+export interface DividerBlock extends BaseBlock {
+    type: 'divider';
+    data: Record<string, never>; // Empty data object
+}
+
+export interface QuoteBlock extends BaseBlock {
+    type: 'quote';
+    data: {
+        text: string;
+        author?: string;
+    };
+}
+
+export interface CalloutBlock extends BaseBlock {
+    type: 'callout';
+    data: {
+        text: string;
+        emoji: string; // Default: 💡
+        color: 'blue' | 'green' | 'yellow' | 'red' | 'purple' | 'gray';
+    };
+}
+
+export interface BookmarkBlock extends BaseBlock {
+    type: 'bookmark';
+    data: {
+        url: string;
+        title?: string;
+        description?: string;
+        image?: string;
+    };
+}
+
+export type Block =
+    | TextBlock
+    | HeadingBlock
+    | CheckboxBlock
+    | ImageBlock
+    | CodeBlock
+    | DividerBlock
+    | QuoteBlock
+    | CalloutBlock
+    | BookmarkBlock;
 
 export interface NoteContent {
     blocks: Block[];

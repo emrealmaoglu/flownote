@@ -83,6 +83,54 @@ const CodeBlockSchema = z.object({
   }),
 });
 
+/**
+ * Sprint 12 - Quick Wins Block Types
+ */
+
+// Divider - Simple horizontal separator
+const DividerBlockSchema = z.object({
+  id: z.string().uuid(),
+  type: z.literal("divider"),
+  order: z.number().int().min(0),
+  data: z.object({}).strict(),
+});
+
+// Quote - Text with optional author attribution
+const QuoteBlockSchema = z.object({
+  id: z.string().uuid(),
+  type: z.literal("quote"),
+  order: z.number().int().min(0),
+  data: z.object({
+    text: z.string(),
+    author: z.string().max(100).optional(),
+  }),
+});
+
+// Callout - Colored info box with emoji
+const CalloutBlockSchema = z.object({
+  id: z.string().uuid(),
+  type: z.literal("callout"),
+  order: z.number().int().min(0),
+  data: z.object({
+    text: z.string(),
+    emoji: z.string().max(10).default("💡"),
+    color: z.enum(["blue", "green", "yellow", "red", "purple", "gray"]).default("blue"),
+  }),
+});
+
+// Bookmark - URL preview card
+const BookmarkBlockSchema = z.object({
+  id: z.string().uuid(),
+  type: z.literal("bookmark"),
+  order: z.number().int().min(0),
+  data: z.object({
+    url: z.string().url(),
+    title: z.string().max(200).optional(),
+    description: z.string().max(500).optional(),
+    image: z.string().url().optional(),
+  }),
+});
+
 // ============================================
 // Birleşik Block Schema (Discriminated Union)
 // ============================================
@@ -91,7 +139,11 @@ export const BlockSchema = z.discriminatedUnion("type", [
   HeadingBlockSchema,
   CheckboxBlockSchema,
   ImageBlockSchema,
-  CodeBlockSchema, // ← Sprint 1 eklendi
+  CodeBlockSchema,
+  DividerBlockSchema,   // ← Sprint 12
+  QuoteBlockSchema,     // ← Sprint 12
+  CalloutBlockSchema,   // ← Sprint 12
+  BookmarkBlockSchema,  // ← Sprint 12
 ]);
 
 export type Block = z.infer<typeof BlockSchema>;
@@ -260,3 +312,7 @@ export type HeadingBlock = z.infer<typeof HeadingBlockSchema>;
 export type CheckboxBlock = z.infer<typeof CheckboxBlockSchema>;
 export type ImageBlock = z.infer<typeof ImageBlockSchema>;
 export type CodeBlock = z.infer<typeof CodeBlockSchema>;
+export type DividerBlock = z.infer<typeof DividerBlockSchema>;
+export type QuoteBlock = z.infer<typeof QuoteBlockSchema>;
+export type CalloutBlock = z.infer<typeof CalloutBlockSchema>;
+export type BookmarkBlock = z.infer<typeof BookmarkBlockSchema>;
