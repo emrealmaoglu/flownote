@@ -6,6 +6,7 @@ import {
   ManyToOne,
   JoinColumn,
   Unique,
+  Index,
 } from "typeorm";
 import { Note } from "./note.entity";
 
@@ -20,9 +21,11 @@ export class NoteLink {
   @PrimaryGeneratedColumn("uuid")
   id!: string;
 
+  @Index("idx_note_links_source") // Index for link queries
   @Column({ name: "source_note_id" })
   sourceNoteId!: string;
 
+  @Index("idx_note_links_target") // Index for backlink queries
   @Column({ name: "target_note_id" })
   targetNoteId!: string;
 
