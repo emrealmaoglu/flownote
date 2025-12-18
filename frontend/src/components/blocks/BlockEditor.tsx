@@ -1,7 +1,8 @@
 import { useRef, useEffect } from 'react';
 import { cn } from '../../lib/utils';
-import type { Block, TextBlock, HeadingBlock, CheckboxBlock, ImageBlock, CodeBlock } from '../../types';
+import type { Block, TextBlock, HeadingBlock, CheckboxBlock, ImageBlock, CodeBlock, QuoteBlock as QuoteBlockType } from '../../types';
 import { DividerBlockEditor } from './DividerBlock';
+import { QuoteBlockEditor } from './QuoteBlock';
 
 interface BlockEditorProps {
     block: Block;
@@ -29,6 +30,14 @@ export function BlockEditor({ block, onUpdate, onBlur, onAddAfter }: BlockEditor
             return <CodeEditor block={block} onUpdate={onUpdate} onBlur={onBlur} />;
         case 'divider':
             return <DividerBlockEditor onBlur={onBlur} />;
+        case 'quote':
+            return (
+                <QuoteBlockEditor
+                    block={block as QuoteBlockType}
+                    onUpdate={onUpdate}
+                    onBlur={onBlur}
+                />
+            );
         default:
             return null;
     }
