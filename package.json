@@ -1,6 +1,6 @@
 {
   "name": "flownote",
-  "version": "1.7.1",
+  "version": "2.0.0",
   "private": true,
   "description": "A Notion-like note-taking application with block-based editor",
   "workspaces": [

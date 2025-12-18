@@ -1,3 +1,36 @@
+## [2.0.0](https://github.com/emrealmaoglu/flownote/compare/v1.7.1...v2.0.0) (2025-12-18)
+
+
+### ⚠ BREAKING CHANGES
+
+* **auth:** JWT token is no longer returned in response body.
+Token is now set as HttpOnly cookie for improved security.
+
+Changes:
+- Add cookie-parser middleware to main.ts
+- Update auth.controller to set HttpOnly cookie with token
+- Add /auth/logout endpoint to clear cookie
+- Add /auth/me endpoint for session validation
+- Update JWT strategy to read token from cookie or Authorization header
+- Update all auth controller tests for cookie-based authentication
+
+Security improvements:
+- HttpOnly flag prevents XSS attacks (JavaScript cannot access token)
+- SameSite=strict prevents CSRF attacks
+- Secure flag in production ensures HTTPS-only transmission
+- 7-day cookie expiration
+
+Sprint 11: Performance & Security - P0 Critical Fix
+
+### security
+
+* **auth:** migrate JWT token to HttpOnly cookie ([fd97af2](https://github.com/emrealmaoglu/flownote/commit/fd97af24828cf3d1f903a4a6bf04c88814e39461))
+
+
+### ⚡ Performance Improvements
+
+* **db:** add performance indexes for common queries ([a06d9b2](https://github.com/emrealmaoglu/flownote/commit/a06d9b231d8f6271f46b90474a549d858c1cc9a6))
+
 ## [1.7.1](https://github.com/emrealmaoglu/flownote/compare/v1.7.0...v1.7.1) (2025-12-18)
 
 
