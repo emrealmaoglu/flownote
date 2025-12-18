@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 📚 Documentation
+    url: https://github.com/emrealmaoglu/flownote#readme
+    about: Önce dokümantasyonu kontrol edin
+  - name: 💬 Discussions
+    url: https://github.com/emrealmaoglu/flownote/discussions
+    about: Sorularınız için Discussions kullanın
