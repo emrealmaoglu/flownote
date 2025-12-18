@@ -2,16 +2,21 @@ import { NestFactory } from "@nestjs/core";
 import { ValidationPipe, Logger } from "@nestjs/common";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
+import * as cookieParser from "cookie-parser";
 import { AppModule } from "./app.module";
 
 /**
  * FlowNote Backend Ana Başlatıcı
  * NestJS application bootstrap
  * @SecOps - Security headers and rate limiting enabled
+ * Sprint 11: Cookie parser for HttpOnly cookies
  */
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const logger = new Logger("Bootstrap");
+
+  // 🍪 Cookie Parser (HttpOnly cookie support)
+  app.use(cookieParser());
 
   // 🛡️ Security Headers (helmet)
   app.use(helmet());
