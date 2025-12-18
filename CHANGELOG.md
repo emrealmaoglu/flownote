@@ -1,3 +1,17 @@
+## [1.7.1](https://github.com/emrealmaoglu/flownote/compare/v1.7.0...v1.7.1) (2025-12-18)
+
+
+### 🐛 Bug Fixes
+
+* **test:** remove unused variable assignments and adjust coverage thresholds ([c43a923](https://github.com/emrealmaoglu/flownote/commit/c43a9237459c847cc35e4e800b9ffa7ba177de1b))
+* **test:** remove unused variables in auth.service.spec.ts ([14f9c2a](https://github.com/emrealmaoglu/flownote/commit/14f9c2a7a686d990a5c4cafb08648db3fa5332d9))
+
+
+### 📚 Documentation
+
+* add CONTRIBUTING.md with commit and PR guidelines ([b9981c2](https://github.com/emrealmaoglu/flownote/commit/b9981c2d1a06ea3080a2967ba2f74948c01b6fa9))
+* **adr:** add ADR-003 release strategy and versioning ([0b2fde8](https://github.com/emrealmaoglu/flownote/commit/0b2fde8d01ca9bcb77ecd13afb93bbcb2503ce11))
+
 ## [1.7.0](https://github.com/emrealmaoglu/flownote/compare/v1.6.2...v1.7.0) (2025-12-17)
 
 
