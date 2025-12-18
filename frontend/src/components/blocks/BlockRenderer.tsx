@@ -1,9 +1,10 @@
 import { lazy, Suspense } from 'react';
 import { CheckSquare, Square } from 'lucide-react';
 import { cn } from '../../lib/utils';
-import type { Block, TextBlock, HeadingBlock, CheckboxBlock, ImageBlock, CodeBlock, DividerBlock, QuoteBlock as QuoteBlockType } from '../../types';
+import type { Block, TextBlock, HeadingBlock, CheckboxBlock, ImageBlock, CodeBlock, DividerBlock, QuoteBlock as QuoteBlockType, CalloutBlock as CalloutBlockType } from '../../types';
 import { DividerBlock as DividerBlockComponent } from './DividerBlock';
 import { QuoteBlock } from './QuoteBlock';
+import { CalloutBlock } from './CalloutBlock';
 
 // Lazy load CodeBlockRenderer for bundle optimization
 const CodeBlockRenderer = lazy(() => import('./CodeBlockRenderer'));
@@ -142,6 +143,7 @@ export function BlockRenderer({ block, className }: BlockRendererProps) {
             )}
             {block.type === 'divider' && <DividerBlockComponent />}
             {block.type === 'quote' && <QuoteBlock block={block as QuoteBlockType} />}
+            {block.type === 'callout' && <CalloutBlock block={block as CalloutBlockType} />}
         </div>
     );
 }

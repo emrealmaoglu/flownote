@@ -1,8 +1,9 @@
 import { useRef, useEffect } from 'react';
 import { cn } from '../../lib/utils';
-import type { Block, TextBlock, HeadingBlock, CheckboxBlock, ImageBlock, CodeBlock, QuoteBlock as QuoteBlockType } from '../../types';
+import type { Block, TextBlock, HeadingBlock, CheckboxBlock, ImageBlock, CodeBlock, QuoteBlock as QuoteBlockType, CalloutBlock as CalloutBlockType } from '../../types';
 import { DividerBlockEditor } from './DividerBlock';
 import { QuoteBlockEditor } from './QuoteBlock';
+import { CalloutBlockEditor } from './CalloutBlock';
 
 interface BlockEditorProps {
     block: Block;
@@ -34,6 +35,14 @@ export function BlockEditor({ block, onUpdate, onBlur, onAddAfter }: BlockEditor
             return (
                 <QuoteBlockEditor
                     block={block as QuoteBlockType}
+                    onUpdate={onUpdate}
+                    onBlur={onBlur}
+                />
+            );
+        case 'callout':
+            return (
+                <CalloutBlockEditor
+                    block={block as CalloutBlockType}
                     onUpdate={onUpdate}
                     onBlur={onBlur}
                 />
