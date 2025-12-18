@@ -5,21 +5,30 @@ import { RegisterDto } from "./dto/register.dto";
 import { LoginDto } from "./dto/login.dto";
 import { UnauthorizedException, ConflictException } from "@nestjs/common";
 import { UserRole } from "./entities/user.entity";
+import { Response } from "express";
 
 /**
  * Auth Controller Unit Tests
  * Tests authentication endpoints (register, login)
  * Sprint 10: Quality Gates - Test Coverage
+ * Sprint 11: Updated for HttpOnly cookie support
  */
 describe("AuthController", () => {
   let controller: AuthController;
   let service: AuthService;
+  let mockResponse: Partial<Response>;
 
   const mockAuthService = {
     register: jest.fn(),
     login: jest.fn(),
     validateUser: jest.fn(),
   };
+
+  // Mock Response object for cookie tests
+  const createMockResponse = (): Partial<Response> => ({
+    cookie: jest.fn(),
+    clearCookie: jest.fn(),
+  });
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -34,6 +43,7 @@ describe("AuthController", () => {
 
     controller = module.get<AuthController>(AuthController);
     service = module.get<AuthService>(AuthService);
+    mockResponse = createMockResponse();
 
     jest.clearAllMocks();
   });
@@ -69,11 +79,21 @@ describe("AuthController", () => {
     it("should register a new user successfully", async () => {
       mockAuthService.register.mockResolvedValue(mockServiceResponse);
 
-      const result = await controller.register(registerDto);
+      const result = await controller.register(
+        registerDto,
+        mockResponse as Response,
+      );
 
       expect(service.register).toHaveBeenCalledWith(registerDto);
+      expect(mockResponse.cookie).toHaveBeenCalledWith(
+        "access_token",
+        mockServiceResponse.accessToken,
+        expect.objectContaining({
+          httpOnly: true,
+          sameSite: "strict",
+        }),
+      );
       expect(result).toEqual({
-        accessToken: mockServiceResponse.accessToken,
         user: {
           id: mockServiceResponse.user.id,
           username: mockServiceResponse.user.username,
@@ -82,22 +102,23 @@ describe("AuthController", () => {
           role: mockServiceResponse.user.role,
         },
       });
+      expect(result).not.toHaveProperty("accessToken");
     });
 
-    it("should return access token and user data", async () => {
+    it("should set cookie and return user data without token", async () => {
       mockAuthService.register.mockResolvedValue(mockServiceResponse);
 
-      const result = await controller.register(registerDto);
+      const result = await controller.register(registerDto, mockResponse as Response);
 
-      expect(result).toHaveProperty("accessToken");
+      expect(result).not.toHaveProperty("accessToken");
       expect(result).toHaveProperty("user");
-      expect(result.accessToken).toBe("jwt-token-123");
+      expect(mockResponse.cookie).toHaveBeenCalled();
     });
 
     it("should return user without sensitive fields", async () => {
       mockAuthService.register.mockResolvedValue(mockServiceResponse);
 
-      const result = await controller.register(registerDto);
+      const result = await controller.register(registerDto, mockResponse as Response);
 
       expect(result.user).not.toHaveProperty("passwordHash");
       expect(result.user).not.toHaveProperty("password");
@@ -110,7 +131,7 @@ describe("AuthController", () => {
     it("should include all required user fields in response", async () => {
       mockAuthService.register.mockResolvedValue(mockServiceResponse);
 
-      const result = await controller.register(registerDto);
+      const result = await controller.register(registerDto, mockResponse as Response);
 
       expect(result.user.id).toBe("user-123");
       expect(result.user.username).toBe("newuser");
@@ -124,7 +145,7 @@ describe("AuthController", () => {
         new ConflictException("Bu kullanıcı adı zaten alınmış"),
       );
 
-      await expect(controller.register(registerDto)).rejects.toThrow(
+      await expect(controller.register(registerDto, mockResponse as Response)).rejects.toThrow(
         ConflictException,
       );
     });
@@ -134,7 +155,7 @@ describe("AuthController", () => {
         new ConflictException("Bu email adresi zaten kayıtlı"),
       );
 
-      await expect(controller.register(registerDto)).rejects.toThrow(
+      await expect(controller.register(registerDto, mockResponse as Response)).rejects.toThrow(
         ConflictException,
       );
     });
@@ -142,7 +163,7 @@ describe("AuthController", () => {
     it("should call service with exact DTO", async () => {
       mockAuthService.register.mockResolvedValue(mockServiceResponse);
 
-      await controller.register(registerDto);
+      await controller.register(registerDto, mockResponse as Response);
 
       expect(service.register).toHaveBeenCalledWith(registerDto);
       expect(service.register).toHaveBeenCalledTimes(1);
@@ -152,7 +173,7 @@ describe("AuthController", () => {
       const error = new Error("Database connection failed");
       mockAuthService.register.mockRejectedValue(error);
 
-      await expect(controller.register(registerDto)).rejects.toThrow(error);
+      await expect(controller.register(registerDto, mockResponse as Response)).rejects.toThrow(error);
     });
   });
 
@@ -181,11 +202,18 @@ describe("AuthController", () => {
     it("should login successfully with username", async () => {
       mockAuthService.login.mockResolvedValue(mockServiceResponse);
 
-      const result = await controller.login(loginDto);
+      const result = await controller.login(loginDto, mockResponse as Response);
 
       expect(service.login).toHaveBeenCalledWith(loginDto);
+      expect(mockResponse.cookie).toHaveBeenCalledWith(
+        "access_token",
+        mockServiceResponse.accessToken,
+        expect.objectContaining({
+          httpOnly: true,
+          sameSite: "strict",
+        }),
+      );
       expect(result).toEqual({
-        accessToken: mockServiceResponse.accessToken,
         user: {
           id: mockServiceResponse.user.id,
           username: mockServiceResponse.user.username,
@@ -194,6 +222,7 @@ describe("AuthController", () => {
           role: mockServiceResponse.user.role,
         },
       });
+      expect(result).not.toHaveProperty("accessToken");
     });
 
     it("should login successfully with email", async () => {
@@ -204,26 +233,27 @@ describe("AuthController", () => {
 
       mockAuthService.login.mockResolvedValue(mockServiceResponse);
 
-      const result = await controller.login(emailLoginDto);
+      const result = await controller.login(emailLoginDto, mockResponse as Response);
 
       expect(service.login).toHaveBeenCalledWith(emailLoginDto);
-      expect(result).toHaveProperty("accessToken");
+      expect(result).not.toHaveProperty("accessToken");
+      expect(result).toHaveProperty("user");
     });
 
-    it("should return access token and user data", async () => {
+    it("should set cookie and return user data without token", async () => {
       mockAuthService.login.mockResolvedValue(mockServiceResponse);
 
-      const result = await controller.login(loginDto);
+      const result = await controller.login(loginDto, mockResponse as Response);
 
-      expect(result).toHaveProperty("accessToken");
+      expect(result).not.toHaveProperty("accessToken");
       expect(result).toHaveProperty("user");
-      expect(result.accessToken).toBe("jwt-token-456");
+      expect(mockResponse.cookie).toHaveBeenCalled();
     });
 
     it("should return user without sensitive fields", async () => {
       mockAuthService.login.mockResolvedValue(mockServiceResponse);
 
-      const result = await controller.login(loginDto);
+      const result = await controller.login(loginDto, mockResponse as Response);
 
       expect(result.user).not.toHaveProperty("passwordHash");
       expect(result.user).not.toHaveProperty("password");
@@ -236,7 +266,7 @@ describe("AuthController", () => {
     it("should include all required user fields in response", async () => {
       mockAuthService.login.mockResolvedValue(mockServiceResponse);
 
-      const result = await controller.login(loginDto);
+      const result = await controller.login(loginDto, mockResponse as Response);
 
       expect(result.user.id).toBe("user-456");
       expect(result.user.username).toBe("testuser");
@@ -250,7 +280,7 @@ describe("AuthController", () => {
         new UnauthorizedException("Kullanıcı adı veya şifre hatalı"),
       );
 
-      await expect(controller.login(loginDto)).rejects.toThrow(
+      await expect(controller.login(loginDto, mockResponse as Response)).rejects.toThrow(
         UnauthorizedException,
       );
     });
@@ -260,7 +290,7 @@ describe("AuthController", () => {
         new UnauthorizedException("Kullanıcı adı veya şifre hatalı"),
       );
 
-      await expect(controller.login(loginDto)).rejects.toThrow(
+      await expect(controller.login(loginDto, mockResponse as Response)).rejects.toThrow(
         UnauthorizedException,
       );
     });
@@ -268,7 +298,7 @@ describe("AuthController", () => {
     it("should call service with exact DTO", async () => {
       mockAuthService.login.mockResolvedValue(mockServiceResponse);
 
-      await controller.login(loginDto);
+      await controller.login(loginDto, mockResponse as Response);
 
       expect(service.login).toHaveBeenCalledWith(loginDto);
       expect(service.login).toHaveBeenCalledTimes(1);
@@ -278,7 +308,7 @@ describe("AuthController", () => {
       const error = new Error("Database connection failed");
       mockAuthService.login.mockRejectedValue(error);
 
-      await expect(controller.login(loginDto)).rejects.toThrow(error);
+      await expect(controller.login(loginDto, mockResponse as Response)).rejects.toThrow(error);
     });
 
     it("should handle admin role in response", async () => {
@@ -292,7 +322,7 @@ describe("AuthController", () => {
 
       mockAuthService.login.mockResolvedValue(adminResponse);
 
-      const result = await controller.login(loginDto);
+      const result = await controller.login(loginDto, mockResponse as Response);
 
       expect(result.user.role).toBe("admin");
     });
@@ -302,8 +332,8 @@ describe("AuthController", () => {
   // RESPONSE FORMAT Tests
   // ============================================
   describe("response formatting", () => {
-    it("should format register response consistently", async () => {
-      const mockResponse = {
+    it("should format register response consistently (no token in body)", async () => {
+      const mockServiceResponse = {
         accessToken: "token",
         user: {
           id: "1",
@@ -316,16 +346,19 @@ describe("AuthController", () => {
         },
       };
 
-      mockAuthService.register.mockResolvedValue(mockResponse);
+      mockAuthService.register.mockResolvedValue(mockServiceResponse);
 
-      const result = await controller.register({
-        username: "user",
-        email: "user@example.com",
-        password: "pass",
-        name: "User",
-      });
+      const result = await controller.register(
+        {
+          username: "user",
+          email: "user@example.com",
+          password: "pass",
+          name: "User",
+        },
+        mockResponse as Response,
+      );
 
-      expect(Object.keys(result)).toEqual(["accessToken", "user"]);
+      expect(Object.keys(result)).toEqual(["user"]);
       expect(Object.keys(result.user)).toEqual([
         "id",
         "username",
@@ -333,10 +366,11 @@ describe("AuthController", () => {
         "name",
         "role",
       ]);
+      expect(mockResponse.cookie).toHaveBeenCalled();
     });
 
-    it("should format login response consistently", async () => {
-      const mockResponse = {
+    it("should format login response consistently (no token in body)", async () => {
+      const mockServiceResponse = {
         accessToken: "token",
         user: {
           id: "1",
@@ -349,14 +383,17 @@ describe("AuthController", () => {
         },
       };
 
-      mockAuthService.login.mockResolvedValue(mockResponse);
+      mockAuthService.login.mockResolvedValue(mockServiceResponse);
 
-      const result = await controller.login({
-        identifier: "user",
-        password: "pass",
-      });
+      const result = await controller.login(
+        {
+          identifier: "user",
+          password: "pass",
+        },
+        mockResponse as Response,
+      );
 
-      expect(Object.keys(result)).toEqual(["accessToken", "user"]);
+      expect(Object.keys(result)).toEqual(["user"]);
       expect(Object.keys(result.user)).toEqual([
         "id",
         "username",
@@ -364,10 +401,11 @@ describe("AuthController", () => {
         "name",
         "role",
       ]);
+      expect(mockResponse.cookie).toHaveBeenCalled();
     });
 
     it("should not include createdAt and updatedAt in response", async () => {
-      const mockResponse = {
+      const mockServiceResponse = {
         accessToken: "token",
         user: {
           id: "1",
@@ -380,14 +418,17 @@ describe("AuthController", () => {
         },
       };
 
-      mockAuthService.register.mockResolvedValue(mockResponse);
+      mockAuthService.register.mockResolvedValue(mockServiceResponse);
 
-      const result = await controller.register({
-        username: "user",
-        email: "user@example.com",
-        password: "pass",
-        name: "User",
-      });
+      const result = await controller.register(
+        {
+          username: "user",
+          email: "user@example.com",
+          password: "pass",
+          name: "User",
+        },
+        mockResponse as Response,
+      );
 
       expect(result.user).not.toHaveProperty("createdAt");
       expect(result.user).not.toHaveProperty("updatedAt");
