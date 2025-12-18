@@ -1,9 +1,6 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { getRepositoryToken } from "@nestjs/typeorm";
-import {
-  NotFoundException,
-  ForbiddenException,
-} from "@nestjs/common";
+import { NotFoundException, ForbiddenException } from "@nestjs/common";
 import { TemplatesService } from "./templates.service";
 import { Template } from "./entities/template.entity";
 import { Note } from "../notes/entities/note.entity";
@@ -302,11 +299,7 @@ describe("TemplatesService", () => {
       mockTemplateRepository.findOne.mockResolvedValue(mockUserTemplate);
       mockTemplateRepository.save.mockResolvedValue(updatedTemplate);
 
-      const result = await service.update(
-        "user-custom",
-        updateDto,
-        "user-123",
-      );
+      const result = await service.update("user-custom", updateDto, "user-123");
 
       expect(result.name).toBe(updateDto.name);
       expect(result.description).toBe(updateDto.description);
@@ -387,9 +380,9 @@ describe("TemplatesService", () => {
     it("should throw NotFoundException if template not found", async () => {
       mockTemplateRepository.findOne.mockResolvedValue(null);
 
-      await expect(
-        service.update("nonexistent", updateDto),
-      ).rejects.toThrow(NotFoundException);
+      await expect(service.update("nonexistent", updateDto)).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
