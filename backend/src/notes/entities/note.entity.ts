@@ -3,6 +3,7 @@ import {
   PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
+  UpdateDateColumn,
   ManyToOne,
   JoinColumn,
   Index,
@@ -57,7 +58,7 @@ export class Note {
   createdAt: Date;
 
   @Index("idx_notes_updated_at")
-  @Column({ name: "updated_at" })
+  @UpdateDateColumn({ name: "updated_at" })
   updatedAt: Date;
 
   // --- Identity Fields (Sprint 8) ---

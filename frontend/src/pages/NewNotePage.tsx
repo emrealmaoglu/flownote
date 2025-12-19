@@ -18,6 +18,7 @@ export function NewNotePage() {
     const navigate = useNavigate();
     const [title, setTitle] = useState('');
     const [blocks, setBlocks] = useState<Block[]>([]);
+    const [error, setError] = useState<string | null>(null);
     const [saving, setSaving] = useState(false);
     const [showTemplateModal, setShowTemplateModal] = useState(false);
 
@@ -61,20 +62,26 @@ export function NewNotePage() {
     // Kaydetme
     async function handleSave() {
         if (!title.trim()) {
-            alert('Lütfen bir başlık girin');
+            setError('Lütfen bir başlık girin');
+            setTimeout(() => setError(null), 3000);
             return;
         }
 
         try {
             setSaving(true);
+            setError(null);
             const content: NoteContent = { blocks };
             const note = await notesApi.create({ title, content });
             // Refresh sidebar notes list
             window.dispatchEvent(new CustomEvent('notes:refresh'));
             navigate(`/notes/${note.id}`);
-        } catch (err) {
+        } catch (err: any) {
             console.error('Failed to save note:', err);
-            alert('Not kaydedilemedi');
+            // Show detailed backend error
+            const backendMsg = err.response?.data?.message || err.message || 'Bilinmeyen hata';
+            const validationErrors = err.response?.data?.errors?.map((e: any) => `${e.field}: ${e.message}`).join(', ');
+
+            setError(validationErrors ? `Validasyon Hatası: ${validationErrors}` : `Hata: ${backendMsg}`);
         } finally {
             setSaving(false);
         }
@@ -126,6 +133,13 @@ export function NewNotePage() {
 
             {/* Content */}
             <main className="max-w-4xl mx-auto px-8 py-8">
+                {/* Error Display */}
+                {error && (
+                    <div className="mb-6 bg-red-500/10 border-2 border-red-500 rounded-xl p-4">
+                        <p className="text-red-400 font-semibold">⚠️ {error}</p>
+                    </div>
+                )}
+
                 {/* Template Button */}
                 {blocks.length === 0 && !title.trim() && (
                     <div className="mb-8 p-6 rounded-xl border border-dashed border-dark-700 bg-dark-800/30 text-center">
