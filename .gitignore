@@ -17,7 +17,11 @@ out/
 backend/flownote.sqlite
 *.sqlite
 *.sqlite3
+*.db
 backend/data/
+packages/database/prisma/*.db
+packages/database/prisma/migrations/
+packages/database/generated/
 
 # Logs
 npm-debug.log*

@@ -1,0 +1,248 @@
+# PR Automation Workflow
+# Automatically labels PRs based on changed files and validates PR title
+name: PR Automation
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+jobs:
+  validate-title:
+    name: 🔍 Validate PR Title
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+
+      - name: Install commitlint
+        run: npm install -g @commitlint/cli @commitlint/config-conventional
+
+      - name: Validate PR title
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          echo "Validating PR title: $PR_TITLE"
+          echo "$PR_TITLE" | npx commitlint --config commitlint.config.js
+
+  auto-label:
+    name: 🏷️ Auto Label PR
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Label based on branch
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const branchName = context.payload.pull_request.head.ref;
+            const labels = [];
+
+            // Branch type labels
+            if (branchName.startsWith('feature/')) {
+              labels.push('feature');
+            } else if (branchName.startsWith('fix/')) {
+              labels.push('bug');
+            } else if (branchName.startsWith('hotfix/')) {
+              labels.push('hotfix', 'priority:critical');
+            } else if (branchName.startsWith('docs/')) {
+              labels.push('documentation');
+            } else if (branchName.startsWith('release/')) {
+              labels.push('release');
+            }
+
+            // Sprint labels
+            const sprintMatch = branchName.match(/sprint-(\d+)/);
+            if (sprintMatch) {
+              labels.push(`sprint-${sprintMatch[1]}`);
+            }
+
+            // Apply labels
+            if (labels.length > 0) {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.payload.pull_request.number,
+                labels: labels
+              });
+              console.log(`Added labels: ${labels.join(', ')}`);
+            }
+
+      - name: Label based on file changes
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { data: files } = await github.rest.pulls.listFiles({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.payload.pull_request.number
+            });
+
+            const labels = new Set();
+
+            files.forEach(file => {
+              const path = file.filename;
+
+              // Package labels
+              if (path.startsWith('frontend/')) labels.add('frontend');
+              if (path.startsWith('backend/')) labels.add('backend');
+              if (path.startsWith('shared/')) labels.add('shared');
+
+              // Technology labels
+              if (path.includes('.test.') || path.includes('.spec.')) labels.add('tests');
+              if (path.endsWith('.md')) labels.add('documentation');
+              if (path.includes('docker')) labels.add('docker');
+              if (path.includes('.yml') || path.includes('.yaml')) labels.add('ci/cd');
+              if (path.includes('package.json')) labels.add('dependencies');
+
+              // Feature labels
+              if (path.includes('editor')) labels.add('editor');
+              if (path.includes('auth')) labels.add('auth');
+              if (path.includes('note')) labels.add('notes');
+              if (path.includes('folder')) labels.add('folders');
+              if (path.includes('workspace')) labels.add('workspace');
+            });
+
+            if (labels.size > 0) {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.payload.pull_request.number,
+                labels: Array.from(labels)
+              });
+              console.log(`Added labels: ${Array.from(labels).join(', ')}`);
+            }
+
+  size-label:
+    name: 📏 Label PR Size
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Label PR size
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { data: files } = await github.rest.pulls.listFiles({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.payload.pull_request.number
+            });
+
+            let additions = 0;
+            let deletions = 0;
+
+            files.forEach(file => {
+              additions += file.additions;
+              deletions += file.deletions;
+            });
+
+            const totalChanges = additions + deletions;
+            let sizeLabel = '';
+
+            if (totalChanges < 10) {
+              sizeLabel = 'size/XS';
+            } else if (totalChanges < 100) {
+              sizeLabel = 'size/S';
+            } else if (totalChanges < 500) {
+              sizeLabel = 'size/M';
+            } else if (totalChanges < 1000) {
+              sizeLabel = 'size/L';
+            } else {
+              sizeLabel = 'size/XL';
+            }
+
+            // Remove old size labels
+            const { data: currentLabels } = await github.rest.issues.listLabelsOnIssue({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number
+            });
+
+            for (const label of currentLabels) {
+              if (label.name.startsWith('size/')) {
+                await github.rest.issues.removeLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: context.payload.pull_request.number,
+                  name: label.name
+                });
+              }
+            }
+
+            // Add new size label
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              labels: [sizeLabel]
+            });
+
+            console.log(`Added label: ${sizeLabel} (${totalChanges} changes)`);
+
+  check-description:
+    name: 📝 Check PR Description
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check PR has description
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const body = context.payload.pull_request.body || '';
+
+            if (body.trim().length < 50) {
+              core.setFailed('❌ PR description is too short. Please provide detailed description (min 50 characters).');
+            } else {
+              console.log('✅ PR description is adequate.');
+            }
+
+  conflict-check:
+    name: 🔀 Check for Conflicts
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check for merge conflicts
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { data: pr } = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.payload.pull_request.number
+            });
+
+            if (pr.mergeable === false) {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.payload.pull_request.number,
+                labels: ['conflicts']
+              });
+
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.payload.pull_request.number,
+                body: '⚠️ **Merge Conflict Detected**\n\nThis PR has conflicts with the base branch. Please resolve them before merging.\n\n```bash\ngit fetch origin\ngit rebase origin/' + pr.base.ref + '\n# Resolve conflicts\ngit push --force-with-lease\n```'
+              });
+
+              core.setFailed('PR has merge conflicts');
+            } else {
+              console.log('✅ No merge conflicts detected');
+            }
