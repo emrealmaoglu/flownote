@@ -1,0 +1,84 @@
+# Semantic Release Workflow
+# Handles automated versioning and releasing on main, develop, and release/* branches
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+      - 'release/**'
+
+env:
+  NODE_VERSION: '20.x'
+
+jobs:
+  release:
+    name: 🚀 Semantic Release
+    runs-on: ubuntu-latest
+    if: "!contains(github.event.head_commit.message, '[skip ci]')"
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+      id-token: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+          token: ${{ secrets.GH_TOKEN || github.token }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Verify commit linting
+        run: |
+          # Verify last commit follows conventional commits
+          npm exec -- commitlint --from=HEAD~1 --to=HEAD --verbose
+
+      - name: Run semantic-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN || github.token }}
+          GH_TOKEN: ${{ secrets.GH_TOKEN || github.token }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          npx semantic-release
+
+      - name: Get release version
+        id: get_version
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "📦 Released version: $VERSION"
+
+      - name: Notify on success
+        if: success()
+        run: |
+          BRANCH=${GITHUB_REF##*/}
+          VERSION=${{ steps.get_version.outputs.version }}
+
+          if [ "$BRANCH" = "main" ]; then
+            echo "✅ Production release: v$VERSION"
+          elif [ "$BRANCH" = "develop" ]; then
+            echo "✅ Beta release: v$VERSION"
+          else
+            echo "✅ RC release: v$VERSION"
+          fi
+
+      - name: Notify on failure
+        if: failure()
+        run: |
+          echo "❌ Release failed. Check logs above."
+          echo "Common issues:"
+          echo "  - No releasable commits (only chore, docs, etc.)"
+          echo "  - Commit messages don't follow conventional commits"
+          echo "  - GITHUB_TOKEN permissions insufficient"
