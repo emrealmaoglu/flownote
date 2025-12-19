@@ -1,7 +1,11 @@
 import { lazy, Suspense } from 'react';
 import { CheckSquare, Square } from 'lucide-react';
 import { cn } from '../../lib/utils';
-import type { Block, TextBlock, HeadingBlock, CheckboxBlock, ImageBlock, CodeBlock } from '../../types';
+import type { Block, TextBlock, HeadingBlock, CheckboxBlock, ImageBlock, CodeBlock, QuoteBlock as QuoteBlockType, CalloutBlock as CalloutBlockType, BookmarkBlock as BookmarkBlockType } from '../../types';
+import { DividerBlock } from './DividerBlock';
+import { QuoteBlock } from './QuoteBlock';
+import { CalloutBlock } from './CalloutBlock';
+import { BookmarkBlock } from './BookmarkBlock';
 
 // Lazy load CodeBlockRenderer for bundle optimization
 const CodeBlockRenderer = lazy(() => import('./CodeBlockRenderer'));
@@ -137,6 +141,10 @@ export function BlockRenderer({ block, className }: BlockRendererProps) {
                     <CodeBlockRenderer block={block as CodeBlock} />
                 </Suspense>
             )}
+            {block.type === 'divider' && <DividerBlock />}
+            {block.type === 'quote' && <QuoteBlock block={block as QuoteBlockType} />}
+            {block.type === 'callout' && <CalloutBlock block={block as CalloutBlockType} />}
+            {block.type === 'bookmark' && <BookmarkBlock block={block as BookmarkBlockType} />}
         </div>
     );
 }
