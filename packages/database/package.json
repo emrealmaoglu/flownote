@@ -14,9 +14,7 @@
     "clean": "rm -rf node_modules .turbo generated"
   },
   "dependencies": {
-    "@prisma/client": "^5.22.0",
-    "@types/bcrypt": "^5.0.2",
-    "bcrypt": "^5.1.1"
+    "@prisma/client": "^5.22.0"
   },
   "devDependencies": {
     "@types/node": "^20.10.6",
