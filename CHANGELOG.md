@@ -1,3 +1,10 @@
+## [2.3.0](https://github.com/emrealmaoglu/flownote/compare/v2.2.0...v2.3.0) (2025-12-19)
+
+
+### 🚀 Features
+
+* implement user profile and seed data management ([6b3da1e](https://github.com/emrealmaoglu/flownote/commit/6b3da1e063237f76dd56fd232cc212e7eb95062f))
+
 ## [2.2.0](https://github.com/emrealmaoglu/flownote/compare/v2.1.0...v2.2.0) (2025-12-19)
 
 
