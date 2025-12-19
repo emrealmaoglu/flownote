@@ -37,7 +37,7 @@ import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
 @Controller("notes")
 @UseGuards(JwtAuthGuard)
 export class NotesController {
-  constructor(private readonly notesService: NotesService) { }
+  constructor(private readonly notesService: NotesService) {}
 
   /**
    * POST /notes - Yeni not oluştur
