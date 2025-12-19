@@ -8,7 +8,6 @@ import { cn } from '../lib/utils';
 export function CalendarPage() {
     const [notes, setNotes] = useState<NoteSummary[]>([]);
     const [currentDate, setCurrentDate] = useState(new Date());
-    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         loadNotes();
@@ -20,8 +19,6 @@ export function CalendarPage() {
             setNotes(data);
         } catch (err) {
             console.error('Failed to load notes', err);
-        } finally {
-            setLoading(false);
         }
     }
 
@@ -30,7 +27,7 @@ export function CalendarPage() {
         const month = date.getMonth();
         const daysInMonth = new Date(year, month + 1, 0).getDate();
         const firstDayOfMonth = new Date(year, month, 1).getDay();
-        
+
         const days = [];
         // Add empty days for padding
         for (let i = 0; i < (firstDayOfMonth === 0 ? 6 : firstDayOfMonth - 1); i++) {
@@ -60,8 +57,8 @@ export function CalendarPage() {
         return notes.filter(note => {
             const noteDate = new Date(note.createdAt);
             return noteDate.getDate() === date.getDate() &&
-                   noteDate.getMonth() === date.getMonth() &&
-                   noteDate.getFullYear() === date.getFullYear();
+                noteDate.getMonth() === date.getMonth() &&
+                noteDate.getFullYear() === date.getFullYear();
         });
     };
 
@@ -125,7 +122,7 @@ export function CalendarPage() {
                                         )}>
                                             {date.getDate()}
                                         </span>
-                                        
+
                                         <div className="space-y-1 overflow-y-auto max-h-[90px] pr-1 scrollbar-thin scrollbar-thumb-dark-700">
                                             {getNotesForDate(date).map(note => (
                                                 <Link

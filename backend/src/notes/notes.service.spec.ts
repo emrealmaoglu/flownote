@@ -84,15 +84,17 @@ describe("NotesService", () => {
         title: "New Note",
         content: { blocks: [] },
       };
+      const userId = "user-123";
 
       mockNoteRepository.create.mockReturnValue(mockNote);
       mockNoteRepository.save.mockResolvedValue(mockNote);
 
-      const result = await service.create(createDto);
+      const result = await service.create(createDto, userId);
 
       expect(mockNoteRepository.create).toHaveBeenCalledWith({
         title: createDto.title,
         content: createDto.content,
+        userId: userId,
       });
       expect(mockNoteRepository.save).toHaveBeenCalled();
       expect(result).toEqual(mockNote);
@@ -112,11 +114,12 @@ describe("NotesService", () => {
           ],
         },
       };
+      const userId = "user-123";
 
       mockNoteRepository.create.mockReturnValue({ ...mockNote, ...createDto });
       mockNoteRepository.save.mockResolvedValue({ ...mockNote, ...createDto });
 
-      const result = await service.create(createDto);
+      const result = await service.create(createDto, userId);
 
       expect(result.content.blocks).toHaveLength(1);
       expect(result.content.blocks[0].type).toBe("heading");

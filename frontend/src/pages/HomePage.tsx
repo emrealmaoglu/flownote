@@ -26,9 +26,10 @@ export function HomePage() {
             ]);
             setNotes(notesData);
             setTeamMembers(teamData);
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error('Veri yüklenemedi:', err);
-            const msg = err.response?.data?.message || 'Veriler yüklenemedi';
+            const error = err as { response?: { data?: { message?: string } } };
+            const msg = error.response?.data?.message || 'Veriler yüklenemedi';
             setError(msg);
         } finally {
             setLoading(false);
@@ -52,11 +53,12 @@ export function HomePage() {
             });
             setQuickNote('');
             loadData(); // Listeyi yenile
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error('Quick note failed:', err);
             // Extract specific validation message if available
-            const backendMsg = err.response?.data?.message || err.message;
-            const validationErrors = err.response?.data?.errors?.map((e: any) => e.message).join(', ');
+            const error = err as { response?: { data?: { message?: string; errors?: Array<{ message: string }> } }; message?: string };
+            const backendMsg = error.response?.data?.message || error.message;
+            const validationErrors = error.response?.data?.errors?.map((e) => e.message).join(', ');
 
             setError(validationErrors ? `Hata: ${validationErrors}` : `Hata: ${backendMsg}`);
             setTimeout(() => setError(null), 5000);

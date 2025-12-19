@@ -75,11 +75,12 @@ export function NewNotePage() {
             // Refresh sidebar notes list
             window.dispatchEvent(new CustomEvent('notes:refresh'));
             navigate(`/notes/${note.id}`);
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error('Failed to save note:', err);
             // Show detailed backend error
-            const backendMsg = err.response?.data?.message || err.message || 'Bilinmeyen hata';
-            const validationErrors = err.response?.data?.errors?.map((e: any) => `${e.field}: ${e.message}`).join(', ');
+            const error = err as { response?: { data?: { message?: string; errors?: Array<{ field: string; message: string }> } }; message?: string };
+            const backendMsg = error.response?.data?.message || error.message || 'Bilinmeyen hata';
+            const validationErrors = error.response?.data?.errors?.map((e) => `${e.field}: ${e.message}`).join(', ');
 
             setError(validationErrors ? `Validasyon Hatası: ${validationErrors}` : `Hata: ${backendMsg}`);
         } finally {
