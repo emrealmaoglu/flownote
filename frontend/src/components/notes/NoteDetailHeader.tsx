@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Smile, ImageIcon, X, Trash2 } from 'lucide-react';
+import { Smile, ImageIcon, X } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import type { Note } from '../../types';
 
@@ -69,7 +69,7 @@ export function NoteDetailHeader({ note, onUpdate, isFocusMode }: NoteDetailHead
                             Change Cover
                         </button>
                         <button
-                            onClick={() => onUpdate({ coverType: 'none', coverValue: null })}
+                            onClick={() => onUpdate({ coverType: 'none', coverValue: undefined })}
                             className="bg-black/50 hover:bg-red-500/80 text-white p-1 text-xs rounded-md backdrop-blur-md transition-colors"
                             title="Remove Cover"
                             data-testid="remove-cover-btn"
@@ -90,7 +90,7 @@ export function NoteDetailHeader({ note, onUpdate, isFocusMode }: NoteDetailHead
                                         style={{ background: g !== 'none' ? g : undefined }}
                                         onClick={() => {
                                             if (g === 'none') {
-                                                onUpdate({ coverType: 'none', coverValue: null });
+                                                onUpdate({ coverType: 'none', coverValue: undefined });
                                             } else {
                                                 onUpdate({ coverType: 'gradient', coverValue: g });
                                             }
@@ -154,7 +154,7 @@ export function NoteDetailHeader({ note, onUpdate, isFocusMode }: NoteDetailHead
                         <button
                             onClick={(e) => {
                                 e.stopPropagation();
-                                onUpdate({ iconEmoji: null });
+                                onUpdate({ iconEmoji: undefined });
                             }}
                             className="absolute -top-1 -right-1 bg-dark-800 text-dark-400 hover:text-red-400 rounded-full p-1 opacity-0 group-hover/icon:opacity-100 transition-opacity shadow-sm border border-dark-700"
                             title="Remove Icon"
