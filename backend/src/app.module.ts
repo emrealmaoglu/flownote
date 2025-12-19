@@ -7,6 +7,8 @@ import { NotesModule } from "./notes/notes.module";
 import { AuthModule } from "./auth/auth.module";
 import { TemplatesModule } from "./templates/templates.module";
 import { AdminModule } from "./admin/admin.module";
+import { SeedModule } from "./seed/seed.module";
+import { UsersModule } from "./users/users.module";
 
 /**
  * FlowNote Ana Modül
@@ -65,6 +67,8 @@ import { AdminModule } from "./admin/admin.module";
     NotesModule,
     TemplatesModule,
     AdminModule,
+    SeedModule,
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService],

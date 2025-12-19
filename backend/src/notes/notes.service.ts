@@ -21,7 +21,7 @@ export class NotesService {
     private readonly notesRepository: Repository<Note>,
     @InjectRepository(NoteLink)
     private readonly noteLinkRepository: Repository<NoteLink>,
-  ) {}
+  ) { }
 
   /**
    * Sprint 8: Pragmatic Schema Patch (Migration Strategy A)
@@ -74,12 +74,14 @@ export class NotesService {
   /**
    * Yeni not oluştur
    * @param createNoteDto - Zod ile validate edilmiş DTO
+   * @param userId - Authenticated user ID from JWT
    * @returns Oluşturulan not
    */
-  async create(createNoteDto: CreateNoteDto): Promise<Note> {
+  async create(createNoteDto: CreateNoteDto, userId: string): Promise<Note> {
     const note = this.notesRepository.create({
       title: createNoteDto.title,
       content: createNoteDto.content,
+      userId: userId,
     });
     return this.notesRepository.save(note);
   }
