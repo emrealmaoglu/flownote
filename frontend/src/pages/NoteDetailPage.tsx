@@ -301,6 +301,14 @@ function createBlock(type: BlockType, order: number): Block {
             return { id, type: 'image', order, data: { url: '', alt: '' } };
         case 'code':
             return { id, type: 'code', order, data: { code: '', language: 'javascript' } };
+        case 'divider':
+            return { id, type: 'divider', order, data: {} } as Block;
+        case 'quote':
+            return { id, type: 'quote', order, data: { text: '', author: '' } } as Block;
+        case 'callout':
+            return { id, type: 'callout', order, data: { text: '', emoji: '💡', color: 'blue' } } as Block;
+        case 'bookmark':
+            return { id, type: 'bookmark', order, data: { url: '', title: '', description: '' } } as Block;
         default:
             return { id, type: 'text', order, data: { text: '' } };
     }

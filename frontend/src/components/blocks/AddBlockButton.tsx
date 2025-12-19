@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Plus, Type, Heading1, CheckSquare, Image, Code } from 'lucide-react';
+import { Plus, Type, Heading1, CheckSquare, Image, Code, Minus, Quote, Lightbulb, Link2 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import type { BlockType } from '../../types';
 
@@ -14,6 +14,10 @@ const BLOCK_OPTIONS: { type: BlockType; label: string; icon: React.ReactNode }[]
     { type: 'checkbox', label: 'Checkbox', icon: <CheckSquare className="w-4 h-4" /> },
     { type: 'image', label: 'Image', icon: <Image className="w-4 h-4" /> },
     { type: 'code', label: 'Code', icon: <Code className="w-4 h-4" /> },
+    { type: 'divider', label: 'Divider', icon: <Minus className="w-4 h-4" /> },
+    { type: 'quote', label: 'Quote', icon: <Quote className="w-4 h-4" /> },
+    { type: 'callout', label: 'Callout', icon: <Lightbulb className="w-4 h-4" /> },
+    { type: 'bookmark', label: 'Bookmark', icon: <Link2 className="w-4 h-4" /> },
 ];
 
 /**
