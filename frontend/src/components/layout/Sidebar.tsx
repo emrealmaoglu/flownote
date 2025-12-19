@@ -1,8 +1,11 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Plus, Settings, Home, Focus, LogOut, User, Activity, CalendarDays, Inbox, KanbanSquare, Users } from 'lucide-react';
+import { Plus, Settings, Home, Focus, LogOut, User, Activity, CalendarDays, Inbox, KanbanSquare, Users, Star, Clock } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { NoteList } from '../notes';
 import { useFocusMode, useAuth } from '../../contexts';
+import { notesApi } from '../../api';
+import type { NoteSummary } from '../../types';
 
 /**
  * Sidebar Component
@@ -16,6 +19,13 @@ interface SidebarProps {
 export function Sidebar({ className }: SidebarProps) {
     const { toggleFocusMode } = useFocusMode();
     const { user, logout } = useAuth();
+    const [recentNotes, setRecentNotes] = useState<NoteSummary[]>([]);
+    const [favoriteNotes, setFavoriteNotes] = useState<NoteSummary[]>([]);
+
+    useEffect(() => {
+        notesApi.getRecent(5).then(setRecentNotes).catch(console.error);
+        notesApi.getFavorites().then(setFavoriteNotes).catch(console.error);
+    }, []);
 
     return (
         <aside
@@ -126,6 +136,38 @@ export function Sidebar({ className }: SidebarProps) {
                             <Activity className="w-4 h-4" />
                             Activity
                         </div>
+                    </nav>
+                </div>
+
+                {/* FAVORITES */}
+                {favoriteNotes.length > 0 && (
+                    <div>
+                        <h2 className="text-xs font-semibold text-dark-500 uppercase tracking-wider mb-2 px-2 flex items-center gap-2">
+                            <Star className="w-3 h-3" /> Favorites
+                        </h2>
+                        <nav className="space-y-0.5">
+                            {favoriteNotes.map((note) => (
+                                <Link key={note.id} to={`/notes/${note.id}`} className="flex items-center gap-2 px-2 py-1.5 rounded-lg text-dark-300 hover:bg-dark-800">
+                                    <span>{note.iconEmoji || '📄'}</span>
+                                    <span className="truncate text-sm">{note.title}</span>
+                                </Link>
+                            ))}
+                        </nav>
+                    </div>
+                )}
+
+                {/* RECENT */}
+                <div>
+                    <h2 className="text-xs font-semibold text-dark-500 uppercase tracking-wider mb-2 px-2 flex items-center gap-2">
+                        <Clock className="w-3 h-3" /> Recent
+                    </h2>
+                    <nav className="space-y-0.5">
+                        {recentNotes.map((note) => (
+                            <Link key={note.id} to={`/notes/${note.id}`} className="flex items-center gap-2 px-2 py-1.5 rounded-lg text-dark-300 hover:bg-dark-800">
+                                <span>{note.iconEmoji || '📄'}</span>
+                                <span className="truncate text-sm">{note.title}</span>
+                            </Link>
+                        ))}
                     </nav>
                 </div>
 

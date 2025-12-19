@@ -70,4 +70,9 @@ export class Note {
 
   @Column({ name: "cover_value", type: "text", nullable: true })
   coverValue: string | null;
+
+  // --- Favorites (Sprint 12) ---
+
+  @Column({ name: "is_favorite", type: "boolean", default: false })
+  isFavorite: boolean;
 }
