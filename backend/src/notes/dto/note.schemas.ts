@@ -208,10 +208,18 @@ export const CreateNoteSchema = z
     }
 
     if (t === "color" && !HexColorSchema.safeParse(v).success) {
-      ctx.addIssue({ code: "custom", path: ["coverValue"], message: "Invalid hex color" });
+      ctx.addIssue({
+        code: "custom",
+        path: ["coverValue"],
+        message: "Invalid hex color",
+      });
     }
     if (t === "image" && !UrlSchema.safeParse(v).success) {
-      ctx.addIssue({ code: "custom", path: ["coverValue"], message: "Invalid image URL" });
+      ctx.addIssue({
+        code: "custom",
+        path: ["coverValue"],
+        message: "Invalid image URL",
+      });
     }
     // t === "gradient": MVP’de allowlist yoksa sadece non-empty kabul ediyoruz.
   });
@@ -272,10 +280,18 @@ export const UpdateNoteSchema = z
     }
 
     if (t === "color" && !HexColorSchema.safeParse(v).success) {
-      ctx.addIssue({ code: "custom", path: ["coverValue"], message: "Invalid hex color" });
+      ctx.addIssue({
+        code: "custom",
+        path: ["coverValue"],
+        message: "Invalid hex color",
+      });
     }
     if (t === "image" && !UrlSchema.safeParse(v).success) {
-      ctx.addIssue({ code: "custom", path: ["coverValue"], message: "Invalid image URL" });
+      ctx.addIssue({
+        code: "custom",
+        path: ["coverValue"],
+        message: "Invalid image URL",
+      });
     }
   });
 

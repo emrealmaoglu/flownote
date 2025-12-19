@@ -5,6 +5,7 @@ import {
   CreateDateColumn,
   ManyToOne,
   JoinColumn,
+  Index,
 } from "typeorm";
 import { User } from "../../auth/entities/user.entity";
 
@@ -20,6 +21,7 @@ import { User } from "../../auth/entities/user.entity";
  * }
  */
 @Entity("notes")
+@Index("idx_notes_user_updated", ["userId", "updatedAt"]) // Composite index for user + date queries
 export class Note {
   @PrimaryGeneratedColumn("uuid")
   id: string;
@@ -46,12 +48,15 @@ export class Note {
   @JoinColumn({ name: "user_id" })
   user: User;
 
+  @Index("idx_notes_user_id") // Foreign key index
   @Column({ name: "user_id", nullable: true })
   userId: string;
 
+  @Index("idx_notes_created_at")
   @CreateDateColumn({ name: "created_at" })
   createdAt: Date;
 
+  @Index("idx_notes_updated_at")
   @Column({ name: "updated_at" })
   updatedAt: Date;
 

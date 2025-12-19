@@ -15,7 +15,12 @@
         "test:watch": "jest --watch",
         "test:cov": "jest --coverage",
         "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-        "test:e2e": "jest --config ./test/jest-e2e.json"
+        "test:e2e": "jest --config ./test/jest-e2e.json",
+        "typeorm": "typeorm-ts-node-commonjs",
+        "typeorm:migration:generate": "npm run typeorm -- migration:generate -d src/data-source.ts",
+        "typeorm:migration:create": "npm run typeorm -- migration:create",
+        "typeorm:migration:run": "npm run typeorm -- migration:run -d src/data-source.ts",
+        "typeorm:migration:revert": "npm run typeorm -- migration:revert -d src/data-source.ts"
     },
     "dependencies": {
         "@nestjs/common": "^10.3.0",
@@ -29,6 +34,8 @@
         "better-sqlite3": "^12.5.0",
         "class-transformer": "^0.5.1",
         "class-validator": "^0.14.3",
+        "cookie-parser": "^1.4.7",
+        "dotenv": "^16.4.5",
         "express-rate-limit": "^8.2.1",
         "helmet": "^8.1.0",
         "nest-winston": "^1.10.2",
@@ -48,6 +55,7 @@
         "@nestjs/testing": "^10.3.0",
         "@types/bcrypt": "^5.0.2",
         "@types/better-sqlite3": "^7.6.13",
+        "@types/cookie-parser": "^1.4.10",
         "@types/express": "^4.17.21",
         "@types/jest": "^29.5.11",
         "@types/node": "^20.10.6",
@@ -81,9 +89,30 @@
             "^.+\\.(t|j)s$": "ts-jest"
         },
         "collectCoverageFrom": [
-            "**/*.(t|j)s"
+            "**/*.ts",
+            "!**/*.spec.ts",
+            "!**/*.module.ts",
+            "!**/*.entity.ts",
+            "!**/dto/**",
+            "!**/entities/**",
+            "!**/migrations/**",
+            "!main.ts"
         ],
         "coverageDirectory": "../coverage",
+        "coverageReporters": [
+            "text",
+            "lcov",
+            "json-summary",
+            "html"
+        ],
+        "coverageThreshold": {
+            "global": {
+                "branches": 29,
+                "functions": 40,
+                "lines": 35,
+                "statements": 36
+            }
+        },
         "testEnvironment": "node"
     }
 }

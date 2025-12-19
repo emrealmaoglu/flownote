@@ -67,7 +67,7 @@ jobs:
         run: npm run lint --workspace=frontend --if-present
 
   # ============================================
-  # Test - Unit & Integration Tests
+  # Test - Unit & Integration Tests with Coverage
   # ============================================
   test:
     name: 🧪 Test
@@ -101,8 +101,8 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run backend tests
-        run: npm run test --workspace=backend
+      - name: Run backend tests with coverage
+        run: npm run test:cov --workspace=backend
         env:
           DATABASE_HOST: localhost
           DATABASE_PORT: 5432
@@ -113,6 +113,34 @@ jobs:
 
       - name: Run frontend tests
         run: npm run test --workspace=frontend --if-present
+
+      - name: Upload backend coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-coverage
+          path: backend/coverage/
+          retention-days: 7
+
+      - name: Upload frontend coverage report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: frontend-coverage
+          path: frontend/coverage/
+          retention-days: 7
+          if-no-files-found: ignore
+
+      - name: Check backend coverage threshold
+        run: |
+          if [ -f backend/coverage/coverage-summary.json ]; then
+            COVERAGE=$(cat backend/coverage/coverage-summary.json | grep -o '"lines":{"total":[0-9]*,"covered":[0-9]*,"skipped":[0-9]*,"pct":[0-9.]*' | grep -o 'pct":[0-9.]*' | cut -d':' -f2)
+            echo "📊 Backend coverage: $COVERAGE%"
+            if [ $(echo "$COVERAGE < 50" | bc -l) -eq 1 ]; then
+              echo "⚠️ Coverage below 50% threshold"
+            else
+              echo "✅ Coverage meets 50% threshold"
+            fi
+          fi
 
   # ============================================
   # Build - Docker Image Build
