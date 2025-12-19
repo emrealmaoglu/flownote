@@ -1,7 +1,7 @@
 import { lazy, Suspense } from 'react';
 import { CheckSquare, Square } from 'lucide-react';
 import { cn } from '../../lib/utils';
-import type { Block, TextBlock, HeadingBlock, CheckboxBlock, ImageBlock, CodeBlock, DividerBlock, QuoteBlock as QuoteBlockType, CalloutBlock as CalloutBlockType } from '../../types';
+import type { Block, TextBlock, HeadingBlock, CheckboxBlock, ImageBlock, CodeBlock, QuoteBlock as QuoteBlockType, CalloutBlock as CalloutBlockType } from '../../types';
 import { DividerBlock as DividerBlockComponent } from './DividerBlock';
 import { QuoteBlock } from './QuoteBlock';
 import { CalloutBlock } from './CalloutBlock';
