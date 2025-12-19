@@ -1,3 +1,10 @@
+## [2.2.0](https://github.com/emrealmaoglu/flownote/compare/v2.1.0...v2.2.0) (2025-12-19)
+
+
+### 🚀 Features
+
+* **editor:** add inline markdown formatting support ([e4ecb68](https://github.com/emrealmaoglu/flownote/commit/e4ecb686830f73e946b15a0e0f575787f4ff0234))
+
 ## [2.1.0](https://github.com/emrealmaoglu/flownote/compare/v2.0.0...v2.1.0) (2025-12-19)
 
 
