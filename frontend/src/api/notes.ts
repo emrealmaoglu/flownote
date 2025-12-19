@@ -103,6 +103,35 @@ export const notesApi = {
         const response = await apiClient.get<{ outlinks: NoteSummary[] }>(`/notes/${noteId}/outlinks`);
         return response.data.outlinks;
     },
+
+    /**
+     * Son güncellenmiş notları getir
+     * Sprint 12 - Recent Notes
+     */
+    async getRecent(limit = 5): Promise<NoteSummary[]> {
+        const response = await apiClient.get<NoteSummary[]>('/notes/recent', {
+            params: { limit },
+        });
+        return response.data;
+    },
+
+    /**
+     * Favorilere eklenen notları getir
+     * Sprint 12 - Favorites
+     */
+    async getFavorites(): Promise<NoteSummary[]> {
+        const response = await apiClient.get<NoteSummary[]>('/notes/favorites');
+        return response.data;
+    },
+
+    /**
+     * Notu favori olarak işaretle/kaldır
+     * Sprint 12 - Toggle Favorite
+     */
+    async toggleFavorite(id: string): Promise<Note> {
+        const response = await apiClient.patch<Note>(`/notes/${id}/favorite`);
+        return response.data;
+    },
 };
 
 export default notesApi;
