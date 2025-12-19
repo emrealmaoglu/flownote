@@ -98,6 +98,42 @@ export class NotesController {
   }
 
   /**
+   * GET /notes/recent - Get recent notes
+   * Sprint 12 - Recent notes for sidebar
+   */
+  @Get("recent")
+  async getRecent(@Query("limit") limit?: string) {
+    const parsedLimit = parseInt(limit || "5", 10);
+    const notes = await this.notesService.getRecent(parsedLimit);
+    return notes.map((note) => ({
+      id: note.id,
+      title: note.title,
+      blockCount: note.content?.blocks?.length || 0,
+      iconEmoji: note.iconEmoji,
+      createdAt: note.createdAt.toISOString(),
+      updatedAt: note.updatedAt.toISOString(),
+    }));
+  }
+
+  /**
+   * GET /notes/favorites - Get favorite notes
+   * Sprint 12 - Favorites for sidebar
+   */
+  @Get("favorites")
+  async getFavorites() {
+    const notes = await this.notesService.getFavorites();
+    return notes.map((note) => ({
+      id: note.id,
+      title: note.title,
+      blockCount: note.content?.blocks?.length || 0,
+      iconEmoji: note.iconEmoji,
+      isFavorite: note.isFavorite,
+      createdAt: note.createdAt.toISOString(),
+      updatedAt: note.updatedAt.toISOString(),
+    }));
+  }
+
+  /**
    * GET /notes/:id - Tek not getir (full content)
    */
   @Get(":id")
@@ -194,6 +230,21 @@ export class NotesController {
         updatedAt: note.updatedAt.toISOString(),
       })),
       count: outlinks.length,
+    };
+  }
+
+  /**
+   * PATCH /notes/:id/favorite - Toggle favorite status
+   * Sprint 12 - Favorites
+   */
+  @Patch(":id/favorite")
+  async toggleFavorite(@Param("id", ParseUUIDPipe) id: string) {
+    const note = await this.notesService.toggleFavorite(id);
+    return {
+      id: note.id,
+      title: note.title,
+      isFavorite: note.isFavorite,
+      updatedAt: note.updatedAt.toISOString(),
     };
   }
 
