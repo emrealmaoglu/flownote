@@ -20,7 +20,7 @@
 | v1.0.0 | 12 Aralık 2024 | Core Features |
 
 ---
-
+ 
 ## ✅ Completed Sprints
 
 ### Sprint 1: Advanced Features (v1.1.0) ✅

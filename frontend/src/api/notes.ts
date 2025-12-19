@@ -103,6 +103,35 @@ export const notesApi = {
         const response = await apiClient.get<{ outlinks: NoteSummary[] }>(`/notes/${noteId}/outlinks`);
         return response.data.outlinks;
     },
+
+    /**
+     * Toggle favorite status
+     * Sprint 12 - Quick Wins
+     */
+    async toggleFavorite(id: string): Promise<Note> {
+        const response = await apiClient.patch<Note>(`/notes/${id}/favorite`);
+        return response.data;
+    },
+
+    /**
+     * Get all favorite notes
+     * Sprint 12 - Quick Wins
+     */
+    async getFavorites(): Promise<NoteSummary[]> {
+        const response = await apiClient.get<{ favorites: NoteSummary[] }>('/notes/favorites');
+        return response.data.favorites;
+    },
+
+    /**
+     * Get recent notes
+     * Sprint 12 - Quick Wins
+     */
+    async getRecent(limit = 5): Promise<NoteSummary[]> {
+        const response = await apiClient.get<{ recent: NoteSummary[] }>('/notes/recent', {
+            params: { limit },
+        });
+        return response.data.recent;
+    },
 };
 
 export default notesApi;

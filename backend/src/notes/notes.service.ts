@@ -56,6 +56,15 @@ export class NotesService {
         await runner.query(`ALTER TABLE note ADD COLUMN cover_value TEXT`);
       }
 
+      // Check is_favorite (Sprint 12)
+      const hasFavorite = await runner.hasColumn("note", "is_favorite");
+      if (!hasFavorite) {
+        console.log("Migrating: Adding is_favorite column");
+        await runner.query(
+          `ALTER TABLE note ADD COLUMN is_favorite BOOLEAN DEFAULT 0`,
+        );
+      }
+
       console.log("Schema check complete.");
     } catch (err) {
       console.error("Schema Migration Error:", err);
@@ -320,5 +329,39 @@ export class NotesService {
    */
   async findByTitle(title: string): Promise<Note | null> {
     return this.notesRepository.findOne({ where: { title } });
+  }
+
+  // ============================================
+  // Favorites & Recent Methods (Sprint 12)
+  // ============================================
+
+  /**
+   * Toggle favorite status of a note
+   */
+  async toggleFavorite(id: string): Promise<Note> {
+    const note = await this.findOne(id);
+    note.isFavorite = !note.isFavorite;
+    return this.notesRepository.save(note);
+  }
+
+  /**
+   * Get all favorite notes
+   */
+  async getFavorites(): Promise<Note[]> {
+    return this.notesRepository.find({
+      where: { isFavorite: true },
+      order: { updatedAt: "DESC" },
+      take: 10,
+    });
+  }
+
+  /**
+   * Get recent notes (by updatedAt)
+   */
+  async getRecent(limit = 5): Promise<Note[]> {
+    return this.notesRepository.find({
+      order: { updatedAt: "DESC" },
+      take: limit,
+    });
   }
 }

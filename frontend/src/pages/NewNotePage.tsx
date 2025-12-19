@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Loader2, Type, Heading1, CheckSquare, Image, LayoutTemplate } from 'lucide-react';
+import { ArrowLeft, Loader2, Type, Heading1, CheckSquare, Image, LayoutTemplate, Code, Minus, Quote, Lightbulb, Link2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { cn, generateId } from '../lib/utils';
 import { notesApi } from '../api';
@@ -43,6 +43,18 @@ export function NewNotePage() {
                 return { text: '', checked: false };
             case 'image':
                 return { url: '', alt: '' };
+            case 'code':
+                return { code: '', language: 'javascript' };
+            case 'divider':
+                return {};
+            case 'quote':
+                return { text: '', author: '' };
+            case 'callout':
+                return { text: '', emoji: '💡', color: 'blue' };
+            case 'bookmark':
+                return { url: '', title: '', description: '' };
+            default:
+                return { text: '' };
         }
     }
 
@@ -225,7 +237,7 @@ export function NewNotePage() {
                 </div>
 
                 {/* Add Block Buttons */}
-                <div className="flex items-center gap-2 p-4 rounded-lg border border-dashed border-dark-700">
+                <div className="flex flex-wrap items-center gap-2 p-4 rounded-lg border border-dashed border-dark-700">
                     <span className="text-dark-500 text-sm mr-2">Block ekle:</span>
                     <button
                         onClick={() => addBlock('text')}
@@ -270,6 +282,62 @@ export function NewNotePage() {
                     >
                         <Image className="w-4 h-4" />
                         Image
+                    </button>
+                    <button
+                        onClick={() => addBlock('code')}
+                        className={cn(
+                            'flex items-center gap-1 px-3 py-1.5 rounded-lg',
+                            'bg-dark-800 hover:bg-dark-700 text-dark-300 text-sm',
+                            'transition-colors',
+                        )}
+                    >
+                        <Code className="w-4 h-4" />
+                        Code
+                    </button>
+                    {/* Sprint 12 - New Block Types */}
+                    <button
+                        onClick={() => addBlock('divider')}
+                        className={cn(
+                            'flex items-center gap-1 px-3 py-1.5 rounded-lg',
+                            'bg-dark-800 hover:bg-dark-700 text-dark-300 text-sm',
+                            'transition-colors',
+                        )}
+                    >
+                        <Minus className="w-4 h-4" />
+                        Divider
+                    </button>
+                    <button
+                        onClick={() => addBlock('quote')}
+                        className={cn(
+                            'flex items-center gap-1 px-3 py-1.5 rounded-lg',
+                            'bg-dark-800 hover:bg-dark-700 text-dark-300 text-sm',
+                            'transition-colors',
+                        )}
+                    >
+                        <Quote className="w-4 h-4" />
+                        Quote
+                    </button>
+                    <button
+                        onClick={() => addBlock('callout')}
+                        className={cn(
+                            'flex items-center gap-1 px-3 py-1.5 rounded-lg',
+                            'bg-dark-800 hover:bg-dark-700 text-dark-300 text-sm',
+                            'transition-colors',
+                        )}
+                    >
+                        <Lightbulb className="w-4 h-4" />
+                        Callout
+                    </button>
+                    <button
+                        onClick={() => addBlock('bookmark')}
+                        className={cn(
+                            'flex items-center gap-1 px-3 py-1.5 rounded-lg',
+                            'bg-dark-800 hover:bg-dark-700 text-dark-300 text-sm',
+                            'transition-colors',
+                        )}
+                    >
+                        <Link2 className="w-4 h-4" />
+                        Bookmark
                     </button>
                 </div>
 

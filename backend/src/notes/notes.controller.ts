@@ -205,4 +205,54 @@ export class NotesController {
   async remove(@Param("id", ParseUUIDPipe) id: string) {
     await this.notesService.remove(id);
   }
+
+  /**
+   * PATCH /notes/:id/favorite - Toggle favorite status
+   * Sprint 12 - Quick Wins
+   */
+  @Patch(":id/favorite")
+  async toggleFavorite(@Param("id", ParseUUIDPipe) id: string) {
+    const note = await this.notesService.toggleFavorite(id);
+    return {
+      id: note.id,
+      title: note.title,
+      isFavorite: note.isFavorite,
+      updatedAt: note.updatedAt.toISOString(),
+    };
+  }
+
+  /**
+   * GET /notes/favorites - Get all favorite notes
+   * Sprint 12 - Quick Wins
+   */
+  @Get("favorites")
+  async getFavorites() {
+    const notes = await this.notesService.getFavorites();
+    return {
+      favorites: notes.map((note) => ({
+        id: note.id,
+        title: note.title,
+        iconEmoji: note.iconEmoji,
+        updatedAt: note.updatedAt.toISOString(),
+      })),
+    };
+  }
+
+  /**
+   * GET /notes/recent - Get recent notes
+   * Sprint 12 - Quick Wins
+   */
+  @Get("recent")
+  async getRecent(@Query("limit") limit?: string) {
+    const parsedLimit = parseInt(limit || "5", 10);
+    const notes = await this.notesService.getRecent(parsedLimit);
+    return {
+      recent: notes.map((note) => ({
+        id: note.id,
+        title: note.title,
+        iconEmoji: note.iconEmoji,
+        updatedAt: note.updatedAt.toISOString(),
+      })),
+    };
+  }
 }
