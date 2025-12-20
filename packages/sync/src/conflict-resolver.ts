@@ -95,13 +95,4 @@ export class ConflictResolver {
       action: 'merge',
     };
   }
-
-  /**
-   * Smart merge for note content (future enhancement)
-   */
-  private _smartMerge(conflict: SyncConflict): any {
-    // TODO: Implement 3-way merge algorithm
-    // For now, fallback to last write wins
-    return this.lastWriteWins(conflict);
-  }
 }
