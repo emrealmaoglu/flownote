@@ -12,6 +12,7 @@ import {
   HttpStatus,
   ParseUUIDPipe,
   UseGuards,
+  Request,
 } from "@nestjs/common";
 import { NotesService } from "./notes.service";
 import { CreateNoteDto } from "./dto/create-note.dto";
@@ -37,7 +38,7 @@ import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
 @Controller("notes")
 @UseGuards(JwtAuthGuard)
 export class NotesController {
-  constructor(private readonly notesService: NotesService) {}
+  constructor(private readonly notesService: NotesService) { }
 
   /**
    * POST /notes - Yeni not oluştur
@@ -46,9 +47,10 @@ export class NotesController {
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async create(
+    @Request() req: any,
     @Body(new ZodValidationPipe(CreateNoteSchema)) createNoteDto: CreateNoteDto,
   ) {
-    const note = await this.notesService.create(createNoteDto);
+    const note = await this.notesService.create(createNoteDto, req.user.id);
     return {
       id: note.id,
       title: note.title,

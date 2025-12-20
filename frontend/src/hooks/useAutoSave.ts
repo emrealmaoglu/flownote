@@ -45,10 +45,17 @@ export function useAutoSave({ noteId, delay = 1000, onSave }: UseAutoSaveOptions
             setSaveStatus('saved');
             // Reset to idle after 2 seconds
             setTimeout(() => setSaveStatus('idle'), 2000);
-        } catch (error) {
+        } catch (error: unknown) {
             console.error('Auto-save failed:', error);
             setSaveStatus('error');
-            toast.error('Kaydetme başarısız. Lütfen tekrar deneyin.');
+
+            // Extract detailed error message
+            const err = error as { response?: { data?: { message?: string; errors?: Array<{ field: string; message: string }> } }; message?: string };
+            const backendMsg = err.response?.data?.message || err.message || 'Bilinmeyen hata';
+            const validationErrors = err.response?.data?.errors?.map((e) => `${e.field}: ${e.message}`).join(', ');
+            const detailedError = validationErrors ? `Validasyon: ${validationErrors}` : backendMsg;
+
+            toast.error(`Kaydetme başarısız: ${detailedError}`);
             // Requeue failed changes
             pendingChanges.current = { ...dataToSave, ...pendingChanges.current };
         } finally {

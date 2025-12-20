@@ -10,16 +10,14 @@ export const apiClient = axios.create({
         'Content-Type': 'application/json',
     },
     timeout: 10000,
+    withCredentials: true, // Sprint 11: HttpOnly cookie desteği
 });
 
-// Request interceptor - Auth token ekleme (Faz 4'te aktif edilecek)
+// Request interceptor
 apiClient.interceptors.request.use(
     (config) => {
-        // Faz 4 tamamlandı: JWT token ekleniyor
-        const token = localStorage.getItem('accessToken');
-        if (token && !config.url?.includes('/auth/')) {
-            config.headers.Authorization = `Bearer ${token}`;
-        }
+        // Not: Token artık HttpOnly cookie üzerinden gönderiliyor
+        // Authorization header'a gerek yok, browser otomatik ekler
         return config;
     },
     (error) => Promise.reject(error),

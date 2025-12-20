@@ -7,8 +7,8 @@ import { NotesModule } from "./notes/notes.module";
 import { AuthModule } from "./auth/auth.module";
 import { TemplatesModule } from "./templates/templates.module";
 import { AdminModule } from "./admin/admin.module";
-import { SyncModule } from "./sync/sync.module";
-import { PrismaService } from "./common/prisma.service";
+import { SeedModule } from "./seed/seed.module";
+import { UsersModule } from "./users/users.module";
 
 /**
  * FlowNote Ana Modül
@@ -67,7 +67,8 @@ import { PrismaService } from "./common/prisma.service";
     NotesModule,
     TemplatesModule,
     AdminModule,
-    SyncModule,
+    SeedModule,
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService],

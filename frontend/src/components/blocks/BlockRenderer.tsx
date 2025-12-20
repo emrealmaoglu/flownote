@@ -1,6 +1,7 @@
 import { lazy, Suspense } from 'react';
 import { CheckSquare, Square } from 'lucide-react';
 import { cn } from '../../lib/utils';
+import { parseInlineMarkdown } from '../../lib/markdown';
 import type { Block, TextBlock, HeadingBlock, CheckboxBlock, ImageBlock, CodeBlock, QuoteBlock as QuoteBlockType, CalloutBlock as CalloutBlockType, BookmarkBlock as BookmarkBlockType } from '../../types';
 import { DividerBlock } from './DividerBlock';
 import { QuoteBlock } from './QuoteBlock';
@@ -24,33 +25,60 @@ interface BlockRendererProps {
 
 /**
  * Text Block Renderer
+ * Sprint 13: Now supports inline markdown formatting
+ * Supported: **bold**, *italic*, `code`, ~~strikethrough~~, [links](url)
  */
 function TextBlockRenderer({ block }: { block: TextBlock }) {
+    const text = block.data.text;
+
+    if (!text || text.trim() === '') {
+        return (
+            <p className="text-dark-200 leading-relaxed">
+                <span className="text-dark-500 italic">Empty text block</span>
+            </p>
+        );
+    }
+
+    const html = parseInlineMarkdown(text);
+
     return (
-        <p className="text-dark-200 leading-relaxed">
-            {block.data.text || <span className="text-dark-500 italic">Empty text block</span>}
-        </p>
+        <p
+            className="text-dark-200 leading-relaxed prose prose-invert prose-sm max-w-none"
+            dangerouslySetInnerHTML={{ __html: html }}
+        />
     );
 }
 
 /**
  * Heading Block Renderer
+ * Sprint 13: Now supports inline markdown formatting in headings
  */
 function HeadingBlockRenderer({ block }: { block: HeadingBlock }) {
     const { text, level } = block.data;
 
     const headingClasses = {
-        1: 'text-2xl font-bold text-dark-50',
-        2: 'text-xl font-semibold text-dark-100',
-        3: 'text-lg font-medium text-dark-100',
+        1: 'text-2xl font-bold text-dark-50 prose prose-invert prose-2xl',
+        2: 'text-xl font-semibold text-dark-100 prose prose-invert prose-xl',
+        3: 'text-lg font-medium text-dark-100 prose prose-invert prose-lg',
     };
 
     const Tag = `h${level}` as keyof JSX.IntrinsicElements;
 
+    if (!text || text.trim() === '') {
+        return (
+            <Tag className={headingClasses[level]}>
+                <span className="text-dark-500 italic">Empty heading</span>
+            </Tag>
+        );
+    }
+
+    const html = parseInlineMarkdown(text);
+
     return (
-        <Tag className={headingClasses[level]}>
-            {text || <span className="text-dark-500 italic">Empty heading</span>}
-        </Tag>
+        <Tag
+            className={headingClasses[level]}
+            dangerouslySetInnerHTML={{ __html: html }}
+        />
     );
 }
 

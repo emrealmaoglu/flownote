@@ -1,13 +1,40 @@
-# 📝 Changelog
+## [2.3.0](https://github.com/emrealmaoglu/flownote/compare/v2.2.0...v2.3.0) (2025-12-19)
 
-All notable changes to FlowNote will be documented in this file.
-
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
-
-## [Unreleased]
 
 ### 🚀 Features
+
+* implement user profile and seed data management ([6b3da1e](https://github.com/emrealmaoglu/flownote/commit/6b3da1e063237f76dd56fd232cc212e7eb95062f))
+
+## [2.2.0](https://github.com/emrealmaoglu/flownote/compare/v2.1.0...v2.2.0) (2025-12-19)
+
+
+### 🚀 Features
+
+* **editor:** add inline markdown formatting support ([e4ecb68](https://github.com/emrealmaoglu/flownote/commit/e4ecb686830f73e946b15a0e0f575787f4ff0234))
+
+## [2.1.0](https://github.com/emrealmaoglu/flownote/compare/v2.0.0...v2.1.0) (2025-12-19)
+
+
+### 🚀 Features
+
+* **api:** add favorites and recent notes endpoints ([1e2bec2](https://github.com/emrealmaoglu/flownote/commit/1e2bec2ab0831aadd11122d66ac0a4e02a037931))
+* **blocks:** add bookmark block with url preview ([135d007](https://github.com/emrealmaoglu/flownote/commit/135d007fd1b6aaeb5d595c3d8d6d8eba1d03ca37))
+* **blocks:** add callout block with emoji and color picker ([4dd59ad](https://github.com/emrealmaoglu/flownote/commit/4dd59ad8836e6b763efc8ef08d955e270003ba4c))
+* **blocks:** add divider block component ([d5cce67](https://github.com/emrealmaoglu/flownote/commit/d5cce67d4494130d5508922d4ceffe087db746e4))
+* **blocks:** add quote block with author support ([7b5064e](https://github.com/emrealmaoglu/flownote/commit/7b5064e7070342a197d097d914c1dacf694bdfdb))
+* **blocks:** integrate new blocks into renderer and editor ([b959acf](https://github.com/emrealmaoglu/flownote/commit/b959acf3a2d3620702999cd238ab9d194dc85d7c))
+* **sidebar:** add recent notes and favorites sections ([5c26f41](https://github.com/emrealmaoglu/flownote/commit/5c26f4127ab383ceceb6a2da43b004a3aa75cf25))
+* **ui:** add block type buttons for new blocks ([9b191de](https://github.com/emrealmaoglu/flownote/commit/9b191def5cbbdba2003f4d3eabd468bf092dd103))
+
+
+### 🐛 Bug Fixes
+
+* **lint:** remove unused updatedatecolumn import ([e6cfc8d](https://github.com/emrealmaoglu/flownote/commit/e6cfc8d021df64d14fe01a41f4a19887158246af))
+* **lint:** replace any type with proper error handling ([b5546bc](https://github.com/emrealmaoglu/flownote/commit/b5546bc920b1420adf7f0ca7f48ae2a325a4aaa4))
+* **test:** exclude playwright tests from vitest ([b9e0f94](https://github.com/emrealmaoglu/flownote/commit/b9e0f9406c02fd704e82ff698b0c2da643f0ff84))
+* **typescript:** resolve type errors in notedetailheader ([6484a62](https://github.com/emrealmaoglu/flownote/commit/6484a6219d05f7142eea5df583fa547ab3770b42))
+
+## [2.0.0](https://github.com/emrealmaoglu/flownote/compare/v1.7.1...v2.0.0) (2025-12-18)
 
 #### Sprint 14.2: Migration & Sync Engine (2025-12-20)
 
