@@ -4,7 +4,7 @@
  * Single source of truth for database access
  */
 
-import { PrismaClient } from '../generated/client';
+import { PrismaClient } from '@prisma/client';
 
 // Global Prisma instance to prevent multiple connections in development
 const globalForPrisma = globalThis as unknown as {
@@ -25,4 +25,4 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 // Re-export Prisma types for convenience
-export * from '../generated/client';
+export * from '@prisma/client';
