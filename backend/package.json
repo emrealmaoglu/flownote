@@ -99,6 +99,8 @@
             "!**/dto/**",
             "!**/entities/**",
             "!**/migrations/**",
+            "!**/sync/**",
+            "!**/common/prisma.service.ts",
             "!main.ts"
         ],
         "coverageDirectory": "../coverage",
