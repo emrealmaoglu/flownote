@@ -7,11 +7,13 @@ import { NotesModule } from "./notes/notes.module";
 import { AuthModule } from "./auth/auth.module";
 import { TemplatesModule } from "./templates/templates.module";
 import { AdminModule } from "./admin/admin.module";
+import { SyncModule } from "./sync/sync.module";
+import { PrismaService } from "./common/prisma.service";
 
 /**
  * FlowNote Ana Modül
  * Tüm modülleri buradan yönet
- * Sprint 3: TemplatesModule eklendi
+ * Sprint 14.2.3: SyncModule + Prisma eklendi
  */
 @Module({
   imports: [
@@ -65,8 +67,9 @@ import { AdminModule } from "./admin/admin.module";
     NotesModule,
     TemplatesModule,
     AdminModule,
+    SyncModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, PrismaService],
 })
 export class AppModule {}
