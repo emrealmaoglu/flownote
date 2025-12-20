@@ -1,5 +1,3 @@
-import type { Note, Folder } from '@flownote/database';
-
 // ============================================
 // SYNC OPERATION TYPES
 // ============================================
