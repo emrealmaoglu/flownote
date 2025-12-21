@@ -25,7 +25,7 @@ interface AuthContextType {
     isAdmin: boolean;
     login: (identifier: string, password: string) => Promise<void>;
     register: (username: string, email: string, password: string, name: string) => Promise<void>;
-    logout: () => void;
+    logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -39,19 +39,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const [token, setToken] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(true);
 
-    // Sayfa yüklendiğinde localStorage'dan token kontrol et
+    // Sayfa yüklendiğinde session kontrolü yap
     useEffect(() => {
-        const storedToken = localStorage.getItem('accessToken');
-        const storedUser = localStorage.getItem('user');
-
-        if (storedToken && storedUser) {
-            setToken(storedToken);
-            setUser(JSON.parse(storedUser));
-            // API client'a token ekle
-            apiClient.defaults.headers.common['Authorization'] = `Bearer ${storedToken}`;
-        }
-        setIsLoading(false);
+        checkAuth();
     }, []);
+
+    async function checkAuth() {
+        try {
+            const response = await apiClient.get<AuthUser>('/auth/me');
+            setUser(response.data);
+            setToken('cookie-session'); // Session aktif işareti
+        } catch (err) {
+            // Session yok veya geçersiz
+            setToken(null);
+            setUser(null);
+            localStorage.removeItem('user');
+        } finally {
+            setIsLoading(false);
+        }
+    }
 
     /**
      * Kullanıcı girişi
@@ -59,57 +65,59 @@ export function AuthProvider({ children }: { children: ReactNode }) {
      * @param password - şifre
      */
     async function login(identifier: string, password: string) {
-        const response = await apiClient.post<{ accessToken: string; user: AuthUser }>(
+        // Backend HttpOnly cookie set edecek
+        const response = await apiClient.post<{ user: AuthUser }>(
             '/auth/login',
             { identifier, password },
         );
 
-        const { accessToken, user: userData } = response.data;
+        const { user: userData } = response.data;
 
         // State güncelle
-        setToken(accessToken);
+        setToken('cookie-session');
         setUser(userData);
 
-        // LocalStorage'a kaydet
-        localStorage.setItem('accessToken', accessToken);
+        // LocalStorage'a sadece user bilgisini cache amaçlı kaydet
         localStorage.setItem('user', JSON.stringify(userData));
-
-        // API client'a token ekle
-        apiClient.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
     }
 
     /**
      * Kullanıcı kaydı
      */
     async function register(username: string, email: string, password: string, name: string) {
-        const response = await apiClient.post<{ accessToken: string; user: AuthUser }>(
+        // Backend HttpOnly cookie set edecek
+        const response = await apiClient.post<{ user: AuthUser }>(
             '/auth/register',
             { username, email, password, name },
         );
 
-        const { accessToken, user: userData } = response.data;
+        const { user: userData } = response.data;
 
         // State güncelle
-        setToken(accessToken);
+        setToken('cookie-session');
         setUser(userData);
 
         // LocalStorage'a kaydet
-        localStorage.setItem('accessToken', accessToken);
         localStorage.setItem('user', JSON.stringify(userData));
-
-        // API client'a token ekle
-        apiClient.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
     }
 
     /**
      * Çıkış yap
      */
-    function logout() {
-        setToken(null);
-        setUser(null);
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('user');
-        delete apiClient.defaults.headers.common['Authorization'];
+    /**
+     * Çıkış yap
+     */
+    async function logout() {
+        try {
+            await apiClient.post('/auth/logout');
+        } catch (error) {
+            console.error('Logout error:', error);
+        } finally {
+            setToken(null);
+            setUser(null);
+            localStorage.removeItem('user');
+            // localStorage.removeItem('accessToken'); // Artık kullanılmıyor
+        }
     }
 
     const value: AuthContextType = {

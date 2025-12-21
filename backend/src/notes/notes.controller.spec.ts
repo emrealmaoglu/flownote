@@ -79,12 +79,13 @@ describe("NotesController", () => {
         title: "New Note",
         content: { blocks: [] },
       };
+      const mockReq = { user: { id: "user-123" } };
 
       mockNotesService.create.mockResolvedValue(mockNote);
 
-      const result = await controller.create(createDto);
+      const result = await controller.create(mockReq, createDto);
 
-      expect(service.create).toHaveBeenCalledWith(createDto);
+      expect(service.create).toHaveBeenCalledWith(createDto, "user-123");
       expect(result).toEqual({
         id: mockNote.id,
         title: mockNote.title,
@@ -105,6 +106,7 @@ describe("NotesController", () => {
         coverType: "color",
         coverValue: "#FF5733",
       };
+      const mockReq = { user: { id: "user-123" } };
 
       const noteWithIdentity = {
         ...mockNote,
@@ -113,7 +115,7 @@ describe("NotesController", () => {
 
       mockNotesService.create.mockResolvedValue(noteWithIdentity);
 
-      const result = await controller.create(createDto);
+      const result = await controller.create(mockReq, createDto);
 
       expect(result.iconEmoji).toBe("🎨");
       expect(result.coverType).toBe("color");
@@ -121,9 +123,10 @@ describe("NotesController", () => {
     });
 
     it("should format dates to ISO strings", async () => {
+      const mockReq = { user: { id: "user-123" } };
       mockNotesService.create.mockResolvedValue(mockNote);
 
-      const result = await controller.create({
+      const result = await controller.create(mockReq, {
         title: "Test",
         content: { blocks: [] },
       });

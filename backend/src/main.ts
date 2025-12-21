@@ -25,7 +25,7 @@ async function bootstrap() {
   app.use(
     rateLimit({
       windowMs: 15 * 60 * 1000, // 15 minutes
-      max: 100, // Max 100 requests per windowMs
+      max: 1000, // Max 1000 requests per windowMs (Increased for Dev)
       message: {
         statusCode: 429,
         message: "Too many requests, please try again later.",
