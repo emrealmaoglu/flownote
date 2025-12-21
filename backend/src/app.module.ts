@@ -13,7 +13,7 @@ import { UsersModule } from "./users/users.module";
 /**
  * FlowNote Ana Modül
  * Tüm modülleri buradan yönet
- * Sprint 3: TemplatesModule eklendi
+ * Sprint 14.2.3: SyncModule + Prisma eklendi
  */
 @Module({
   imports: [
@@ -71,6 +71,6 @@ import { UsersModule } from "./users/users.module";
     UsersModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, PrismaService],
 })
 export class AppModule {}
