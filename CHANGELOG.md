@@ -18,6 +18,23 @@ Commit Convention:
 - BREAKING CHANGE: 💥 Breaking changes (major version)
 -->
 
+## [3.1.0-beta.4](https://github.com/emrealmaoglu/flownote/compare/v3.1.0-beta.3...v3.1.0-beta.4) (2025-12-24)
+
+
+### 🚀 Features
+
+* **api:** configure openapi documentation ([5227fc8](https://github.com/emrealmaoglu/flownote/commit/5227fc8809b92e166d4d351cf3916c8c29371040))
+
+
+### 📚 Documentation
+
+* **config:** update tech debt and sprint reports ([3cca1ce](https://github.com/emrealmaoglu/flownote/commit/3cca1cec51393a4cd6b488364339be254d5af860))
+
+
+### ✅ Tests
+
+* **auth:** add unit tests for usersservice and fix entity typing ([88a1f97](https://github.com/emrealmaoglu/flownote/commit/88a1f97edf585f85aea296f4310fb1f8153b57c5))
+
 ## [3.1.0-beta.3](https://github.com/emrealmaoglu/flownote/compare/v3.1.0-beta.2...v3.1.0-beta.3) (2025-12-24)
 
 
