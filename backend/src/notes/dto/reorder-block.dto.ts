@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { ApiProperty } from '@nestjs/swagger';
 
 /**
  * Reorder Block DTO
@@ -9,4 +10,17 @@ export const ReorderBlockSchema = z.object({
   newOrder: z.number().min(0, "Order must be positive"),
 });
 
-export type ReorderBlockDto = z.infer<typeof ReorderBlockSchema>;
+export class ReorderBlockDto {
+  @ApiProperty({
+    description: 'Block ID to move',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+  })
+  blockId: string;
+
+  @ApiProperty({
+    description: 'New order index',
+    example: 1,
+    minimum: 0,
+  })
+  newOrder: number;
+}
