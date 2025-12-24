@@ -1,13 +1,20 @@
 import type { SyncQueueItem, SyncEntity } from './types';
 import { LocalStorageAdapter } from './storage-adapter';
+import { ILogger, ConsoleLogger } from './logger';
 
 export class OfflineQueue {
   private queue: SyncQueueItem[] = [];
   private storage: LocalStorageAdapter;
+  private logger: ILogger;
   private readonly QUEUE_KEY = 'sync:queue';
 
-  constructor() {
-    this.storage = new LocalStorageAdapter();
+  constructor(logger?: ILogger) {
+    // Create new ConsoleLogger if none provided
+    const baseLogger = logger || new ConsoleLogger('OfflineQueue');
+    this.logger = baseLogger;
+
+    // Pass logger to storage adapter
+    this.storage = new LocalStorageAdapter('flownote', baseLogger);
     this.loadQueue();
   }
 
@@ -24,9 +31,11 @@ export class OfflineQueue {
     this.queue.push(item);
     await this.saveQueue();
 
-    console.log(
-      `📥 Queued ${entity.operation} operation for ${entity.type}:${entity.id}`
-    );
+    this.logger.log('Queued operation', {
+      operation: entity.operation,
+      type: entity.type,
+      id: entity.id
+    });
   }
 
   /**
@@ -84,14 +93,16 @@ export class OfflineQueue {
       // Re-add to end of queue
       this.queue.push(item);
       await this.saveQueue();
-      console.log(
-        `🔄 Retry ${item.retryCount}/${item.maxRetries} for ${item.type}:${item.id}`
-      );
+      this.logger.log(`Retry attempt ${item.retryCount}/${item.maxRetries}`, {
+        type: item.type,
+        id: item.id
+      });
       return true;
     } else {
-      console.error(
-        `❌ Max retries reached for ${item.type}:${item.id}`,
-        error
+      this.logger.error(
+        `Max retries reached`,
+        new Error(error),
+        { type: item.type, id: item.id }
       );
       return false;
     }
@@ -105,10 +116,10 @@ export class OfflineQueue {
       const saved = await this.storage.get(this.QUEUE_KEY);
       if (saved && Array.isArray(saved)) {
         this.queue = saved;
-        console.log(`📂 Loaded ${this.queue.length} items from queue`);
+        this.logger.log(`Loaded queue items`, { count: this.queue.length });
       }
     } catch (error) {
-      console.error('Failed to load queue:', error);
+      this.logger.error('Failed to load queue', error instanceof Error ? error : new Error(String(error)));
     }
   }
 
@@ -119,7 +130,7 @@ export class OfflineQueue {
     try {
       await this.storage.set(this.QUEUE_KEY, this.queue);
     } catch (error) {
-      console.error('Failed to save queue:', error);
+      this.logger.error('Failed to save queue', error instanceof Error ? error : new Error(String(error)));
     }
   }
 }
