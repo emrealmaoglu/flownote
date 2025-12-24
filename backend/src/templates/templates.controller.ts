@@ -32,7 +32,7 @@ import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
 @Controller("templates")
 @UseGuards(JwtAuthGuard)
 export class TemplatesController {
-  constructor(private readonly templatesService: TemplatesService) { }
+  constructor(private readonly templatesService: TemplatesService) {}
 
   /**
    * GET /templates - List all templates
@@ -133,7 +133,10 @@ export class TemplatesController {
    */
   @Delete(":id")
   @HttpCode(HttpStatus.NO_CONTENT)
-  async remove(@Param("id", ParseUUIDPipe) id: string, @Req() req: AuthenticatedRequest) {
+  async remove(
+    @Param("id", ParseUUIDPipe) id: string,
+    @Req() req: AuthenticatedRequest,
+  ) {
     await this.templatesService.remove(id, req.user?.id);
   }
 

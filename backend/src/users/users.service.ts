@@ -1,16 +1,20 @@
-import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, IsNull } from 'typeorm';
-import * as bcrypt from 'bcrypt';
-import { User } from '../auth/entities/user.entity';
-import { CreateUserDto, UpdateUserDto, UserResponseDto } from './dto';
+import {
+  Injectable,
+  ConflictException,
+  NotFoundException,
+} from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository, IsNull } from "typeorm";
+import * as bcrypt from "bcrypt";
+import { User } from "../auth/entities/user.entity";
+import { CreateUserDto, UpdateUserDto, UserResponseDto } from "./dto";
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-  ) { }
+  ) {}
 
   /**
    * Create a new user with hashed password
@@ -26,9 +30,9 @@ export class UsersService {
 
     if (existingUser) {
       if (existingUser.email === email) {
-        throw new ConflictException('Email already registered');
+        throw new ConflictException("Email already registered");
       }
-      throw new ConflictException('Username already taken');
+      throw new ConflictException("Username already taken");
     }
 
     // Hash password
@@ -64,17 +68,17 @@ export class UsersService {
   async findById(id: string): Promise<UserResponseDto> {
     const user = await this.userRepository.findOne({
       where: { id, deletedAt: IsNull() },
-      relations: ['team'],
+      relations: ["team"],
     });
 
     if (!user) {
-      throw new NotFoundException('User not found');
+      throw new NotFoundException("User not found");
     }
 
     return new UserResponseDto({
       id: user.id,
       username: user.username,
-      email: user.email,
+      email: user.email!, // Assert email exists for valid user
       name: user.name,
       role: user.role,
       teamId: user.team?.id,
@@ -109,18 +113,21 @@ export class UsersService {
   async findAll(): Promise<UserResponseDto[]> {
     const users = await this.userRepository.find({
       where: { deletedAt: IsNull() },
-      order: { createdAt: 'DESC' },
+      order: { createdAt: "DESC" },
     });
 
-    return users.map(user => new UserResponseDto({
-      id: user.id,
-      username: user.username,
-      email: user.email,
-      name: user.name,
-      role: user.role,
-      createdAt: user.createdAt,
-      updatedAt: user.updatedAt,
-    }));
+    return users.map(
+      (user) =>
+        new UserResponseDto({
+          id: user.id,
+          username: user.username,
+          email: user.email!, // Assert email exists
+          name: user.name,
+          role: user.role,
+          createdAt: user.createdAt,
+          updatedAt: user.updatedAt,
+        }),
+    );
   }
 
   /**
@@ -128,13 +135,16 @@ export class UsersService {
    * @throws NotFoundException if user not found
    * @throws ConflictException if email/username already taken
    */
-  async update(id: string, updateUserDto: UpdateUserDto): Promise<UserResponseDto> {
+  async update(
+    id: string,
+    updateUserDto: UpdateUserDto,
+  ): Promise<UserResponseDto> {
     const user = await this.userRepository.findOne({
       where: { id, deletedAt: IsNull() },
     });
 
     if (!user) {
-      throw new NotFoundException('User not found');
+      throw new NotFoundException("User not found");
     }
 
     // Check email uniqueness if changing
@@ -143,7 +153,7 @@ export class UsersService {
         where: { email: updateUserDto.email },
       });
       if (emailExists) {
-        throw new ConflictException('Email already registered');
+        throw new ConflictException("Email already registered");
       }
     }
 
@@ -153,7 +163,7 @@ export class UsersService {
         where: { username: updateUserDto.username },
       });
       if (usernameExists) {
-        throw new ConflictException('Username already taken');
+        throw new ConflictException("Username already taken");
       }
     }
 
@@ -168,7 +178,9 @@ export class UsersService {
     if (updateUserDto.username) user.username = updateUserDto.username;
     if (updateUserDto.name) user.name = updateUserDto.name;
     if (updateUserDto.teamId !== undefined) {
-      user.team = updateUserDto.teamId ? { id: updateUserDto.teamId } as any : null;
+      user.team = updateUserDto.teamId
+        ? ({ id: updateUserDto.teamId } as any)
+        : null;
     }
 
     const savedUser = await this.userRepository.save(user);
@@ -194,13 +206,13 @@ export class UsersService {
     });
 
     if (!user) {
-      throw new NotFoundException('User not found');
+      throw new NotFoundException("User not found");
     }
 
     user.deletedAt = new Date();
     await this.userRepository.save(user);
 
-    return { message: 'User successfully deleted' };
+    return { message: "User successfully deleted" };
   }
 
   /**
@@ -213,11 +225,11 @@ export class UsersService {
     });
 
     if (!user) {
-      throw new NotFoundException('User not found');
+      throw new NotFoundException("User not found");
     }
 
     if (!user.deletedAt) {
-      throw new ConflictException('User is not deleted');
+      throw new ConflictException("User is not deleted");
     }
 
     user.deletedAt = null;
@@ -241,17 +253,17 @@ export class UsersService {
     const result = await this.userRepository.delete(id);
 
     if (result.affected === 0) {
-      throw new NotFoundException('User not found');
+      throw new NotFoundException("User not found");
     }
 
-    return { message: 'User permanently deleted' };
+    return { message: "User permanently deleted" };
   }
 
   // Existing method
   async getTeamMembers(userId: string) {
     const user = await this.userRepository.findOne({
       where: { id: userId },
-      relations: ['team'],
+      relations: ["team"],
     });
 
     if (!user || !user.team) {
@@ -261,9 +273,9 @@ export class UsersService {
     // Fetch other members of the same team
     const members = await this.userRepository.find({
       where: { team: { id: user.team.id } },
-      select: ['id', 'username', 'name', 'role'], // Don't return passwords
+      select: ["id", "username", "name", "role"], // Don't return passwords
     });
 
-    return members.filter(m => m.id !== userId); // Exclude self
+    return members.filter((m) => m.id !== userId); // Exclude self
   }
 }

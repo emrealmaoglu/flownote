@@ -108,7 +108,10 @@ describe("AuthController", () => {
     it("should set cookie and return user data without token", async () => {
       mockAuthService.register.mockResolvedValue(mockServiceResponse);
 
-      const result = await controller.register(registerDto, mockResponse as Response);
+      const result = await controller.register(
+        registerDto,
+        mockResponse as Response,
+      );
 
       expect(result).not.toHaveProperty("accessToken");
       expect(result).toHaveProperty("user");
@@ -118,7 +121,10 @@ describe("AuthController", () => {
     it("should return user without sensitive fields", async () => {
       mockAuthService.register.mockResolvedValue(mockServiceResponse);
 
-      const result = await controller.register(registerDto, mockResponse as Response);
+      const result = await controller.register(
+        registerDto,
+        mockResponse as Response,
+      );
 
       expect(result.user).not.toHaveProperty("passwordHash");
       expect(result.user).not.toHaveProperty("password");
@@ -131,7 +137,10 @@ describe("AuthController", () => {
     it("should include all required user fields in response", async () => {
       mockAuthService.register.mockResolvedValue(mockServiceResponse);
 
-      const result = await controller.register(registerDto, mockResponse as Response);
+      const result = await controller.register(
+        registerDto,
+        mockResponse as Response,
+      );
 
       expect(result.user.id).toBe("user-123");
       expect(result.user.username).toBe("newuser");
@@ -145,9 +154,9 @@ describe("AuthController", () => {
         new ConflictException("Bu kullanıcı adı zaten alınmış"),
       );
 
-      await expect(controller.register(registerDto, mockResponse as Response)).rejects.toThrow(
-        ConflictException,
-      );
+      await expect(
+        controller.register(registerDto, mockResponse as Response),
+      ).rejects.toThrow(ConflictException);
     });
 
     it("should throw ConflictException for duplicate email", async () => {
@@ -155,9 +164,9 @@ describe("AuthController", () => {
         new ConflictException("Bu email adresi zaten kayıtlı"),
       );
 
-      await expect(controller.register(registerDto, mockResponse as Response)).rejects.toThrow(
-        ConflictException,
-      );
+      await expect(
+        controller.register(registerDto, mockResponse as Response),
+      ).rejects.toThrow(ConflictException);
     });
 
     it("should call service with exact DTO", async () => {
@@ -173,7 +182,9 @@ describe("AuthController", () => {
       const error = new Error("Database connection failed");
       mockAuthService.register.mockRejectedValue(error);
 
-      await expect(controller.register(registerDto, mockResponse as Response)).rejects.toThrow(error);
+      await expect(
+        controller.register(registerDto, mockResponse as Response),
+      ).rejects.toThrow(error);
     });
   });
 
@@ -233,7 +244,10 @@ describe("AuthController", () => {
 
       mockAuthService.login.mockResolvedValue(mockServiceResponse);
 
-      const result = await controller.login(emailLoginDto, mockResponse as Response);
+      const result = await controller.login(
+        emailLoginDto,
+        mockResponse as Response,
+      );
 
       expect(service.login).toHaveBeenCalledWith(emailLoginDto);
       expect(result).not.toHaveProperty("accessToken");
@@ -280,9 +294,9 @@ describe("AuthController", () => {
         new UnauthorizedException("Kullanıcı adı veya şifre hatalı"),
       );
 
-      await expect(controller.login(loginDto, mockResponse as Response)).rejects.toThrow(
-        UnauthorizedException,
-      );
+      await expect(
+        controller.login(loginDto, mockResponse as Response),
+      ).rejects.toThrow(UnauthorizedException);
     });
 
     it("should throw UnauthorizedException for non-existent user", async () => {
@@ -290,9 +304,9 @@ describe("AuthController", () => {
         new UnauthorizedException("Kullanıcı adı veya şifre hatalı"),
       );
 
-      await expect(controller.login(loginDto, mockResponse as Response)).rejects.toThrow(
-        UnauthorizedException,
-      );
+      await expect(
+        controller.login(loginDto, mockResponse as Response),
+      ).rejects.toThrow(UnauthorizedException);
     });
 
     it("should call service with exact DTO", async () => {
@@ -308,7 +322,9 @@ describe("AuthController", () => {
       const error = new Error("Database connection failed");
       mockAuthService.login.mockRejectedValue(error);
 
-      await expect(controller.login(loginDto, mockResponse as Response)).rejects.toThrow(error);
+      await expect(
+        controller.login(loginDto, mockResponse as Response),
+      ).rejects.toThrow(error);
     });
 
     it("should handle admin role in response", async () => {

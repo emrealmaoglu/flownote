@@ -1,4 +1,4 @@
-import { IsOptional, IsNumber, IsArray, IsString } from 'class-validator';
+import { IsOptional, IsNumber, IsArray, IsString } from "class-validator";
 
 /**
  * Sync DTOs
@@ -6,35 +6,35 @@ import { IsOptional, IsNumber, IsArray, IsString } from 'class-validator';
  */
 
 export class SyncPullDto {
-    @IsOptional()
-    @IsNumber()
-    since?: number;
+  @IsOptional()
+  @IsNumber()
+  since?: number;
 }
 
 export class SyncPushDto {
-    @IsOptional()
-    @IsArray()
-    created?: any[];
+  @IsOptional()
+  @IsArray()
+  created?: any[];
 
-    @IsOptional()
-    @IsArray()
-    updated?: any[];
+  @IsOptional()
+  @IsArray()
+  updated?: any[];
 
-    @IsOptional()
-    @IsArray()
-    @IsString({ each: true })
-    deleted?: string[];
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  deleted?: string[];
 }
 
 export class SyncRequestDto {
-    @IsOptional()
-    @IsNumber()
-    lastSyncAt?: number;
+  @IsOptional()
+  @IsNumber()
+  lastSyncAt?: number;
 
-    @IsOptional()
-    changes?: {
-        created: any[];
-        updated: any[];
-        deleted: string[];
-    };
+  @IsOptional()
+  changes?: {
+    created: any[];
+    updated: any[];
+    deleted: string[];
+  };
 }

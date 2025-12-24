@@ -28,7 +28,7 @@ export class AuthService implements OnModuleInit {
     private readonly usersRepository: Repository<User>,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
-  ) { }
+  ) {}
 
   /**
    * Module başlatıldığında default kullanıcıları oluştur
@@ -213,7 +213,7 @@ export class AuthService implements OnModuleInit {
       const user = await this.validateUser(payload.sub);
 
       if (!user) {
-        throw new UnauthorizedException('User not found');
+        throw new UnauthorizedException("User not found");
       }
 
       const newPayload = {
@@ -227,7 +227,7 @@ export class AuthService implements OnModuleInit {
         accessToken: this.jwtService.sign(newPayload),
       };
     } catch (e) {
-      throw new UnauthorizedException('Invalid refresh token');
+      throw new UnauthorizedException("Invalid refresh token");
     }
   }
 
@@ -237,8 +237,9 @@ export class AuthService implements OnModuleInit {
   async getProfile(userId: string) {
     const user = await this.usersRepository.findOne({ where: { id: userId } });
     if (!user) {
-      throw new UnauthorizedException('User not found');
+      throw new UnauthorizedException("User not found");
     }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { passwordHash, ...result } = user;
     return result;
   }

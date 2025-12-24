@@ -71,8 +71,8 @@ describe("NotesController", () => {
       id: "user-123",
       email: "test@example.com",
       username: "test",
-      role: "user"
-    }
+      role: "user",
+    },
   } as any;
 
   it("should be defined", () => {
@@ -363,7 +363,9 @@ describe("NotesController", () => {
     it("should return formatted response with ISO dates", async () => {
       mockNotesService.update.mockResolvedValue(mockNote);
 
-      const result = await controller.update(mockReq, mockNote.id, { title: "Test" });
+      const result = await controller.update(mockReq, mockNote.id, {
+        title: "Test",
+      });
 
       expect(typeof result.createdAt).toBe("string");
       expect(typeof result.updatedAt).toBe("string");
@@ -382,7 +384,11 @@ describe("NotesController", () => {
 
       mockNotesService.reorderBlock.mockResolvedValue(mockNote);
 
-      const result = await controller.reorderBlock(mockReq, mockNote.id, reorderDto);
+      const result = await controller.reorderBlock(
+        mockReq,
+        mockNote.id,
+        reorderDto,
+      );
 
       expect(service.reorderBlock).toHaveBeenCalledWith(
         mockNote.id,
@@ -401,7 +407,11 @@ describe("NotesController", () => {
 
       mockNotesService.reorderBlock.mockResolvedValue(mockNote);
 
-      const result = await controller.reorderBlock(mockReq, mockNote.id, reorderDto);
+      const result = await controller.reorderBlock(
+        mockReq,
+        mockNote.id,
+        reorderDto,
+      );
 
       expect(result.content).toBeDefined();
       expect(result.title).toBe(mockNote.title);

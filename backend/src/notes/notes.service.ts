@@ -21,7 +21,7 @@ export class NotesService {
     private readonly notesRepository: Repository<Note>,
     @InjectRepository(NoteLink)
     private readonly noteLinkRepository: Repository<NoteLink>,
-  ) { }
+  ) {}
 
   private readonly logger = new Logger(NotesService.name);
 
@@ -31,7 +31,7 @@ export class NotesService {
    */
   async onModuleInit() {
     try {
-      if (process.env.NODE_ENV === 'test') return;
+      if (process.env.NODE_ENV === "test") return;
       this.logger.log("Checking Note schema for Identity fields...");
       const runner =
         this.notesRepository.manager.connection.createQueryRunner();
@@ -123,7 +123,11 @@ export class NotesService {
    * @param updateNoteDto - Güncellenecek alanlar
    * @returns Güncellenmiş not
    */
-  async update(id: string, updateNoteDto: UpdateNoteDto, userId?: string): Promise<Note> {
+  async update(
+    id: string,
+    updateNoteDto: UpdateNoteDto,
+    userId?: string,
+  ): Promise<Note> {
     const note = await this.findOne(id, userId);
 
     if (updateNoteDto.title !== undefined) {
@@ -161,7 +165,11 @@ export class NotesService {
    * @param limit - Sonuç limiti (default: 10)
    * @returns Skorlanmış arama sonuçları
    */
-  async search(query: string, userId: string, limit = 10): Promise<SearchResultDto[]> {
+  async search(
+    query: string,
+    userId: string,
+    limit = 10,
+  ): Promise<SearchResultDto[]> {
     const sanitizedQuery = query.trim().toLowerCase();
 
     if (sanitizedQuery.length < 2) {
@@ -172,12 +180,15 @@ export class NotesService {
     const notes = await this.notesRepository
       .createQueryBuilder("note")
       .where("note.userId = :userId", { userId })
-      .andWhere(new Brackets((qb: WhereExpressionBuilder) => {
-        qb.where("LOWER(note.title) LIKE :query", { query: `%${sanitizedQuery}%` })
-          .orWhere("note.content::text ILIKE :query", {
+      .andWhere(
+        new Brackets((qb: WhereExpressionBuilder) => {
+          qb.where("LOWER(note.title) LIKE :query", {
+            query: `%${sanitizedQuery}%`,
+          }).orWhere("note.content::text ILIKE :query", {
             query: `%${sanitizedQuery}%`,
           });
-      }))
+        }),
+      )
       .orderBy("note.updatedAt", "DESC")
       .limit(limit)
       .getMany();
@@ -253,7 +264,7 @@ export class NotesService {
     noteId: string,
     blockId: string,
     newOrder: number,
-    userId?: string
+    userId?: string,
   ): Promise<Note> {
     const note = await this.findOne(noteId, userId);
 
@@ -383,7 +394,8 @@ export class NotesService {
    * @param limit - Number of recent notes to fetch (default: 5)
    * @returns Recent notes ordered by updatedAt
    */
-  async getRecent(userId?: string, limit = 5): Promise<Note[]> { // Fix arg order to match usage
+  async getRecent(userId?: string, limit = 5): Promise<Note[]> {
+    // Fix arg order to match usage
     const whereCondition: any = {};
     if (userId) {
       whereCondition.userId = userId;

@@ -1,14 +1,14 @@
-import { Request } from 'express';
-import { UserRole } from '../../auth/entities/user.entity';
+import { Request } from "express";
+import { UserRole } from "../../auth/entities/user.entity";
 
 /**
  * JWT payload structure after validation
  */
 export interface JwtPayload {
-    sub: string;      // User ID
-    email: string;
-    iat?: number;     // Issued at
-    exp?: number;     // Expiration
+  sub: string; // User ID
+  email: string;
+  iat?: number; // Issued at
+  exp?: number; // Expiration
 }
 
 /**
@@ -16,10 +16,10 @@ export interface JwtPayload {
  * Matches the returned object from JwtStrategy.validate()
  */
 export interface RequestUser {
-    id: string;
-    email: string | null;
-    username: string;
-    role: UserRole;
+  id: string;
+  email: string | null;
+  username: string;
+  role: UserRole;
 }
 
 /**
@@ -27,5 +27,5 @@ export interface RequestUser {
  * Use this instead of `any` for @Request() decorator
  */
 export interface AuthenticatedRequest extends Request {
-    user: RequestUser;
+  user: RequestUser;
 }
