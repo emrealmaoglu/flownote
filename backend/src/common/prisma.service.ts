@@ -1,4 +1,4 @@
-import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
+import { Injectable, OnModuleInit, OnModuleDestroy, Logger } from '@nestjs/common';
 import { prisma } from '@flownote/database';
 
 /**
@@ -7,6 +7,8 @@ import { prisma } from '@flownote/database';
  */
 @Injectable()
 export class PrismaService implements OnModuleInit, OnModuleDestroy {
+    private readonly logger = new Logger(PrismaService.name);
+
     // Expose prisma client
     get client() {
         return prisma;
@@ -14,12 +16,12 @@ export class PrismaService implements OnModuleInit, OnModuleDestroy {
 
     async onModuleInit() {
         await prisma.$connect();
-        console.log('✅ Prisma connected');
+        this.logger.log('Prisma connected');
     }
 
     async onModuleDestroy() {
         await prisma.$disconnect();
-        console.log('✅ Prisma disconnected');
+        this.logger.log('Prisma disconnected');
     }
 
     // Helper methods
