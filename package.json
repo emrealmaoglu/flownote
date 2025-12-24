@@ -28,7 +28,13 @@
     "db:seed": "npm run db:seed --workspace=@flownote/database",
     "prepare": "husky",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
-    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md}\""
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "docker:dev": "docker compose -f docker-compose.dev.yml up --build",
+    "docker:up": "docker compose -f docker-compose.dev.yml up -d --build",
+    "docker:down": "docker compose -f docker-compose.dev.yml down",
+    "docker:logs": "docker compose -f docker-compose.dev.yml logs -f",
+    "docker:clean": "docker compose -f docker-compose.dev.yml down -v --rmi local",
+    "docker:db-shell": "docker compose -f docker-compose.dev.yml exec db psql -U flownote -d flownote_dev"
   },
   "devDependencies": {
     "@commitlint/cli": "^18.4.3",
