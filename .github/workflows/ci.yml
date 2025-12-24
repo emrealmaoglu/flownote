@@ -116,7 +116,11 @@ jobs:
       - name: Run E2E tests
         run: npm run test:e2e --workspace=backend
         env:
-          DATABASE_URL: postgresql://test:test@localhost:5432/flownote_test
+          DATABASE_HOST: localhost
+          DATABASE_PORT: 5432
+          DATABASE_USER: test
+          DATABASE_PASSWORD: test
+          DATABASE_NAME: flownote_test
           JWT_SECRET: test-jwt-secret-min-32-characters-long
           NODE_ENV: test
 

@@ -1,12 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import * as request from 'supertest';
+import * as cookieParser from 'cookie-parser';
 import { AppModule } from '../../src/app.module';
 import { createTestUser } from '../fixtures/test-data';
 
 describe('NotesController (e2e)', () => {
     let app: INestApplication;
-    let authToken: string;
+    let authCookie: string[];
 
     beforeAll(async () => {
         const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -14,6 +15,7 @@ describe('NotesController (e2e)', () => {
         }).compile();
 
         app = moduleFixture.createNestApplication();
+        app.use(cookieParser());
         app.useGlobalPipes(new ValidationPipe());
         await app.init();
 
@@ -26,11 +28,12 @@ describe('NotesController (e2e)', () => {
         const loginResponse = await request(app.getHttpServer())
             .post('/auth/login')
             .send({
-                email: user.email,
+                identifier: user.email,
                 password: user.password,
             });
 
-        authToken = loginResponse.body.access_token;
+        authCookie = loginResponse.get('Set-Cookie') as string[];
+        if (!authCookie) throw new Error('Login failed, no cookie set');
     });
 
     afterAll(async () => {
@@ -43,10 +46,19 @@ describe('NotesController (e2e)', () => {
         it('should create a new note', () => {
             return request(app.getHttpServer())
                 .post('/notes')
-                .set('Authorization', `Bearer ${authToken}`)
+                .set('Cookie', authCookie)
                 .send({
                     title: 'Test Note',
-                    content: 'This is a test note content',
+                    content: {
+                        blocks: [
+                            {
+                                id: '550e8400-e29b-41d4-a716-446655440000',
+                                type: 'text',
+                                order: 0,
+                                data: { text: 'This is a test note content' }
+                            }
+                        ]
+                    },
                 })
                 .expect(201)
                 .expect((res) => {
@@ -59,19 +71,19 @@ describe('NotesController (e2e)', () => {
         it('should get all notes', () => {
             return request(app.getHttpServer())
                 .get('/notes')
-                .set('Authorization', `Bearer ${authToken}`)
+                .set('Cookie', authCookie)
                 .expect(200)
                 .expect((res) => {
-                    expect(Array.isArray(res.body)).toBe(true);
+                    expect(Array.isArray(res.body.notes)).toBe(true);
                     // Check if at least one note exists (created above)
-                    expect(res.body.length).toBeGreaterThan(0);
+                    expect(res.body.notes.length).toBeGreaterThan(0);
                 });
         });
 
         it('should get note by id', () => {
             return request(app.getHttpServer())
                 .get(`/notes/${noteId}`)
-                .set('Authorization', `Bearer ${authToken}`)
+                .set('Cookie', authCookie)
                 .expect(200)
                 .expect((res) => {
                     expect(res.body.id).toBe(noteId);
@@ -80,8 +92,8 @@ describe('NotesController (e2e)', () => {
 
         it('should update note', () => {
             return request(app.getHttpServer())
-                .patch(`/notes/${noteId}`)
-                .set('Authorization', `Bearer ${authToken}`)
+                .put(`/notes/${noteId}`)
+                .set('Cookie', authCookie)
                 .send({
                     title: 'Updated Test Note',
                 })
@@ -94,8 +106,8 @@ describe('NotesController (e2e)', () => {
         it('should delete note', () => {
             return request(app.getHttpServer())
                 .delete(`/notes/${noteId}`)
-                .set('Authorization', `Bearer ${authToken}`)
-                .expect(200);
+                .set('Cookie', authCookie)
+                .expect(204);
         });
     });
 

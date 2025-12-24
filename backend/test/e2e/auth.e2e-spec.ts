@@ -29,7 +29,7 @@ describe('AuthController (e2e)', () => {
                 .send(user)
                 .expect(201)
                 .expect((res) => {
-                    expect(res.body).toHaveProperty('access_token');
+                    expect(res.headers['set-cookie']).toBeDefined();
                     expect(res.body).toHaveProperty('user');
                     expect(res.body.user.email).toBe(user.email);
                 });
@@ -40,6 +40,7 @@ describe('AuthController (e2e)', () => {
                 .post('/auth/register')
                 .send({
                     email: 'invalid-email',
+                    username: 'testuser',
                     password: 'Test123!@#',
                     name: 'Test User',
                 })
@@ -61,12 +62,12 @@ describe('AuthController (e2e)', () => {
             return request(app.getHttpServer())
                 .post('/auth/login')
                 .send({
-                    email: user.email,
+                    identifier: user.email,
                     password: user.password,
                 })
                 .expect(200) // Changed to 201 if create, but login is usually 200/201
                 .expect((res) => {
-                    expect(res.body).toHaveProperty('access_token');
+                    expect(res.headers['set-cookie']).toBeDefined();
                 });
         });
 
@@ -74,7 +75,7 @@ describe('AuthController (e2e)', () => {
             return request(app.getHttpServer())
                 .post('/auth/login')
                 .send({
-                    email: user.email,
+                    identifier: user.email,
                     password: 'wrongpassword',
                 })
                 .expect(401);
