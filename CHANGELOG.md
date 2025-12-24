@@ -18,6 +18,13 @@ Commit Convention:
 - BREAKING CHANGE: 💥 Breaking changes (major version)
 -->
 
+## [3.1.0-beta.1](https://github.com/emrealmaoglu/flownote/compare/v3.0.0...v3.1.0-beta.1) (2025-12-24)
+
+
+### 🚀 Features
+
+* **docker:** add development environment with docker compose ([#33](https://github.com/emrealmaoglu/flownote/issues/33)) ([dd24db5](https://github.com/emrealmaoglu/flownote/commit/dd24db55540dae9979fafb2dcbbd1ae8b47372fe))
+
 ## [3.0.0](https://github.com/emrealmaoglu/flownote/compare/v2.3.0...v3.0.0) (2025-12-24)
 
 
