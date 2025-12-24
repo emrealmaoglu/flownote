@@ -18,6 +18,13 @@ Commit Convention:
 - BREAKING CHANGE: 💥 Breaking changes (major version)
 -->
 
+## [3.1.0-beta.3](https://github.com/emrealmaoglu/flownote/compare/v3.1.0-beta.2...v3.1.0-beta.3) (2025-12-24)
+
+
+### ♻️ Refactoring
+
+* **sync:** implement structured logging interface ([bc561f1](https://github.com/emrealmaoglu/flownote/commit/bc561f18846b85fd63690a01b0b481c5e38d35d3))
+
 ## [3.1.0-beta.2](https://github.com/emrealmaoglu/flownote/compare/v3.1.0-beta.1...v3.1.0-beta.2) (2025-12-24)
 
 
