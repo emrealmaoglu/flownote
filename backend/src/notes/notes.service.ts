@@ -21,7 +21,7 @@ export class NotesService {
     private readonly notesRepository: Repository<Note>,
     @InjectRepository(NoteLink)
     private readonly noteLinkRepository: Repository<NoteLink>,
-  ) {}
+  ) { }
 
   /**
    * Sprint 8: Pragmatic Schema Patch (Migration Strategy A)
@@ -57,13 +57,15 @@ export class NotesService {
       }
 
       // Check is_favorite (Sprint 12)
-      const hasFavorite = await runner.hasColumn('note', 'is_favorite');
+      const hasFavorite = await runner.hasColumn("note", "is_favorite");
       if (!hasFavorite) {
-        console.log('Migrating: Adding is_favorite column');
-        await runner.query(`ALTER TABLE note ADD COLUMN is_favorite BOOLEAN DEFAULT FALSE`);
+        console.log("Migrating: Adding is_favorite column");
+        await runner.query(
+          `ALTER TABLE note ADD COLUMN is_favorite BOOLEAN DEFAULT FALSE`,
+        );
       }
 
-      console.log('Schema check complete.');
+      console.log("Schema check complete.");
     } catch (err) {
       console.error("Schema Migration Error:", err);
     }
@@ -72,12 +74,14 @@ export class NotesService {
   /**
    * Yeni not oluştur
    * @param createNoteDto - Zod ile validate edilmiş DTO
+   * @param userId - Authenticated user ID from JWT
    * @returns Oluşturulan not
    */
-  async create(createNoteDto: CreateNoteDto): Promise<Note> {
+  async create(createNoteDto: CreateNoteDto, userId: string): Promise<Note> {
     const note = this.notesRepository.create({
       title: createNoteDto.title,
       content: createNoteDto.content,
+      userId: userId,
     });
     return this.notesRepository.save(note);
   }
@@ -351,8 +355,8 @@ export class NotesService {
   async getFavorites(): Promise<Note[]> {
     return this.notesRepository.find({
       where: { isFavorite: true },
-      order: { updatedAt: 'DESC' },
-      take: 10
+      order: { updatedAt: "DESC" },
+      take: 10,
     });
   }
 
@@ -363,8 +367,8 @@ export class NotesService {
    */
   async getRecent(limit = 5): Promise<Note[]> {
     return this.notesRepository.find({
-      order: { updatedAt: 'DESC' },
-      take: limit
+      order: { updatedAt: "DESC" },
+      take: limit,
     });
   }
 }

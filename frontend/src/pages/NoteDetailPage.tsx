@@ -50,6 +50,21 @@ export function NoteDetailPage() {
             setLoading(true);
             setError(null);
             const data = await notesApi.getById(noteId);
+
+            // Normalize blocks: Fix invalid UUIDs and ensure order
+            if (data.content?.blocks) {
+                data.content.blocks = data.content.blocks.map((b, i) => {
+                    // Check if ID is a valid UUID
+                    const isValidUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(b.id);
+
+                    return {
+                        ...b,
+                        id: isValidUUID ? b.id : generateId(), // Replace invalid IDs
+                        order: typeof b.order === 'number' ? b.order : i
+                    };
+                });
+            }
+
             setNote(data);
         } catch (err) {
             setError('Not bulunamadı');

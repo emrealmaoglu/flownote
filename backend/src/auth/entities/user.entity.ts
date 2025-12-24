@@ -5,8 +5,10 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   OneToMany,
+  ManyToOne,
 } from "typeorm";
 import { Note } from "../../notes/entities/note.entity";
+import { Team } from "../../users/entities/team.entity";
 
 /**
  * User Roles
@@ -40,6 +42,9 @@ export class User {
 
   @OneToMany(() => Note, (note) => note.user)
   notes: Note[];
+
+  @ManyToOne(() => Team, (team) => team.members, { nullable: true })
+  team: Team;
 
   @CreateDateColumn({ name: "created_at" })
   createdAt: Date;

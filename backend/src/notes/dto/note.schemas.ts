@@ -110,7 +110,9 @@ const CalloutBlockSchema = z.object({
   data: z.object({
     text: z.string(),
     emoji: z.string().default("💡"),
-    color: z.enum(["blue", "green", "yellow", "red", "purple", "gray"]).default("blue"),
+    color: z
+      .enum(["blue", "green", "yellow", "red", "purple", "gray"])
+      .default("blue"),
   }),
 });
 
@@ -135,10 +137,10 @@ export const BlockSchema = z.discriminatedUnion("type", [
   CheckboxBlockSchema,
   ImageBlockSchema,
   CodeBlockSchema, // ← Sprint 1 eklendi
-  DividerBlockSchema,    // ← Sprint 12
-  QuoteBlockSchema,      // ← Sprint 12
-  CalloutBlockSchema,    // ← Sprint 12
-  BookmarkBlockSchema,   // ← Sprint 12
+  DividerBlockSchema, // ← Sprint 12
+  QuoteBlockSchema, // ← Sprint 12
+  CalloutBlockSchema, // ← Sprint 12
+  BookmarkBlockSchema, // ← Sprint 12
 ]);
 
 export type Block = z.infer<typeof BlockSchema>;

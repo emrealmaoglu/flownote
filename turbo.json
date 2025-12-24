@@ -16,7 +16,7 @@
     "DATABASE_PASSWORD",
     "DATABASE_NAME"
   ],
-  "pipeline": {
+  "tasks": {
     "build": {
       "dependsOn": [
         "^build"
