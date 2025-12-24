@@ -1,3 +1,82 @@
+# 📝 Changelog
+
+All notable changes to FlowNote will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+<!-- 
+Commit Convention:
+- feat: ✨ New feature (minor version)
+- fix: 🐛 Bug fix (patch version)
+- perf: ⚡ Performance improvement (patch version)
+- refactor: ♻️ Code refactoring (patch version)
+- docs: 📚 Documentation changes
+- test: ✅ Test changes
+- chore: 🔧 Maintenance tasks
+- ci: 👷 CI/CD changes
+- BREAKING CHANGE: 💥 Breaking changes (major version)
+-->
+
+## [3.0.0](https://github.com/emrealmaoglu/flownote/compare/v2.3.0...v3.0.0) (2025-12-24)
+
+
+### ⚠ BREAKING CHANGES
+
+* **config:** Scope now mandatory in all commits
+* **config:** Scope is now mandatory in all commit messages.
+All commits must follow conventional format: type(scope): subject
+
+Sprint 14 foundation complete. Next steps:
+- Sprint 14.2: Migration script (localStorage → Database)
+- Sprint 14.3: Backend Prisma integration
+- Sprint 14.4: Frontend sync engine
+
+### 🚀 Features
+
+* **backend:** add sync module with Prisma integration ([27d25e9](https://github.com/emrealmaoglu/flownote/commit/27d25e9e3d6a565bcda29f38b2b465a744b2517a))
+* **config:** implement sprint 14 monorepo foundation ([cd895eb](https://github.com/emrealmaoglu/flownote/commit/cd895eb442eb3f81dcaff48e39fb5c4a2b61b337))
+* **config:** merge sprint 14 monorepo foundation ([540b2e8](https://github.com/emrealmaoglu/flownote/commit/540b2e8e7571fb664dc9bcf401d46e4d7cbd08da))
+* **frontend:** integrate sync engine with react hooks and UI ([4473457](https://github.com/emrealmaoglu/flownote/commit/44734578980a43ba66e8a3cf779e582ff55ac36f))
+* **migration:** add localstorage to database migration script ([ab8f96e](https://github.com/emrealmaoglu/flownote/commit/ab8f96e9846f0f60520f78688511f5a6d0eaf86b))
+* **sync:** add sync engine package for bidirectional synchronization ([7eac0d6](https://github.com/emrealmaoglu/flownote/commit/7eac0d6b27a55a20e1986eb332d00627689de30c))
+* **test:** setup e2e testing infrastructure ([#32](https://github.com/emrealmaoglu/flownote/issues/32)) ([910a2aa](https://github.com/emrealmaoglu/flownote/commit/910a2aa0a47dc6be7b2cec0072647c2c1977c231))
+
+
+### 🐛 Bug Fixes
+
+* **backend:** correct jwt guard import path and exclude sync from coverage ([60e43e3](https://github.com/emrealmaoglu/flownote/commit/60e43e364df67b65e893403e725409b38feebb03))
+* **backend:** lower coverage thresholds for sprint 14.2 ([d911394](https://github.com/emrealmaoglu/flownote/commit/d91139404cd43cf8c4894f0f47dfd0d66d91c0b0))
+* **ci:** install optional dependencies in CI ([69d2289](https://github.com/emrealmaoglu/flownote/commit/69d2289130c14421c7c71b0e89284ea3b72e921b))
+* **ci:** use npm install instead of npm ci for optional deps ([7f664d0](https://github.com/emrealmaoglu/flownote/commit/7f664d0484f7e053ca845af0b0a9cb70df9ce8ab))
+* **config:** add package manager field and update gitignore for prisma ([41c4b2c](https://github.com/emrealmaoglu/flownote/commit/41c4b2cd849c3ef70feeaa89c20f84f8de579940))
+* **config:** update gitignore for prisma files ([00858e9](https://github.com/emrealmaoglu/flownote/commit/00858e9fb550ab820fbf11bdd3dd22dc91f1053f))
+* **database:** use @prisma/client instead of relative path ([fb9abf8](https://github.com/emrealmaoglu/flownote/commit/fb9abf8350b4cac3189bde80f446a05f5a3eee96))
+* **deps:** downgrade vite/vitest for CI compatibility ([49022cc](https://github.com/emrealmaoglu/flownote/commit/49022cce47b6bf424e126872cb143d496d4e4c12))
+* **deps:** regenerate package-lock.json to fix platform issue ([8c82b75](https://github.com/emrealmaoglu/flownote/commit/8c82b75a8d138ba58fd34854d05a37d7556525d2))
+* **security:** update vulnerable dependencies ([0ff1580](https://github.com/emrealmaoglu/flownote/commit/0ff1580109c253f4fffbbafb740d79b4bd02db76))
+* **sync:** remove unused imports and prefix unused private method ([7db3b1b](https://github.com/emrealmaoglu/flownote/commit/7db3b1b9ad9c3b9177f67247b651391270df175e))
+* **sync:** remove unused smartMerge method ([32c42ca](https://github.com/emrealmaoglu/flownote/commit/32c42cac5833bd942832fe4b9bf1c6682e60da21))
+* **test:** lower coverage threshold to match actual coverage ([ca0a0fb](https://github.com/emrealmaoglu/flownote/commit/ca0a0fbad8d9a7f34be0efb25904113d4037b560))
+
+
+### 📚 Documentation
+
+* finalize PR template for sprint 14.2 ([2122745](https://github.com/emrealmaoglu/flownote/commit/21227455e0949c8eb592901ab1ff7e726acfc4a0))
+* **sprint-14.2:** update changelog and add PR template ([c1aef37](https://github.com/emrealmaoglu/flownote/commit/c1aef376f49c4fa1ed6c682728fad4b5614b072b))
+
+
+### ✅ Tests
+
+* **config:** scope ile test commit ([7d2bcbe](https://github.com/emrealmaoglu/flownote/commit/7d2bcbeb53fd5b28feddb21d16436280a0705fe4))
+
+
+### 👷 CI/CD
+
+* **docker:** skip docker build temporarily for monorepo compatibility ([546095e](https://github.com/emrealmaoglu/flownote/commit/546095e5d1c69b7bf1e4726dd7f8520677149577)), closes [#27](https://github.com/emrealmaoglu/flownote/issues/27)
+* **docker:** skip docker build temporarily for monorepo compatibility ([fc4a656](https://github.com/emrealmaoglu/flownote/commit/fc4a656428ac3e84752e484e349058d1e7cf7d20))
+* temporarily disable tests due to vite 7 rollup issue ([efce0b0](https://github.com/emrealmaoglu/flownote/commit/efce0b0694c32982048bde0d46bc739d322319bf))
+
 ## [2.3.0](https://github.com/emrealmaoglu/flownote/compare/v2.2.0...v2.3.0) (2025-12-19)
 
 
