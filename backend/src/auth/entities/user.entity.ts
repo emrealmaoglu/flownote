@@ -44,7 +44,7 @@ export class User {
   notes: Note[];
 
   @ManyToOne(() => Team, (team) => team.members, { nullable: true })
-  team: Team;
+  team: Team | null;
 
   @CreateDateColumn({ name: "created_at" })
   createdAt: Date;
