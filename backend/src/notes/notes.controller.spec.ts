@@ -66,6 +66,15 @@ describe("NotesController", () => {
     jest.clearAllMocks();
   });
 
+  const mockReq = {
+    user: {
+      id: "user-123",
+      email: "test@example.com",
+      username: "test",
+      role: "user"
+    }
+  } as any;
+
   it("should be defined", () => {
     expect(controller).toBeDefined();
   });
@@ -79,8 +88,6 @@ describe("NotesController", () => {
         title: "New Note",
         content: { blocks: [] },
       };
-      const mockReq = { user: { id: "user-123" } };
-
       mockNotesService.create.mockResolvedValue(mockNote);
 
       const result = await controller.create(mockReq, createDto);
@@ -106,8 +113,6 @@ describe("NotesController", () => {
         coverType: "color",
         coverValue: "#FF5733",
       };
-      const mockReq = { user: { id: "user-123" } };
-
       const noteWithIdentity = {
         ...mockNote,
         ...createDto,
@@ -123,7 +128,6 @@ describe("NotesController", () => {
     });
 
     it("should format dates to ISO strings", async () => {
-      const mockReq = { user: { id: "user-123" } };
       mockNotesService.create.mockResolvedValue(mockNote);
 
       const result = await controller.create(mockReq, {
@@ -149,7 +153,7 @@ describe("NotesController", () => {
 
       mockNotesService.findAll.mockResolvedValue(notes);
 
-      const result = await controller.findAll();
+      const result = await controller.findAll(mockReq);
 
       expect(service.findAll).toHaveBeenCalled();
       expect(result.notes).toHaveLength(2);
@@ -177,7 +181,7 @@ describe("NotesController", () => {
 
       mockNotesService.findAll.mockResolvedValue([noteWithManyBlocks]);
 
-      const result = await controller.findAll();
+      const result = await controller.findAll(mockReq);
 
       expect(result.notes[0].blockCount).toBe(3);
     });
@@ -190,7 +194,7 @@ describe("NotesController", () => {
 
       mockNotesService.findAll.mockResolvedValue([noteWithoutBlocks]);
 
-      const result = await controller.findAll();
+      const result = await controller.findAll(mockReq);
 
       expect(result.notes[0].blockCount).toBe(0);
     });
@@ -198,7 +202,7 @@ describe("NotesController", () => {
     it("should return empty array when no notes exist", async () => {
       mockNotesService.findAll.mockResolvedValue([]);
 
-      const result = await controller.findAll();
+      const result = await controller.findAll(mockReq);
 
       expect(result.notes).toEqual([]);
       expect(result.notes).toHaveLength(0);
@@ -213,7 +217,7 @@ describe("NotesController", () => {
       const searchResults = [mockNote];
       mockNotesService.search.mockResolvedValue(searchResults);
 
-      const result = await controller.search("test", undefined);
+      const result = await controller.search(mockReq, "test", undefined);
 
       expect(service.search).toHaveBeenCalledWith("test", 10);
       expect(result).toEqual({
@@ -226,7 +230,7 @@ describe("NotesController", () => {
     it("should respect custom limit parameter", async () => {
       mockNotesService.search.mockResolvedValue([]);
 
-      await controller.search("query", "25");
+      await controller.search(mockReq, "query", "25");
 
       expect(service.search).toHaveBeenCalledWith("query", 25);
     });
@@ -234,7 +238,7 @@ describe("NotesController", () => {
     it("should enforce maximum limit of 50", async () => {
       mockNotesService.search.mockResolvedValue([]);
 
-      await controller.search("query", "100");
+      await controller.search(mockReq, "query", "100");
 
       expect(service.search).toHaveBeenCalledWith("query", 50);
     });
@@ -242,7 +246,7 @@ describe("NotesController", () => {
     it("should default to limit 10 when not specified", async () => {
       mockNotesService.search.mockResolvedValue([]);
 
-      await controller.search("query", undefined);
+      await controller.search(mockReq, "query", undefined);
 
       expect(service.search).toHaveBeenCalledWith("query", 10);
     });
@@ -250,7 +254,7 @@ describe("NotesController", () => {
     it("should handle empty query string", async () => {
       mockNotesService.search.mockResolvedValue([]);
 
-      const result = await controller.search("", undefined);
+      const result = await controller.search(mockReq, "", undefined);
 
       expect(service.search).toHaveBeenCalledWith("", 10);
       expect(result.query).toBe("");
@@ -259,7 +263,7 @@ describe("NotesController", () => {
     it("should return empty results for no matches", async () => {
       mockNotesService.search.mockResolvedValue([]);
 
-      const result = await controller.search("nonexistent", undefined);
+      const result = await controller.search(mockReq, "nonexistent", undefined);
 
       expect(result.results).toEqual([]);
       expect(result.totalCount).toBe(0);
@@ -273,7 +277,7 @@ describe("NotesController", () => {
     it("should return a single note by id", async () => {
       mockNotesService.findOne.mockResolvedValue(mockNote);
 
-      const result = await controller.findOne(mockNote.id);
+      const result = await controller.findOne(mockReq, mockNote.id);
 
       expect(service.findOne).toHaveBeenCalledWith(mockNote.id);
       expect(result).toEqual({
@@ -291,7 +295,7 @@ describe("NotesController", () => {
     it("should include full content in response", async () => {
       mockNotesService.findOne.mockResolvedValue(mockNote);
 
-      const result = await controller.findOne(mockNote.id);
+      const result = await controller.findOne(mockReq, mockNote.id);
 
       expect(result.content).toEqual(mockNote.content);
       expect(result.content.blocks).toBeDefined();
@@ -310,7 +314,7 @@ describe("NotesController", () => {
 
       mockNotesService.update.mockResolvedValue(updatedNote);
 
-      const result = await controller.update(mockNote.id, updateDto);
+      const result = await controller.update(mockReq, mockNote.id, updateDto);
 
       expect(service.update).toHaveBeenCalledWith(mockNote.id, updateDto);
       expect(result.title).toBe("Updated Title");
@@ -334,7 +338,7 @@ describe("NotesController", () => {
 
       mockNotesService.update.mockResolvedValue(updatedNote);
 
-      const result = await controller.update(mockNote.id, updateDto);
+      const result = await controller.update(mockReq, mockNote.id, updateDto);
 
       expect(result.content).toEqual(newContent);
     });
@@ -349,7 +353,7 @@ describe("NotesController", () => {
 
       mockNotesService.update.mockResolvedValue(updatedNote);
 
-      const result = await controller.update(mockNote.id, updateDto);
+      const result = await controller.update(mockReq, mockNote.id, updateDto);
 
       expect(result.iconEmoji).toBe("🎯");
       expect(result.coverType).toBe("image");
@@ -359,7 +363,7 @@ describe("NotesController", () => {
     it("should return formatted response with ISO dates", async () => {
       mockNotesService.update.mockResolvedValue(mockNote);
 
-      const result = await controller.update(mockNote.id, { title: "Test" });
+      const result = await controller.update(mockReq, mockNote.id, { title: "Test" });
 
       expect(typeof result.createdAt).toBe("string");
       expect(typeof result.updatedAt).toBe("string");
@@ -378,7 +382,7 @@ describe("NotesController", () => {
 
       mockNotesService.reorderBlock.mockResolvedValue(mockNote);
 
-      const result = await controller.reorderBlock(mockNote.id, reorderDto);
+      const result = await controller.reorderBlock(mockReq, mockNote.id, reorderDto);
 
       expect(service.reorderBlock).toHaveBeenCalledWith(
         mockNote.id,
@@ -397,7 +401,7 @@ describe("NotesController", () => {
 
       mockNotesService.reorderBlock.mockResolvedValue(mockNote);
 
-      const result = await controller.reorderBlock(mockNote.id, reorderDto);
+      const result = await controller.reorderBlock(mockReq, mockNote.id, reorderDto);
 
       expect(result.content).toBeDefined();
       expect(result.title).toBe(mockNote.title);
@@ -424,7 +428,7 @@ describe("NotesController", () => {
 
       mockNotesService.getBacklinks.mockResolvedValue(backlinkNotes);
 
-      const result = await controller.getBacklinks(mockNote.id);
+      const result = await controller.getBacklinks(mockReq, mockNote.id);
 
       expect(service.getBacklinks).toHaveBeenCalledWith(mockNote.id);
       expect(result.noteId).toBe(mockNote.id);
@@ -440,7 +444,7 @@ describe("NotesController", () => {
     it("should return empty array when no backlinks exist", async () => {
       mockNotesService.getBacklinks.mockResolvedValue([]);
 
-      const result = await controller.getBacklinks(mockNote.id);
+      const result = await controller.getBacklinks(mockReq, mockNote.id);
 
       expect(result.backlinks).toEqual([]);
       expect(result.count).toBe(0);
@@ -462,7 +466,7 @@ describe("NotesController", () => {
 
       mockNotesService.getOutlinks.mockResolvedValue(outlinkNotes);
 
-      const result = await controller.getOutlinks(mockNote.id);
+      const result = await controller.getOutlinks(mockReq, mockNote.id);
 
       expect(service.getOutlinks).toHaveBeenCalledWith(mockNote.id);
       expect(result.noteId).toBe(mockNote.id);
@@ -482,7 +486,7 @@ describe("NotesController", () => {
 
       mockNotesService.getOutlinks.mockResolvedValue(outlinkNotes);
 
-      const result = await controller.getOutlinks(mockNote.id);
+      const result = await controller.getOutlinks(mockReq, mockNote.id);
 
       expect(result.outlinks[0].updatedAt).toBe("2024-01-02T00:00:00.000Z");
     });
@@ -490,7 +494,7 @@ describe("NotesController", () => {
     it("should return empty array when no outlinks exist", async () => {
       mockNotesService.getOutlinks.mockResolvedValue([]);
 
-      const result = await controller.getOutlinks(mockNote.id);
+      const result = await controller.getOutlinks(mockReq, mockNote.id);
 
       expect(result.outlinks).toEqual([]);
       expect(result.count).toBe(0);
@@ -504,7 +508,7 @@ describe("NotesController", () => {
     it("should delete a note", async () => {
       mockNotesService.remove.mockResolvedValue(undefined);
 
-      await controller.remove(mockNote.id);
+      await controller.remove(mockReq, mockNote.id);
 
       expect(service.remove).toHaveBeenCalledWith(mockNote.id);
     });
@@ -512,7 +516,7 @@ describe("NotesController", () => {
     it("should not return any value (204 No Content)", async () => {
       mockNotesService.remove.mockResolvedValue(undefined);
 
-      const result = await controller.remove(mockNote.id);
+      const result = await controller.remove(mockReq, mockNote.id);
 
       expect(result).toBeUndefined();
     });
