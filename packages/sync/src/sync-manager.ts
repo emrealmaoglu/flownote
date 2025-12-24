@@ -6,6 +6,7 @@ import type {
   SyncEvent,
   SyncEventListener,
   StorageAdapter,
+  BaseSyncData,
 } from './types';
 import { LocalStorageAdapter } from './storage-adapter';
 import { ConflictResolver } from './conflict-resolver';
@@ -163,8 +164,8 @@ export class SyncManager {
     console.log('📤 Syncing localStorage → Database');
 
     // Get all notes and folders from localStorage
-    const notes = await this.storage.getAll('notes');
-    const folders = await this.storage.getAll('folders');
+    const notes = await this.storage.getAll('notes') as Record<string, BaseSyncData>;
+    const folders = await this.storage.getAll('folders') as Record<string, BaseSyncData>;
 
     // Sync folders first (to maintain hierarchy)
     for (const [id, folderData] of Object.entries(folders)) {
@@ -296,7 +297,7 @@ export class SyncManager {
     // Sync folders
     for (const folder of folders) {
       try {
-        const localData = await this.storage.get(`folders:${folder.id}`);
+        const localData = await this.storage.get(`folders:${folder.id}`) as BaseSyncData | null;
 
         if (localData) {
           // Check for conflicts
@@ -347,7 +348,7 @@ export class SyncManager {
     // Sync notes
     for (const note of notes) {
       try {
-        const localData = await this.storage.get(`notes:${note.id}`);
+        const localData = await this.storage.get(`notes:${note.id}`) as BaseSyncData | null;
 
         if (localData) {
           // Check for conflicts
@@ -533,8 +534,8 @@ export class SyncManager {
   private detectConflict(
     entityId: string,
     entityType: 'note' | 'folder',
-    localData: any,
-    serverData: any
+    localData: BaseSyncData,
+    serverData: BaseSyncData
   ): SyncConflict | null {
     const localTimestamp = new Date(localData.updatedAt).getTime();
     const serverTimestamp = new Date(serverData.updatedAt).getTime();
