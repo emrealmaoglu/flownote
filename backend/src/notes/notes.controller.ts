@@ -14,6 +14,7 @@ import {
   UseGuards,
   Request,
 } from "@nestjs/common";
+import { AuthenticatedRequest } from "../common/interfaces";
 import { NotesService } from "./notes.service";
 import { CreateNoteDto } from "./dto/create-note.dto";
 import { UpdateNoteDto } from "./dto/update-note.dto";
@@ -47,7 +48,7 @@ export class NotesController {
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async create(
-    @Request() req: any,
+    @Request() req: AuthenticatedRequest,
     @Body(new ZodValidationPipe(CreateNoteSchema)) createNoteDto: CreateNoteDto,
   ) {
     const note = await this.notesService.create(createNoteDto, req.user.id);
@@ -67,8 +68,8 @@ export class NotesController {
    * GET /notes - Tüm notları listele
    */
   @Get()
-  async findAll() {
-    const notes = await this.notesService.findAll();
+  async findAll(@Request() req: AuthenticatedRequest) {
+    const notes = await this.notesService.findAll(req.user.id);
     return {
       notes: notes.map((note) => ({
         id: note.id,
@@ -88,9 +89,9 @@ export class NotesController {
    * @param limit - Sonuç limiti (default: 10, max: 50)
    */
   @Get("search")
-  async search(@Query("q") query: string, @Query("limit") limit?: string) {
+  async search(@Request() req: AuthenticatedRequest, @Query("q") query: string, @Query("limit") limit?: string) {
     const parsedLimit = Math.min(parseInt(limit || "10", 10) || 10, 50);
-    const results = await this.notesService.search(query || "", parsedLimit);
+    const results = await this.notesService.search(query || "", req.user.id, parsedLimit);
 
     return {
       query: query || "",
@@ -104,9 +105,9 @@ export class NotesController {
    * Sprint 12 - Recent notes for sidebar
    */
   @Get("recent")
-  async getRecent(@Query("limit") limit?: string) {
+  async getRecent(@Request() req: AuthenticatedRequest, @Query("limit") limit?: string) {
     const parsedLimit = parseInt(limit || "5", 10);
-    const notes = await this.notesService.getRecent(parsedLimit);
+    const notes = await this.notesService.getRecent(req.user.id, parsedLimit);
     return notes.map((note) => ({
       id: note.id,
       title: note.title,
@@ -122,8 +123,8 @@ export class NotesController {
    * Sprint 12 - Favorites for sidebar
    */
   @Get("favorites")
-  async getFavorites() {
-    const notes = await this.notesService.getFavorites();
+  async getFavorites(@Request() req: AuthenticatedRequest) {
+    const notes = await this.notesService.getFavorites(req.user.id);
     return notes.map((note) => ({
       id: note.id,
       title: note.title,
@@ -139,8 +140,8 @@ export class NotesController {
    * GET /notes/:id - Tek not getir (full content)
    */
   @Get(":id")
-  async findOne(@Param("id", ParseUUIDPipe) id: string) {
-    const note = await this.notesService.findOne(id);
+  async findOne(@Request() req: AuthenticatedRequest, @Param("id", ParseUUIDPipe) id: string) {
+    const note = await this.notesService.findOne(id, req.user.id);
     return {
       id: note.id,
       title: note.title,
@@ -159,10 +160,11 @@ export class NotesController {
    */
   @Put(":id")
   async update(
+    @Request() req: AuthenticatedRequest,
     @Param("id", ParseUUIDPipe) id: string,
     @Body(new ZodValidationPipe(UpdateNoteSchema)) updateNoteDto: UpdateNoteDto,
   ) {
-    const note = await this.notesService.update(id, updateNoteDto);
+    const note = await this.notesService.update(id, updateNoteDto, req.user.id);
     return {
       id: note.id,
       title: note.title,
@@ -181,6 +183,7 @@ export class NotesController {
    */
   @Patch(":id/blocks/reorder")
   async reorderBlock(
+    @Request() req: AuthenticatedRequest,
     @Param("id", ParseUUIDPipe) id: string,
     @Body(new ZodValidationPipe(ReorderBlockSchema))
     reorderDto: ReorderBlockDto,
@@ -189,6 +192,7 @@ export class NotesController {
       id,
       reorderDto.blockId,
       reorderDto.newOrder,
+      req.user.id,
     );
     return {
       id: note.id,
@@ -204,8 +208,8 @@ export class NotesController {
    * Sprint 2 - Bi-directional Linking
    */
   @Get(":id/backlinks")
-  async getBacklinks(@Param("id", ParseUUIDPipe) id: string) {
-    const backlinks = await this.notesService.getBacklinks(id);
+  async getBacklinks(@Request() req: AuthenticatedRequest, @Param("id", ParseUUIDPipe) id: string) {
+    const backlinks = await this.notesService.getBacklinks(id, req.user.id);
     return {
       noteId: id,
       backlinks: backlinks.map((note) => ({
@@ -222,8 +226,8 @@ export class NotesController {
    * Sprint 2 - Bi-directional Linking
    */
   @Get(":id/outlinks")
-  async getOutlinks(@Param("id", ParseUUIDPipe) id: string) {
-    const outlinks = await this.notesService.getOutlinks(id);
+  async getOutlinks(@Request() req: AuthenticatedRequest, @Param("id", ParseUUIDPipe) id: string) {
+    const outlinks = await this.notesService.getOutlinks(id, req.user.id);
     return {
       noteId: id,
       outlinks: outlinks.map((note) => ({
@@ -240,8 +244,8 @@ export class NotesController {
    * Sprint 12 - Favorites
    */
   @Patch(":id/favorite")
-  async toggleFavorite(@Param("id", ParseUUIDPipe) id: string) {
-    const note = await this.notesService.toggleFavorite(id);
+  async toggleFavorite(@Request() req: AuthenticatedRequest, @Param("id", ParseUUIDPipe) id: string) {
+    const note = await this.notesService.toggleFavorite(id, req.user.id);
     return {
       id: note.id,
       title: note.title,
@@ -255,7 +259,7 @@ export class NotesController {
    */
   @Delete(":id")
   @HttpCode(HttpStatus.NO_CONTENT)
-  async remove(@Param("id", ParseUUIDPipe) id: string) {
-    await this.notesService.remove(id);
+  async remove(@Request() req: AuthenticatedRequest, @Param("id", ParseUUIDPipe) id: string) {
+    await this.notesService.remove(id, req.user.id);
   }
 }

@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { Repository, Brackets, WhereExpressionBuilder } from "typeorm";
 import { Note } from "./entities/note.entity";
 import { NoteLink } from "./entities/note-link.entity";
 import { CreateNoteDto } from "./dto/create-note.dto";
@@ -91,8 +91,9 @@ export class NotesService {
    * Tüm notları listele
    * @returns Not listesi (özet bilgilerle)
    */
-  async findAll(): Promise<Note[]> {
+  async findAll(userId: string): Promise<Note[]> {
     return this.notesRepository.find({
+      where: { userId },
       order: { createdAt: "DESC" },
     });
   }
@@ -102,8 +103,12 @@ export class NotesService {
    * @param id - Not UUID'si
    * @returns Tam not içeriği (JSONB dahil)
    */
-  async findOne(id: string): Promise<Note> {
-    const note = await this.notesRepository.findOne({ where: { id } });
+  async findOne(id: string, userId?: string): Promise<Note> {
+    const whereCondition: any = { id };
+    if (userId) {
+      whereCondition.userId = userId;
+    }
+    const note = await this.notesRepository.findOne({ where: whereCondition });
     if (!note) {
       throw new NotFoundException(`Note with ID "${id}" not found`);
     }
@@ -116,8 +121,8 @@ export class NotesService {
    * @param updateNoteDto - Güncellenecek alanlar
    * @returns Güncellenmiş not
    */
-  async update(id: string, updateNoteDto: UpdateNoteDto): Promise<Note> {
-    const note = await this.findOne(id);
+  async update(id: string, updateNoteDto: UpdateNoteDto, userId?: string): Promise<Note> {
+    const note = await this.findOne(id, userId);
 
     if (updateNoteDto.title !== undefined) {
       note.title = updateNoteDto.title;
@@ -142,8 +147,8 @@ export class NotesService {
    * Not sil
    * @param id - Not UUID'si
    */
-  async remove(id: string): Promise<void> {
-    const note = await this.findOne(id);
+  async remove(id: string, userId?: string): Promise<void> {
+    const note = await this.findOne(id, userId);
     await this.notesRepository.remove(note);
   }
 
@@ -154,7 +159,7 @@ export class NotesService {
    * @param limit - Sonuç limiti (default: 10)
    * @returns Skorlanmış arama sonuçları
    */
-  async search(query: string, limit = 10): Promise<SearchResultDto[]> {
+  async search(query: string, userId: string, limit = 10): Promise<SearchResultDto[]> {
     const sanitizedQuery = query.trim().toLowerCase();
 
     if (sanitizedQuery.length < 2) {
@@ -164,10 +169,13 @@ export class NotesService {
     // Find notes matching title or content
     const notes = await this.notesRepository
       .createQueryBuilder("note")
-      .where("LOWER(note.title) LIKE :query", { query: `%${sanitizedQuery}%` })
-      .orWhere("note.content::text ILIKE :query", {
-        query: `%${sanitizedQuery}%`,
-      })
+      .where("note.userId = :userId", { userId })
+      .andWhere(new Brackets((qb: WhereExpressionBuilder) => {
+        qb.where("LOWER(note.title) LIKE :query", { query: `%${sanitizedQuery}%` })
+          .orWhere("note.content::text ILIKE :query", {
+            query: `%${sanitizedQuery}%`,
+          });
+      }))
       .orderBy("note.updatedAt", "DESC")
       .limit(limit)
       .getMany();
@@ -243,8 +251,9 @@ export class NotesService {
     noteId: string,
     blockId: string,
     newOrder: number,
+    userId?: string
   ): Promise<Note> {
-    const note = await this.findOne(noteId);
+    const note = await this.findOne(noteId, userId);
 
     if (!note.content?.blocks) {
       throw new NotFoundException("Note has no blocks");
@@ -274,9 +283,10 @@ export class NotesService {
    * Get notes that link TO this note (backlinks)
    * @param noteId - Target note UUID
    */
-  async getBacklinks(noteId: string): Promise<Note[]> {
+  async getBacklinks(noteId: string, userId?: string): Promise<Note[]> {
+    const note = await this.findOne(noteId, userId); // Ensure user has access
     const links = await this.noteLinkRepository.find({
-      where: { targetNoteId: noteId },
+      where: { targetNoteId: note.id }, // Use verified ID
       relations: ["sourceNote"],
     });
 
@@ -287,9 +297,10 @@ export class NotesService {
    * Get notes that this note links TO (outlinks)
    * @param noteId - Source note UUID
    */
-  async getOutlinks(noteId: string): Promise<Note[]> {
+  async getOutlinks(noteId: string, userId?: string): Promise<Note[]> {
+    const note = await this.findOne(noteId, userId); // Ensure user has access
     const links = await this.noteLinkRepository.find({
-      where: { sourceNoteId: noteId },
+      where: { sourceNoteId: note.id },
       relations: ["targetNote"],
     });
 
@@ -343,8 +354,8 @@ export class NotesService {
    * @param id - Note UUID
    * @returns Updated note
    */
-  async toggleFavorite(id: string): Promise<Note> {
-    const note = await this.findOne(id);
+  async toggleFavorite(id: string, userId?: string): Promise<Note> {
+    const note = await this.findOne(id, userId);
     note.isFavorite = !note.isFavorite;
     return this.notesRepository.save(note);
   }
@@ -353,9 +364,13 @@ export class NotesService {
    * Get all favorite notes
    * @returns Favorite notes ordered by updatedAt
    */
-  async getFavorites(): Promise<Note[]> {
+  async getFavorites(userId?: string): Promise<Note[]> {
+    const whereCondition: any = { isFavorite: true };
+    if (userId) {
+      whereCondition.userId = userId;
+    }
     return this.notesRepository.find({
-      where: { isFavorite: true },
+      where: whereCondition,
       order: { updatedAt: "DESC" },
       take: 10,
     });
@@ -366,8 +381,13 @@ export class NotesService {
    * @param limit - Number of recent notes to fetch (default: 5)
    * @returns Recent notes ordered by updatedAt
    */
-  async getRecent(limit = 5): Promise<Note[]> {
+  async getRecent(userId?: string, limit = 5): Promise<Note[]> { // Fix arg order to match usage
+    const whereCondition: any = {};
+    if (userId) {
+      whereCondition.userId = userId;
+    }
     return this.notesRepository.find({
+      where: whereCondition,
       order: { updatedAt: "DESC" },
       take: limit,
     });

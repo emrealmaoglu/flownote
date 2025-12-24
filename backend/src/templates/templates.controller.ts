@@ -13,6 +13,7 @@ import {
   Req,
 } from "@nestjs/common";
 import { TemplatesService } from "./templates.service";
+import { AuthenticatedRequest } from "../common/interfaces";
 import {
   CreateTemplateSchema,
   CreateTemplateDto,
@@ -27,26 +28,18 @@ import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
 /**
  * Templates Controller
  * Sprint 3 - Templates System
- *
- * Endpoints:
- * - GET    /templates         - List all templates
- * - POST   /templates         - Create new template
- * - GET    /templates/:id     - Get template by ID
- * - PUT    /templates/:id     - Update template
- * - DELETE /templates/:id     - Delete template
- * - POST   /templates/:id/apply - Create note from template
  */
 @Controller("templates")
 @UseGuards(JwtAuthGuard)
 export class TemplatesController {
-  constructor(private readonly templatesService: TemplatesService) {}
+  constructor(private readonly templatesService: TemplatesService) { }
 
   /**
    * GET /templates - List all templates
    * Returns builtin templates + user's own templates
    */
   @Get()
-  async findAll(@Req() req: any) {
+  async findAll(@Req() req: AuthenticatedRequest) {
     const templates = await this.templatesService.findAll(req.user?.id);
     return {
       templates: templates.map((template) => ({
@@ -70,7 +63,7 @@ export class TemplatesController {
   async create(
     @Body(new ZodValidationPipe(CreateTemplateSchema))
     createTemplateDto: CreateTemplateDto,
-    @Req() req: any,
+    @Req() req: AuthenticatedRequest,
   ) {
     const template = await this.templatesService.create(
       createTemplateDto,
@@ -115,7 +108,7 @@ export class TemplatesController {
     @Param("id", ParseUUIDPipe) id: string,
     @Body(new ZodValidationPipe(UpdateTemplateSchema))
     updateTemplateDto: UpdateTemplateDto,
-    @Req() req: any,
+    @Req() req: AuthenticatedRequest,
   ) {
     const template = await this.templatesService.update(
       id,
@@ -140,7 +133,7 @@ export class TemplatesController {
    */
   @Delete(":id")
   @HttpCode(HttpStatus.NO_CONTENT)
-  async remove(@Param("id", ParseUUIDPipe) id: string, @Req() req: any) {
+  async remove(@Param("id", ParseUUIDPipe) id: string, @Req() req: AuthenticatedRequest) {
     await this.templatesService.remove(id, req.user?.id);
   }
 
@@ -154,7 +147,7 @@ export class TemplatesController {
     @Param("id", ParseUUIDPipe) id: string,
     @Body(new ZodValidationPipe(ApplyTemplateSchema))
     applyDto: ApplyTemplateDto,
-    @Req() req: any,
+    @Req() req: AuthenticatedRequest,
   ) {
     const note = await this.templatesService.applyTemplate(
       id,
