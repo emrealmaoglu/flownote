@@ -29,6 +29,7 @@ export class NotesService {
    */
   async onModuleInit() {
     try {
+      if (process.env.NODE_ENV === 'test') return;
       console.log("Checking Note schema for Identity fields...");
       const runner =
         this.notesRepository.manager.connection.createQueryRunner();
