@@ -18,6 +18,14 @@ Commit Convention:
 - BREAKING CHANGE: 💥 Breaking changes (major version)
 -->
 
+## [3.1.0-beta.5](https://github.com/emrealmaoglu/flownote/compare/v3.1.0-beta.4...v3.1.0-beta.5) (2025-12-24)
+
+
+### 🐛 Bug Fixes
+
+* **release:** simplify release config and sync version [skip release] ([20e8557](https://github.com/emrealmaoglu/flownote/commit/20e85579ce697e303a44734a5647c1f97ed86f2a))
+* **test:** test release pipeline integration ([4d8222a](https://github.com/emrealmaoglu/flownote/commit/4d8222aeaa07b9412946cee6417356afb2504a32))
+
 ## [3.1.0-beta.4](https://github.com/emrealmaoglu/flownote/compare/v3.1.0-beta.3...v3.1.0-beta.4) (2025-12-24)
 
 
