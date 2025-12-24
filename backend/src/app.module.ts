@@ -9,6 +9,7 @@ import { TemplatesModule } from "./templates/templates.module";
 import { AdminModule } from "./admin/admin.module";
 import { SeedModule } from "./seed/seed.module";
 import { UsersModule } from "./users/users.module";
+import { HealthModule } from "./health/health.module";
 
 /**
  * FlowNote Ana Modül
@@ -69,6 +70,7 @@ import { UsersModule } from "./users/users.module";
     AdminModule,
     SeedModule,
     UsersModule,
+    HealthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

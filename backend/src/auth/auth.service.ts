@@ -28,7 +28,7 @@ export class AuthService implements OnModuleInit {
     private readonly usersRepository: Repository<User>,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
-  ) {}
+  ) { }
 
   /**
    * Module başlatıldığında default kullanıcıları oluştur
@@ -202,5 +202,44 @@ export class AuthService implements OnModuleInit {
    */
   async validateUser(userId: string): Promise<User | null> {
     return this.usersRepository.findOne({ where: { id: userId } });
+  }
+
+  /**
+   * Refresh Token ile yeni Access Token al
+   */
+  async refreshToken(token: string) {
+    try {
+      const payload = this.jwtService.verify(token);
+      const user = await this.validateUser(payload.sub);
+
+      if (!user) {
+        throw new UnauthorizedException('User not found');
+      }
+
+      const newPayload = {
+        sub: user.id,
+        username: user.username,
+        email: user.email,
+        role: user.role,
+      };
+
+      return {
+        accessToken: this.jwtService.sign(newPayload),
+      };
+    } catch (e) {
+      throw new UnauthorizedException('Invalid refresh token');
+    }
+  }
+
+  /**
+   * Kullanıcı profili getir
+   */
+  async getProfile(userId: string) {
+    const user = await this.usersRepository.findOne({ where: { id: userId } });
+    if (!user) {
+      throw new UnauthorizedException('User not found');
+    }
+    const { passwordHash, ...result } = user;
+    return result;
   }
 }
