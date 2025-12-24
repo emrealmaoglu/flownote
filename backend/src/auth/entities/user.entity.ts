@@ -7,6 +7,7 @@ import {
   DeleteDateColumn,
   OneToMany,
   ManyToOne,
+  IsNull,
 } from "typeorm";
 import { Note } from "../../notes/entities/note.entity";
 import { Team } from "../../users/entities/team.entity";
@@ -54,5 +55,5 @@ export class User {
   updatedAt: Date;
 
   @DeleteDateColumn({ name: "deleted_at" })
-  deletedAt: Date;
+  deletedAt: Date | null;
 }
