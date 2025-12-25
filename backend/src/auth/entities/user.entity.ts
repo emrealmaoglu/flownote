@@ -32,7 +32,7 @@ export class User {
   @Column({ type: "varchar", length: 255, unique: true, nullable: true })
   email: string | null;
 
-  @Column({ type: "varchar", length: 255 })
+  @Column({ name: "password_hash", type: "varchar", length: 255 })
   passwordHash: string;
 
   @Column({ type: "varchar", length: 100 })
