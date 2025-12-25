@@ -57,7 +57,7 @@ import { HealthModule } from "./health/health.module";
           ),
           database: configService.get("DATABASE_NAME", "flownote_db"),
           autoLoadEntities: true,
-          synchronize: configService.get("NODE_ENV") !== "production", // DEV only!
+          synchronize: configService.get("NODE_ENV") === "development", // Dev only, disable in Test/Prod
           logging: configService.get("NODE_ENV") === "development",
         };
       },
@@ -75,4 +75,4 @@ import { HealthModule } from "./health/health.module";
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }
