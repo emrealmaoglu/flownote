@@ -21,8 +21,13 @@ beforeAll(async () => {
       .map((name) => `"public"."${name}"`)
       .join(', ');
 
+    console.log(`Cleaning tables: ${tables}`);
+
     if (tables.length > 0) {
       await prisma.$executeRawUnsafe(`TRUNCATE TABLE ${tables} CASCADE;`);
+      console.log("Database cleaned successfully");
+    } else {
+      console.log("No tables to clean");
     }
   } catch (error) {
     console.error("Failed to clean database:", error);
