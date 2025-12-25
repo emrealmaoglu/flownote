@@ -478,14 +478,14 @@ export class SyncManager {
     if (entity.type === 'note') {
       await prisma.note.create({
         data: {
-          ...entity.data,
+          ...(entity.data as any),
           userId: this.userId,
         },
       });
     } else if (entity.type === 'folder') {
       await prisma.folder.create({
         data: {
-          ...entity.data,
+          ...(entity.data as any),
           userId: this.userId,
         },
       });
@@ -499,12 +499,12 @@ export class SyncManager {
     if (entity.type === 'note') {
       await prisma.note.update({
         where: { id: entity.id },
-        data: entity.data,
+        data: entity.data as any,
       });
     } else if (entity.type === 'folder') {
       await prisma.folder.update({
         where: { id: entity.id },
-        data: entity.data,
+        data: entity.data as any,
       });
     }
   }
@@ -614,12 +614,12 @@ export class SyncManager {
         if (conflict.entityType === 'note') {
           await prisma.note.update({
             where: { id: conflict.entityId },
-            data: conflict.localData,
+            data: conflict.localData as any,
           });
         } else {
           await prisma.folder.update({
             where: { id: conflict.entityId },
-            data: conflict.localData,
+            data: conflict.localData as any,
           });
         }
       } else if (resolution.action === 'merge') {
