@@ -205,7 +205,7 @@ export class SyncManager {
                   icon: folderData.icon,
                   position: folderData.position,
                   updatedAt: new Date(folderData.updatedAt),
-                },
+                } as any,
               });
               this.logger.debug('Folder updated in database', { folderId: id });
             }
@@ -223,7 +223,7 @@ export class SyncManager {
               userId: this.userId,
               createdAt: new Date(folderData.createdAt),
               updatedAt: new Date(folderData.updatedAt),
-            },
+            } as any,
           });
           this.logger.debug('Folder created in database', { folderId: id });
         }
@@ -259,7 +259,7 @@ export class SyncManager {
                   coverImage: noteData.coverImage,
                   isFavorite: noteData.isFavorite,
                   updatedAt: new Date(noteData.updatedAt),
-                },
+                } as any,
               });
               this.logger.debug('Note updated in database', { noteId: id });
             }
@@ -279,7 +279,7 @@ export class SyncManager {
               userId: this.userId,
               createdAt: new Date(noteData.createdAt),
               updatedAt: new Date(noteData.updatedAt),
-            },
+            } as any,
           });
           this.logger.debug('Note created in database', { noteId: id });
         }
