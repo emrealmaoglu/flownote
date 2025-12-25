@@ -76,97 +76,98 @@ export class SyncService {
         data: createdNotes.map((note: any) => ({
           ...note,
           userId,
-          skipDuplicates: true as any,
-        });
-      }
+        })),
+        skipDuplicates: true as any,
+      });
+    }
 
     if (createdFolders.length > 0) {
-        await this.prisma.client.folder.createMany({
-          data: createdFolders.map((folder: any) => ({
-            ...folder,
-            userId,
-          })),
-          skipDuplicates: true as any,
-        });
-      }
-
-      // Update existing records
-      for (const note of updatedNotes) {
-        await this.prisma.client.note.update({
-          where: { id: note.id },
-          data: note,
-        });
-      }
-
-      for (const folder of updatedFolders) {
-        await this.prisma.client.folder.update({
-          where: { id: folder.id },
-          data: folder,
-        });
-      }
-
-      // Delete records
-      if (deleted.length > 0) {
-        await this.prisma.client.note.deleteMany({
-          where: {
-            id: { in: deleted },
-            userId,
-          },
-        });
-      }
-
-      return {
-        success: true,
-        processed: {
-          created: created.length,
-          updated: updated.length,
-          deleted: deleted.length,
-        },
-        timestamp: Date.now(),
-      };
+      await this.prisma.client.folder.createMany({
+        data: createdFolders.map((folder: any) => ({
+          ...folder,
+          userId,
+        })),
+        skipDuplicates: true as any,
+      });
     }
+
+    // Update existing records
+    for (const note of updatedNotes) {
+      await this.prisma.client.note.update({
+        where: { id: note.id },
+        data: note,
+      });
+    }
+
+    for (const folder of updatedFolders) {
+      await this.prisma.client.folder.update({
+        where: { id: folder.id },
+        data: folder,
+      });
+    }
+
+    // Delete records
+    if (deleted.length > 0) {
+      await this.prisma.client.note.deleteMany({
+        where: {
+          id: { in: deleted },
+          userId,
+        },
+      });
+    }
+
+    return {
+      success: true,
+      processed: {
+        created: created.length,
+        updated: updated.length,
+        deleted: deleted.length,
+      },
+      timestamp: Date.now(),
+    };
+  }
 
   /**
    * Full bidirectional sync
    */
   async sync(userId: string, dto: SyncRequestDto) {
-      // Push local changes first
-      if (dto.changes) {
-        await this.pushChanges(userId, {
-          created: dto.changes.created,
-          updated: dto.changes.updated,
-          deleted: dto.changes.deleted,
-        });
-      }
-
-      // Then pull server changes
-      const serverChanges = await this.pullChanges(userId, {
-        since: dto.lastSyncAt,
+    // Push local changes first
+    if (dto.changes) {
+      await this.pushChanges(userId, {
+        created: dto.changes.created,
+        updated: dto.changes.updated,
+        deleted: dto.changes.deleted,
       });
-
-      return serverChanges;
     }
+
+    // Then pull server changes
+    const serverChanges = await this.pullChanges(userId, {
+      since: dto.lastSyncAt,
+    });
+
+    return serverChanges;
+  }
 
   /**
    * Get sync status
    */
   async getStatus(userId: string) {
-      const [noteCount, folderCount, lastNote] = await Promise.all([
-        this.prisma.client.note.count({ where: { userId } }),
-        this.prisma.client.folder.count({ where: { userId } }),
-        this.prisma.client.note.findFirst({
-          where: { userId },
-          orderBy: { updatedAt: "desc" },
-          select: { updatedAt: true },
-        }),
-      ]);
+    const [noteCount, folderCount, lastNote] = await Promise.all([
+      this.prisma.client.note.count({ where: { userId } }),
+      this.prisma.client.folder.count({ where: { userId } }),
+      this.prisma.client.note.findFirst({
+        where: { userId },
+        orderBy: { updatedAt: "desc" },
+        select: { updatedAt: true },
+      }),
+    ]);
 
-      return {
-        noteCount,
-        folderCount,
-        lastSyncAt: lastNote?.updatedAt?.getTime() || null,
-        pendingChanges: 0,
-        conflicts: 0,
-      };
-    }
+    return {
+      noteCount,
+      folderCount,
+      lastSyncAt: lastNote?.updatedAt?.getTime() || null,
+      pendingChanges: 0,
+      conflicts: 0,
+    };
   }
+}
