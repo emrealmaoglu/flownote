@@ -383,9 +383,9 @@ export class SyncManager {
                 title: note.title,
                 content: note.content,
                 folderId: note.folderId,
-                color: note.color,
-                icon: note.icon,
-                coverImage: note.coverImage,
+                color: (note as any).color, // Legacy field
+                icon: (note as any).icon, // Legacy field
+                coverImage: (note as any).coverImage, // Legacy field
                 isFavorite: note.isFavorite,
                 createdAt: note.createdAt.toISOString(),
                 updatedAt: note.updatedAt.toISOString(),
@@ -400,9 +400,9 @@ export class SyncManager {
             title: note.title,
             content: note.content,
             folderId: note.folderId,
-            color: note.color,
-            icon: note.icon,
-            coverImage: note.coverImage,
+            color: (note as any).color, // Legacy field
+            icon: (note as any).icon, // Legacy field
+            coverImage: (note as any).coverImage, // Legacy field
             isFavorite: note.isFavorite,
             createdAt: note.createdAt.toISOString(),
             updatedAt: note.updatedAt.toISOString(),
