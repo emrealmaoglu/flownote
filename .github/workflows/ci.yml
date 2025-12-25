@@ -110,6 +110,8 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
       - run: npm install
+      - name: Switch to PostgreSQL Schema
+        run: sed -i 's/provider = "sqlite"/provider = "postgresql"/g' packages/database/prisma/schema.prisma
       - name: Generate Prisma Client
         run: npm run db:generate --workspace=@flownote/database
       - name: Install Playwright Browsers
