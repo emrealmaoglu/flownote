@@ -93,9 +93,9 @@ jobs:
       postgres:
         image: postgres:15
         env:
-          POSTGRES_USER: test
-          POSTGRES_PASSWORD: test
+          POSTGRES_USER: postgres
           POSTGRES_DB: flownote_test
+          POSTGRES_HOST_AUTH_METHOD: trust
         ports:
           - 5432:5432
         options: >-
@@ -120,16 +120,16 @@ jobs:
       - name: Push DB Schema
         run: npx prisma db push --schema=packages/database/prisma/schema.prisma
         env:
-          DATABASE_URL: postgresql://test:test@localhost:5432/flownote_test?schema=public
+          DATABASE_URL: postgresql://postgres@localhost:5432/flownote_test?schema=public
       - name: Run E2E tests
         run: npm run test:e2e --workspace=backend
         env:
+          DB_TYPE: postgres
           DATABASE_HOST: localhost
           DATABASE_PORT: 5432
-          DATABASE_USER: test
-          DATABASE_PASSWORD: test
+          DATABASE_USER: postgres
           DATABASE_NAME: flownote_test
-          DATABASE_URL: postgresql://test:test@localhost:5432/flownote_test?schema=public
+          DATABASE_URL: postgresql://postgres@localhost:5432/flownote_test?schema=public
           JWT_SECRET: test-jwt-secret-min-32-characters-long
           NODE_ENV: test
 
