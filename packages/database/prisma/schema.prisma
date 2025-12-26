@@ -4,7 +4,6 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/client"
 }
 
 datasource db {
@@ -23,6 +22,8 @@ model User {
   passwordHash String   @map("password_hash")
   name         String
   role         String   @default("user") // "admin" or "user"
+  teamId       String?  @map("team_id")
+  team         Team?    @relation(fields: [teamId], references: [id])
 
   // Profile
   bio          String?
@@ -31,6 +32,7 @@ model User {
   // Timestamps
   createdAt    DateTime @default(now()) @map("created_at")
   updatedAt    DateTime @updatedAt @map("updated_at")
+  deletedAt    DateTime? @map("deleted_at")
 
   // Relations
   notes        Note[]
@@ -39,6 +41,25 @@ model User {
   @@index([username])
   @@index([email])
   @@map("users")
+}
+
+// ============================================
+// TEAMS
+// ============================================
+
+model Team {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+
+  // Relations
+  members     User[]
+
+  // Timestamps
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("teams")
 }
 
 // ============================================

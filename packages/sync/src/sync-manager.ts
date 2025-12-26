@@ -6,10 +6,12 @@ import type {
   SyncEvent,
   SyncEventListener,
   StorageAdapter,
+  BaseSyncData,
 } from './types';
 import { LocalStorageAdapter } from './storage-adapter';
 import { ConflictResolver } from './conflict-resolver';
 import { OfflineQueue } from './offline-queue';
+import { ILogger, ConsoleLogger } from './logger';
 import { prisma } from '@flownote/database';
 
 export class SyncManager {
@@ -22,13 +24,16 @@ export class SyncManager {
   private syncIntervalId: NodeJS.Timeout | null = null;
   private isOnline: boolean = true;
   private userId: string;
+  private logger: ILogger;
 
   constructor(
     userId: string,
     config: Partial<SyncConfig> = {},
-    storage?: StorageAdapter
+    storage?: StorageAdapter,
+    logger?: ILogger
   ) {
     this.userId = userId;
+    this.logger = logger || new ConsoleLogger('SyncManager');
     this.config = {
       enabled: true,
       autoSync: true,
@@ -49,9 +54,9 @@ export class SyncManager {
       errors: [],
     };
 
-    this.storage = storage || new LocalStorageAdapter();
+    this.storage = storage || new LocalStorageAdapter('flownote', this.logger);
     this.conflictResolver = new ConflictResolver(this.config.conflictStrategy);
-    this.offlineQueue = new OfflineQueue();
+    this.offlineQueue = new OfflineQueue(this.logger);
 
     this.setupOnlineDetection();
   }
@@ -60,7 +65,7 @@ export class SyncManager {
    * Initialize sync manager and start auto-sync if enabled
    */
   async initialize(): Promise<void> {
-    console.log('🔄 Initializing Sync Manager...');
+    this.logger.log('Initializing Sync Manager...', { userId: this.userId });
 
     // Load pending operations from queue
     this.state.pendingOperations = this.offlineQueue.size();
@@ -70,7 +75,11 @@ export class SyncManager {
       this.startAutoSync();
     }
 
-    console.log('✅ Sync Manager initialized');
+    this.logger.log('Sync Manager initialized', {
+      autoSync: this.config.autoSync,
+      syncInterval: this.config.syncInterval,
+      pendingOperations: this.state.pendingOperations,
+    });
   }
 
   /**
@@ -78,17 +87,15 @@ export class SyncManager {
    */
   startAutoSync(): void {
     if (this.syncIntervalId) {
-      console.log('⚠️ Auto-sync already running');
+      this.logger.warn('Auto-sync already running');
       return;
     }
 
-    console.log(
-      `🔄 Starting auto-sync (interval: ${this.config.syncInterval}ms)`
-    );
+    this.logger.log('Starting auto-sync', { interval: this.config.syncInterval });
 
     this.syncIntervalId = setInterval(() => {
       this.sync().catch((error) => {
-        console.error('Auto-sync error:', error);
+        this.logger.error('Auto-sync failed', error instanceof Error ? error : new Error(String(error)));
       });
     }, this.config.syncInterval);
   }
@@ -100,7 +107,7 @@ export class SyncManager {
     if (this.syncIntervalId) {
       clearInterval(this.syncIntervalId);
       this.syncIntervalId = null;
-      console.log('⏹️ Auto-sync stopped');
+      this.logger.log('Auto-sync stopped');
     }
   }
 
@@ -109,17 +116,17 @@ export class SyncManager {
    */
   async sync(): Promise<void> {
     if (!this.config.enabled) {
-      console.log('⚠️ Sync is disabled');
+      this.logger.warn('Sync is disabled');
       return;
     }
 
     if (this.state.status === 'syncing') {
-      console.log('⚠️ Sync already in progress');
+      this.logger.warn('Sync already in progress');
       return;
     }
 
     if (!this.isOnline && !this.config.offlineMode) {
-      console.log('⚠️ Offline - queueing operations');
+      this.logger.warn('Offline - queueing operations');
       this.emitEvent({ type: 'offline_detected' });
       return;
     }
@@ -144,14 +151,14 @@ export class SyncManager {
       this.state.pendingOperations = this.offlineQueue.size();
 
       const duration = Date.now() - startTime;
-      console.log(`✅ Sync completed in ${duration}ms`);
+      this.logger.log('Sync completed', { duration, pendingOperations: this.state.pendingOperations });
       this.emitEvent({ type: 'sync_completed', duration });
     } catch (error) {
       this.state.status = 'error';
       const errorMessage =
         error instanceof Error ? error.message : 'Unknown error';
       this.state.errors.push(errorMessage);
-      console.error('❌ Sync error:', error);
+      this.logger.error('Sync failed', error instanceof Error ? error : new Error(errorMessage));
       this.emitEvent({ type: 'sync_error', error: errorMessage });
     }
   }
@@ -160,11 +167,11 @@ export class SyncManager {
    * Sync localStorage to database
    */
   private async syncLocalStorageToDb(): Promise<void> {
-    console.log('📤 Syncing localStorage → Database');
+    this.logger.debug('Syncing localStorage → Database');
 
     // Get all notes and folders from localStorage
-    const notes = await this.storage.getAll('notes');
-    const folders = await this.storage.getAll('folders');
+    const notes = await this.storage.getAll('notes') as Record<string, BaseSyncData>;
+    const folders = await this.storage.getAll('folders') as Record<string, BaseSyncData>;
 
     // Sync folders first (to maintain hierarchy)
     for (const [id, folderData] of Object.entries(folders)) {
@@ -198,8 +205,9 @@ export class SyncManager {
                   icon: folderData.icon,
                   position: folderData.position,
                   updatedAt: new Date(folderData.updatedAt),
-                },
+                } as any,
               });
+              this.logger.debug('Folder updated in database', { folderId: id });
             }
           }
         } else {
@@ -215,11 +223,12 @@ export class SyncManager {
               userId: this.userId,
               createdAt: new Date(folderData.createdAt),
               updatedAt: new Date(folderData.updatedAt),
-            },
+            } as any,
           });
+          this.logger.debug('Folder created in database', { folderId: id });
         }
       } catch (error) {
-        console.error(`Failed to sync folder ${id}:`, error);
+        this.logger.error('Failed to sync folder to database', error instanceof Error ? error : new Error(String(error)), { folderId: id });
       }
     }
 
@@ -250,8 +259,9 @@ export class SyncManager {
                   coverImage: noteData.coverImage,
                   isFavorite: noteData.isFavorite,
                   updatedAt: new Date(noteData.updatedAt),
-                },
+                } as any,
               });
+              this.logger.debug('Note updated in database', { noteId: id });
             }
           }
         } else {
@@ -269,11 +279,12 @@ export class SyncManager {
               userId: this.userId,
               createdAt: new Date(noteData.createdAt),
               updatedAt: new Date(noteData.updatedAt),
-            },
+            } as any,
           });
+          this.logger.debug('Note created in database', { noteId: id });
         }
       } catch (error) {
-        console.error(`Failed to sync note ${id}:`, error);
+        this.logger.error('Failed to sync note to database', error instanceof Error ? error : new Error(String(error)), { noteId: id });
       }
     }
   }
@@ -282,7 +293,7 @@ export class SyncManager {
    * Sync database to localStorage
    */
   private async syncDbToLocalStorage(): Promise<void> {
-    console.log('📥 Syncing Database → localStorage');
+    this.logger.debug('Syncing Database → localStorage');
 
     // Get all folders and notes from database
     const folders = await prisma.folder.findMany({
@@ -296,7 +307,7 @@ export class SyncManager {
     // Sync folders
     for (const folder of folders) {
       try {
-        const localData = await this.storage.get(`folders:${folder.id}`);
+        const localData = await this.storage.get(`folders:${folder.id}`) as BaseSyncData | null;
 
         if (localData) {
           // Check for conflicts
@@ -324,6 +335,7 @@ export class SyncManager {
                 createdAt: folder.createdAt.toISOString(),
                 updatedAt: folder.updatedAt.toISOString(),
               });
+              this.logger.debug('Folder updated in localStorage', { folderId: folder.id });
             }
           }
         } else {
@@ -338,16 +350,17 @@ export class SyncManager {
             createdAt: folder.createdAt.toISOString(),
             updatedAt: folder.updatedAt.toISOString(),
           });
+          this.logger.debug('Folder created in localStorage', { folderId: folder.id });
         }
       } catch (error) {
-        console.error(`Failed to sync folder ${folder.id} to localStorage:`, error);
+        this.logger.error('Failed to sync folder to localStorage', error instanceof Error ? error : new Error(String(error)), { folderId: folder.id });
       }
     }
 
     // Sync notes
     for (const note of notes) {
       try {
-        const localData = await this.storage.get(`notes:${note.id}`);
+        const localData = await this.storage.get(`notes:${note.id}`) as BaseSyncData | null;
 
         if (localData) {
           // Check for conflicts
@@ -370,13 +383,14 @@ export class SyncManager {
                 title: note.title,
                 content: note.content,
                 folderId: note.folderId,
-                color: note.color,
-                icon: note.icon,
-                coverImage: note.coverImage,
+                color: (note as any).color, // Legacy field
+                icon: (note as any).icon, // Legacy field
+                coverImage: (note as any).coverImage, // Legacy field
                 isFavorite: note.isFavorite,
                 createdAt: note.createdAt.toISOString(),
                 updatedAt: note.updatedAt.toISOString(),
               });
+              this.logger.debug('Note updated in localStorage', { noteId: note.id });
             }
           }
         } else {
@@ -386,16 +400,17 @@ export class SyncManager {
             title: note.title,
             content: note.content,
             folderId: note.folderId,
-            color: note.color,
-            icon: note.icon,
-            coverImage: note.coverImage,
+            color: (note as any).color, // Legacy field
+            icon: (note as any).icon, // Legacy field
+            coverImage: (note as any).coverImage, // Legacy field
             isFavorite: note.isFavorite,
             createdAt: note.createdAt.toISOString(),
             updatedAt: note.updatedAt.toISOString(),
           });
+          this.logger.debug('Note created in localStorage', { noteId: note.id });
         }
       } catch (error) {
-        console.error(`Failed to sync note ${note.id} to localStorage:`, error);
+        this.logger.error('Failed to sync note to localStorage', error instanceof Error ? error : new Error(String(error)), { noteId: note.id });
       }
     }
   }
@@ -407,7 +422,7 @@ export class SyncManager {
     const queueSize = this.offlineQueue.size();
     if (queueSize === 0) return;
 
-    console.log(`📦 Processing ${queueSize} queued operations`);
+    this.logger.log('Processing offline queue', { queueSize });
 
     let processed = 0;
     let item = this.offlineQueue.dequeue();
@@ -422,14 +437,17 @@ export class SyncManager {
           error instanceof Error ? error.message : 'Unknown error';
         const retry = await this.offlineQueue.retry(item, errorMessage);
         if (!retry) {
-          console.error(`Failed to process ${item.type}:${item.id}`, error);
+          this.logger.error('Failed to process queue item', error instanceof Error ? error : new Error(errorMessage), {
+            entityType: item.type,
+            entityId: item.id,
+          });
         }
       }
 
       item = this.offlineQueue.dequeue();
     }
 
-    console.log(`✅ Processed ${processed}/${queueSize} operations`);
+    this.logger.log('Offline queue processed', { processed, total: queueSize });
     this.emitEvent({ type: 'queue_processed', processed });
   }
 
@@ -460,14 +478,14 @@ export class SyncManager {
     if (entity.type === 'note') {
       await prisma.note.create({
         data: {
-          ...entity.data,
+          ...(entity.data as any),
           userId: this.userId,
         },
       });
     } else if (entity.type === 'folder') {
       await prisma.folder.create({
         data: {
-          ...entity.data,
+          ...(entity.data as any),
           userId: this.userId,
         },
       });
@@ -481,12 +499,12 @@ export class SyncManager {
     if (entity.type === 'note') {
       await prisma.note.update({
         where: { id: entity.id },
-        data: entity.data,
+        data: entity.data as any,
       });
     } else if (entity.type === 'folder') {
       await prisma.folder.update({
         where: { id: entity.id },
-        data: entity.data,
+        data: entity.data as any,
       });
     }
   }
@@ -533,8 +551,8 @@ export class SyncManager {
   private detectConflict(
     entityId: string,
     entityType: 'note' | 'folder',
-    localData: any,
-    serverData: any
+    localData: BaseSyncData,
+    serverData: BaseSyncData
   ): SyncConflict | null {
     const localTimestamp = new Date(localData.updatedAt).getTime();
     const serverTimestamp = new Date(serverData.updatedAt).getTime();
@@ -566,7 +584,12 @@ export class SyncManager {
    * Handle sync conflict
    */
   private async handleConflict(conflict: SyncConflict): Promise<void> {
-    console.log(`⚠️ Conflict detected for ${conflict.entityType}:${conflict.entityId}`);
+    this.logger.warn('Conflict detected', {
+      entityType: conflict.entityType,
+      entityId: conflict.entityId,
+      localTimestamp: conflict.localTimestamp,
+      serverTimestamp: conflict.serverTimestamp,
+    });
 
     this.state.conflicts.push(conflict);
     this.emitEvent({ type: 'conflict_detected', conflict });
@@ -574,7 +597,11 @@ export class SyncManager {
     const resolution = this.conflictResolver.resolve(conflict);
 
     if (resolution.resolved) {
-      console.log(`✅ Conflict resolved using strategy: ${resolution.action}`);
+      this.logger.log('Conflict resolved', {
+        entityId: conflict.entityId,
+        action: resolution.action,
+        strategy: this.config.conflictStrategy,
+      });
 
       if (resolution.action === 'use_server') {
         // Update localStorage with server data
@@ -587,12 +614,12 @@ export class SyncManager {
         if (conflict.entityType === 'note') {
           await prisma.note.update({
             where: { id: conflict.entityId },
-            data: conflict.localData,
+            data: conflict.localData as any,
           });
         } else {
           await prisma.folder.update({
             where: { id: conflict.entityId },
-            data: conflict.localData,
+            data: conflict.localData as any,
           });
         }
       } else if (resolution.action === 'merge') {
@@ -609,7 +636,7 @@ export class SyncManager {
 
       this.emitEvent({ type: 'conflict_resolved', entityId: conflict.entityId });
     } else {
-      console.log('⏸️ Manual conflict resolution required');
+      this.logger.warn('Manual conflict resolution required', { entityId: conflict.entityId });
     }
   }
 
@@ -676,7 +703,7 @@ export class SyncManager {
       try {
         listener(event);
       } catch (error) {
-        console.error('Error in event listener:', error);
+        this.logger.error('Error in event listener', error instanceof Error ? error : new Error(String(error)));
       }
     });
   }
@@ -688,20 +715,20 @@ export class SyncManager {
     if (typeof window !== 'undefined') {
       window.addEventListener('online', () => {
         this.isOnline = true;
-        console.log('🌐 Connection restored');
+        this.logger.log('Connection restored');
         this.emitEvent({ type: 'online_detected' });
 
         // Trigger sync when coming back online
         if (this.config.enabled) {
           this.sync().catch((error) => {
-            console.error('Sync error after reconnection:', error);
+            this.logger.error('Sync error after reconnection', error instanceof Error ? error : new Error(String(error)));
           });
         }
       });
 
       window.addEventListener('offline', () => {
         this.isOnline = false;
-        console.log('📡 Connection lost');
+        this.logger.warn('Connection lost');
         this.emitEvent({ type: 'offline_detected' });
       });
 
@@ -715,6 +742,6 @@ export class SyncManager {
   destroy(): void {
     this.stopAutoSync();
     this.eventListeners = [];
-    console.log('🧹 Sync Manager destroyed');
+    this.logger.log('Sync Manager destroyed');
   }
 }

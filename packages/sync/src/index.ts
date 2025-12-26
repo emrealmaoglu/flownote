@@ -11,10 +11,9 @@ export { SyncManager } from './sync-manager';
 // Export components
 export { ConflictResolver } from './conflict-resolver';
 export { OfflineQueue } from './offline-queue';
-export {
-  LocalStorageAdapter,
-  IndexedDBAdapter,
-} from './storage-adapter';
+export { LocalStorageAdapter } from './storage-adapter';
+export { IndexedDBAdapter } from './storage-adapter';
+export { ILogger, ConsoleLogger, NoopLogger } from './logger';
 
 // Export types
 export type {

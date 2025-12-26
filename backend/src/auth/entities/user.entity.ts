@@ -4,6 +4,7 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  DeleteDateColumn,
   OneToMany,
   ManyToOne,
 } from "typeorm";
@@ -31,7 +32,7 @@ export class User {
   @Column({ type: "varchar", length: 255, unique: true, nullable: true })
   email: string | null;
 
-  @Column({ type: "varchar", length: 255 })
+  @Column({ name: "password_hash", type: "varchar", length: 255 })
   passwordHash: string;
 
   @Column({ type: "varchar", length: 100 })
@@ -44,11 +45,14 @@ export class User {
   notes: Note[];
 
   @ManyToOne(() => Team, (team) => team.members, { nullable: true })
-  team: Team;
+  team: Team | null;
 
   @CreateDateColumn({ name: "created_at" })
   createdAt: Date;
 
   @UpdateDateColumn({ name: "updated_at" })
   updatedAt: Date;
+
+  @DeleteDateColumn({ name: "deleted_at" })
+  deletedAt: Date | null;
 }

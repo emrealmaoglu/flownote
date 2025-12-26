@@ -137,7 +137,7 @@ describe("NotesService", () => {
       ];
       mockNoteRepository.find.mockResolvedValue(notes);
 
-      const result = await service.findAll();
+      const result = await service.findAll("user-123");
 
       expect(mockNoteRepository.find).toHaveBeenCalledWith({
         order: { createdAt: "DESC" },
@@ -149,7 +149,7 @@ describe("NotesService", () => {
     it("should return empty array when no notes exist", async () => {
       mockNoteRepository.find.mockResolvedValue([]);
 
-      const result = await service.findAll();
+      const result = await service.findAll("user-123");
 
       expect(result).toEqual([]);
       expect(result).toHaveLength(0);

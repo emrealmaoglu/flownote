@@ -18,6 +18,52 @@ Commit Convention:
 - BREAKING CHANGE: 💥 Breaking changes (major version)
 -->
 
+## [3.1.0-beta.5](https://github.com/emrealmaoglu/flownote/compare/v3.1.0-beta.4...v3.1.0-beta.5) (2025-12-24)
+
+
+### 🐛 Bug Fixes
+
+* **release:** simplify release config and sync version [skip release] ([20e8557](https://github.com/emrealmaoglu/flownote/commit/20e85579ce697e303a44734a5647c1f97ed86f2a))
+* **test:** test release pipeline integration ([4d8222a](https://github.com/emrealmaoglu/flownote/commit/4d8222aeaa07b9412946cee6417356afb2504a32))
+
+## [3.1.0-beta.4](https://github.com/emrealmaoglu/flownote/compare/v3.1.0-beta.3...v3.1.0-beta.4) (2025-12-24)
+
+
+### 🚀 Features
+
+* **api:** configure openapi documentation ([5227fc8](https://github.com/emrealmaoglu/flownote/commit/5227fc8809b92e166d4d351cf3916c8c29371040))
+
+
+### 📚 Documentation
+
+* **config:** update tech debt and sprint reports ([3cca1ce](https://github.com/emrealmaoglu/flownote/commit/3cca1cec51393a4cd6b488364339be254d5af860))
+
+
+### ✅ Tests
+
+* **auth:** add unit tests for usersservice and fix entity typing ([88a1f97](https://github.com/emrealmaoglu/flownote/commit/88a1f97edf585f85aea296f4310fb1f8153b57c5))
+
+## [3.1.0-beta.3](https://github.com/emrealmaoglu/flownote/compare/v3.1.0-beta.2...v3.1.0-beta.3) (2025-12-24)
+
+
+### ♻️ Refactoring
+
+* **sync:** implement structured logging interface ([bc561f1](https://github.com/emrealmaoglu/flownote/commit/bc561f18846b85fd63690a01b0b481c5e38d35d3))
+
+## [3.1.0-beta.2](https://github.com/emrealmaoglu/flownote/compare/v3.1.0-beta.1...v3.1.0-beta.2) (2025-12-24)
+
+
+### ♻️ Refactoring
+
+* **api:** enforce type safety and logging ([#34](https://github.com/emrealmaoglu/flownote/issues/34)) ([5a4bdf8](https://github.com/emrealmaoglu/flownote/commit/5a4bdf87118964f60be433552453b656a542e8fe))
+
+## [3.1.0-beta.1](https://github.com/emrealmaoglu/flownote/compare/v3.0.0...v3.1.0-beta.1) (2025-12-24)
+
+
+### 🚀 Features
+
+* **docker:** add development environment with docker compose ([#33](https://github.com/emrealmaoglu/flownote/issues/33)) ([dd24db5](https://github.com/emrealmaoglu/flownote/commit/dd24db55540dae9979fafb2dcbbd1ae8b47372fe))
+
 ## [3.0.0](https://github.com/emrealmaoglu/flownote/compare/v2.3.0...v3.0.0) (2025-12-24)
 
 

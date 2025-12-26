@@ -256,3 +256,43 @@ Bu proje MIT lisansı altında lisanslanmıştır.
 <div align="center">
   <sub>Built with ❤️ using NestJS + React + TypeScript</sub>
 </div>
+
+## 🐳 Docker Development
+
+### Quick Start
+
+```bash
+# Start all services
+make dev
+# or
+npm run docker:dev
+```
+
+### Available Commands
+
+| Command | Description |
+|---------|-------------|
+| `make dev` | Start with live output |
+| `make up` | Start in background |
+| `make down` | Stop all services |
+| `make logs` | View all logs |
+| `make db-shell` | PostgreSQL shell |
+| `make test` | Run tests |
+| `make clean` | Full cleanup |
+
+### Service URLs
+
+| Service | URL |
+|---------|-----|
+| Frontend | http://localhost:5173 |
+| Backend API | http://localhost:3000 |
+| Adminer (DB GUI) | http://localhost:8080 |
+
+### Environment Variables
+
+Copy `.env.example` to `.env` and adjust as needed:
+
+```bash
+cp .env.example .env
+```
+<!-- release test 3 -->

@@ -22,11 +22,16 @@ export type ConflictStrategy =
 // SYNC ENTITY TYPES
 // ============================================
 
+export interface BaseSyncData {
+  updatedAt: string | Date;
+  [key: string]: any;
+}
+
 export interface SyncEntity {
   id: string;
   type: 'note' | 'folder';
   operation: SyncOperation;
-  data: any;
+  data: BaseSyncData; // Was any
   timestamp: number;
   localVersion?: number;
   serverVersion?: number;
@@ -41,8 +46,8 @@ export interface SyncQueueItem extends SyncEntity {
 export interface SyncConflict {
   entityId: string;
   entityType: 'note' | 'folder';
-  localData: any;
-  serverData: any;
+  localData: BaseSyncData; // Was any
+  serverData: BaseSyncData; // Was any
   localTimestamp: number;
   serverTimestamp: number;
 }

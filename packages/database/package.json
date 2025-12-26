@@ -12,7 +12,8 @@
     "db:studio": "prisma studio",
     "db:seed": "tsx prisma/seed.ts",
     "migrate:from-localstorage": "tsx src/migrations/migrate-from-localstorage.ts",
-    "clean": "rm -rf node_modules .turbo generated"
+    "clean": "rm -rf node_modules .turbo generated",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",

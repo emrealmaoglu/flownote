@@ -1,111 +1,70 @@
 # 🗺️ FlowNote Project Roadmap
 
-> **Son Güncelleme:** 2024-12-15  
-> **Proje Durumu:** 🚀 v1.7.0 (Sprint 5 Complete)  
+> **Son Güncelleme:** 2025-12-24
+> **Proje Durumu:** 🚀 v3.1.0-beta.4 (Sprint 14.4 Complete)
 > **Branch Protection:** ✅ Aktif
 
 ---
 
-## � Release History
+## 📅 Release History
 
 | Versiyon | Tarih | Öne Çıkan Özellik |
 |----------|-------|-------------------|
-| v1.7.5 | 16 Aralık 2024 | UX Polish (Zen Mode), Bug Fixes (CORS/Auth) |
-| v1.7.0 | 15 Aralık 2024 | Security Hardening, Observability |
-| v1.5.0 | 14 Aralık 2024 | Auth & Local Dev (SQLite, Username) |
-| v1.4.0 | 14 Aralık 2024 | Templates System |
-| v1.3.0 | 14 Aralık 2024 | Bi-directional Linking |
-| v1.2.0 | 13 Aralık 2024 | Drag & Drop |
-| v1.1.0 | 13 Aralık 2024 | Global Search, Command Palette |
-| v1.0.0 | 12 Aralık 2024 | Core Features |
+| v3.1.0-beta.4 | 24 Aralık 2024 | Sync Logging, API Docs, Strict Type Safety |
+| v3.0.0 | 23 Aralık 2024 | Tech Debt Reduction, Monorepo Setup |
+| v1.7.5 | 16 Aralık 2024 | UX Polish (Zen Mode), Bug Fixes |
 
 ---
 
-## ✅ Completed Sprints
+## ✅ Completed Sprints (Recent)
 
-### Sprint 1: Advanced Features (v1.1.0) ✅
-- Global Search (pg_trgm)
-- Command Palette (Cmd+K)
-- Code Blocks (Prism.js)
-- Focus Mode
-
-### Sprint 2: Block Management (v1.2.0 - v1.3.0) ✅
-- Drag & Drop (@dnd-kit)
-- Bi-directional Linking
-
-### Sprint 3: Templates System (v1.4.0) ✅
-- Built-in templates (Meeting, Journal, Project, Todo)
-- Template API & UI
-
-### Sprint 4: Auth & Local Dev (v1.5.0) ✅
-- SQLite support (Docker-free dev)
-- Username/Role fields
-- Identifier login (username OR email)
-- Admin panel
-- RolesGuard
-
-### Sprint 5: Foundation & Security (v1.7.0) ✅
-- Helmet security headers
-- Rate limiting (global + auth)
-- Winston structured logging
-- Correlation ID tracking
-- Global exception filter
-- Toast notifications
-- ErrorBoundary
-- Skeleton components
-- CI security audit
-
----
-
-### Sprint 6: Quality Gates (v1.7.5) ✅
-- [x] Playwright E2E Setup
-- [x] Lighthouse CI Integration
-- [x] Husky Pre-commit hooks via config
-- [x] Smoke Test Suite
+### Sprint 14.4: Tech Debt & Quality (v3.1.0) ✅
+- [x] **API Docs:** Swagger/OpenAPI setup (`/api/docs`)
+- [x] **Logging:** Structured logging for Sync package
+- [x] **Type Safety:** 0 explicit `any` types in Frontend
+- [x] **Testing:** Unit tests for `UsersService`
 
 ### Sprint 8: Identity & Trust (v1.8.0) ✅
-- [x] Note Icons (Emoji)
-- [x] Note Covers (Gradient/Color/Image)
-- [x] DB Hygiene (Safe Reset, Gitignore)
-- [x] Zod Identity Validation (P0 Fix)
-- [x] Sidebar Navigation Groups
-- [x] Smoke Tests Hardening
+- [x] Note Icons & Covers
+- [x] DB Hygiene
+- [x] Sidebar Groups
 
-## Next Sprint
+---
 
-### Sprint 9: The Omnibar (v1.9.0)
-- Command Center (cmd+k)
-- Quick Capture from anywhere
-- Global Search (Notes + Blocks)
-- Keyboard-first navigation
+## 🏃‍♂️ Current Sprint
+
+### Sprint 15: Auth, Safety & Reliability (v3.2.0)
+> **Goal:** Solidify the Authentication system and ensure rigorous testing coverage.
+
+#### 1. Backend Feature Parity (`api`)
+- [ ] `UsersService` CRUD: `create`, `update`, `delete`, `findByEmail` capabilities.
+- [ ] Refactor `AuthService` to use `UsersService` methods properly.
+
+#### 2. Quality Assurance (`test`)
+- [ ] **E2E Tests:** Implement full Auth flow (Register -> Login -> Fail -> Logout).
+- [ ] Verify Release Workflow automation.
+
+#### 3. Performance (`perf`)
+- [ ] Frontend Bundle Size audit & report.
+- [ ] Lazy loading optimization for heavy components.
 
 ---
 
 ## 📋 Future Sprints
 
-### Sprint 7: FlowAI (v2.0.0)
+### Sprint 16: The Omnibar (v3.3.0)
+- Command Center (cmd+k)
+- Global Search
+- Keyboard-first navigation
+
+### Sprint 17: FlowAI (v4.0.0)
 - Ollama integration
 - Streaming SSE
-- AI assistant UI
 - Note summarization
-- PII filtering
 
 ---
 
 ## 📝 Kurallar
-
-- ✅ **Conventional Commits** formatı zorunlu (küçük harfle!)
+- ✅ **Conventional Commits** formatı zorunlu
 - ✅ **Feature branch** ile çalış
-- ✅ **Main'e direkt commit YASAK**
 - ✅ **PR merge öncesi:** Lint + Test + Build
-- ✅ **LESSONS_LEARNED.md** her sprint başında oku!
-
----
-
-## 📚 Key Documents
-
-| Dosya | Açıklama |
-|-------|----------|
-| `.ai-context/ROADMAP.md` | Bu dosya |
-| `.ai-context/LESSONS_LEARNED.md` | Hatalar ve çözümler |
-| `.ai-context/ADR/` | Mimari kararlar |

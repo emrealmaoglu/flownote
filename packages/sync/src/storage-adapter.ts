@@ -1,13 +1,16 @@
 import { StorageAdapter } from './types';
+import { ILogger, ConsoleLogger } from './logger';
 
 /**
  * LocalStorage adapter for browser
  */
 export class LocalStorageAdapter implements StorageAdapter {
   private prefix: string;
+  private logger: ILogger;
 
-  constructor(prefix = 'flownote') {
+  constructor(prefix = 'flownote', logger?: ILogger) {
     this.prefix = prefix;
+    this.logger = logger || new ConsoleLogger('LocalStorageAdapter');
   }
 
   private getKey(key: string): string {
@@ -19,7 +22,7 @@ export class LocalStorageAdapter implements StorageAdapter {
       const item = localStorage.getItem(this.getKey(key));
       return item ? JSON.parse(item) : null;
     } catch (error) {
-      console.error(`LocalStorage get error for key ${key}:`, error);
+      this.logger.error(`LocalStorage get error`, error instanceof Error ? error : new Error(String(error)), { key });
       return null;
     }
   }
@@ -28,7 +31,7 @@ export class LocalStorageAdapter implements StorageAdapter {
     try {
       localStorage.setItem(this.getKey(key), JSON.stringify(value));
     } catch (error) {
-      console.error(`LocalStorage set error for key ${key}:`, error);
+      this.logger.error(`LocalStorage set error`, error instanceof Error ? error : new Error(String(error)), { key });
       throw error;
     }
   }
@@ -37,7 +40,7 @@ export class LocalStorageAdapter implements StorageAdapter {
     try {
       localStorage.removeItem(this.getKey(key));
     } catch (error) {
-      console.error(`LocalStorage delete error for key ${key}:`, error);
+      this.logger.error(`LocalStorage delete error`, error instanceof Error ? error : new Error(String(error)), { key });
       throw error;
     }
   }
@@ -53,12 +56,17 @@ export class LocalStorageAdapter implements StorageAdapter {
           const item = localStorage.getItem(key);
           if (item) {
             const shortKey = key.replace(fullPrefix + ':', '');
-            result[shortKey] = JSON.parse(item);
+            // @SecOps - JSON parse vulnerabilities managed by try-catch
+            try {
+              result[shortKey] = JSON.parse(item);
+            } catch (e) {
+              this.logger.warn(`Skipping invalid JSON for key: ${key}`);
+            }
           }
         }
       }
     } catch (error) {
-      console.error(`LocalStorage getAll error:`, error);
+      this.logger.error(`LocalStorage getAll error`, error instanceof Error ? error : new Error(String(error)));
     }
 
     return result;
@@ -77,7 +85,7 @@ export class LocalStorageAdapter implements StorageAdapter {
 
       keysToRemove.forEach((key) => localStorage.removeItem(key));
     } catch (error) {
-      console.error(`LocalStorage clear error:`, error);
+      this.logger.error(`LocalStorage clear error`, error instanceof Error ? error : new Error(String(error)));
       throw error;
     }
   }
