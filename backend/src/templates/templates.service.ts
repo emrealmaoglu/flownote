@@ -22,7 +22,7 @@ export class TemplatesService {
     private readonly templatesRepository: Repository<Template>,
     @InjectRepository(Note)
     private readonly notesRepository: Repository<Note>,
-  ) {}
+  ) { }
 
   /**
    * Create a new template
@@ -387,8 +387,11 @@ export class TemplatesService {
     for (const templateData of builtinTemplates) {
       const template = this.templatesRepository.create({
         ...templateData,
+        id: uuidv4(),
         isBuiltin: true,
         userId: null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
       });
       await this.templatesRepository.save(template);
     }
