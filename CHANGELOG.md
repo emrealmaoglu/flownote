@@ -18,6 +18,14 @@ Commit Convention:
 - BREAKING CHANGE: 💥 Breaking changes (major version)
 -->
 
+## [3.1.7](https://github.com/emrealmaoglu/flownote/compare/v3.1.6...v3.1.7) (2025-12-28)
+
+
+### 🐛 Bug Fixes
+
+* **database:** explicitly generate uuid and timestamps in seed service ([b11e946](https://github.com/emrealmaoglu/flownote/commit/b11e94697783d57d26ae1febe9b018c82e014931))
+* **database:** remove duplicate property in seed service ([3cfa4c1](https://github.com/emrealmaoglu/flownote/commit/3cfa4c1d4fafb93cec65ab2f633d220ca7133b78))
+
 ## [3.1.6](https://github.com/emrealmaoglu/flownote/compare/v3.1.5...v3.1.6) (2025-12-28)
 
 
