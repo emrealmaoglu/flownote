@@ -18,6 +18,13 @@ Commit Convention:
 - BREAKING CHANGE: 💥 Breaking changes (major version)
 -->
 
+## [3.1.6](https://github.com/emrealmaoglu/flownote/compare/v3.1.5...v3.1.6) (2025-12-28)
+
+
+### 🐛 Bug Fixes
+
+* **template:** explicitly generate uuid and timestamps for builtin seeds ([20eb740](https://github.com/emrealmaoglu/flownote/commit/20eb740967fc946ecb74bab81f5f96275bff7de6))
+
 ## [3.1.5](https://github.com/emrealmaoglu/flownote/compare/v3.1.4...v3.1.5) (2025-12-28)
 
 
