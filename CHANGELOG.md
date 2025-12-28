@@ -18,6 +18,13 @@ Commit Convention:
 - BREAKING CHANGE: 💥 Breaking changes (major version)
 -->
 
+## [3.1.2](https://github.com/emrealmaoglu/flownote/compare/v3.1.1...v3.1.2) (2025-12-28)
+
+
+### 🐛 Bug Fixes
+
+* **auth:** explicitly generate uuid for admin seed ([5199692](https://github.com/emrealmaoglu/flownote/commit/51996925df45e4bd3653905e771ac18c2838cc42))
+
 ## [3.1.1](https://github.com/emrealmaoglu/flownote/compare/v3.1.0...v3.1.1) (2025-12-28)
 
 
