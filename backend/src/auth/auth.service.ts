@@ -12,7 +12,9 @@ import { Repository } from "typeorm";
 import * as bcrypt from "bcrypt";
 import { User, UserRole } from "./entities/user.entity";
 import { LoginDto } from "./dto/login.dto";
+import { LoginDto } from "./dto/login.dto";
 import { RegisterDto } from "./dto/register.dto";
+import { v4 as uuidv4 } from "uuid";
 
 /**
  * AuthService
@@ -28,7 +30,7 @@ export class AuthService implements OnModuleInit {
     private readonly usersRepository: Repository<User>,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
-  ) {}
+  ) { }
 
   /**
    * Module başlatıldığında default kullanıcıları oluştur
@@ -52,6 +54,7 @@ export class AuthService implements OnModuleInit {
       const passwordHash = await bcrypt.hash(adminPassword, 10);
 
       const admin = this.usersRepository.create({
+        id: uuidv4(),
         username: "admin",
         email: "admin@flownote.local",
         passwordHash,
