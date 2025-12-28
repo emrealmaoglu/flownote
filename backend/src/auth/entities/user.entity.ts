@@ -7,6 +7,7 @@ import {
   DeleteDateColumn,
   OneToMany,
   ManyToOne,
+  JoinColumn,
 } from "typeorm";
 import { Note } from "../../notes/entities/note.entity";
 import { Team } from "../../users/entities/team.entity";
@@ -45,7 +46,11 @@ export class User {
   notes: Note[];
 
   @ManyToOne(() => Team, (team) => team.members, { nullable: true })
+  @JoinColumn({ name: "team_id" })
   team: Team | null;
+
+  @Column({ name: "team_id", nullable: true })
+  teamId: string | null;
 
   @CreateDateColumn({ name: "created_at" })
   createdAt: Date;
