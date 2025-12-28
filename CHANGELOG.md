@@ -18,6 +18,13 @@ Commit Convention:
 - BREAKING CHANGE: 💥 Breaking changes (major version)
 -->
 
+## [3.1.3](https://github.com/emrealmaoglu/flownote/compare/v3.1.2...v3.1.3) (2025-12-28)
+
+
+### 🐛 Bug Fixes
+
+* **auth:** remove duplicate import ([552697d](https://github.com/emrealmaoglu/flownote/commit/552697d28e4228226d140a64310d8eb7440a682a))
+
 ## [3.1.2](https://github.com/emrealmaoglu/flownote/compare/v3.1.1...v3.1.2) (2025-12-28)
 
 
