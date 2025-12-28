@@ -18,6 +18,13 @@ Commit Convention:
 - BREAKING CHANGE: 💥 Breaking changes (major version)
 -->
 
+## [3.1.1](https://github.com/emrealmaoglu/flownote/compare/v3.1.0...v3.1.1) (2025-12-28)
+
+
+### 🐛 Bug Fixes
+
+* **database:** map user team relation to team_id column ([336d2a8](https://github.com/emrealmaoglu/flownote/commit/336d2a872ff83009f80fdc6f144ab6290df65401))
+
 ## [3.1.0-beta.5](https://github.com/emrealmaoglu/flownote/compare/v3.1.0-beta.4...v3.1.0-beta.5) (2025-12-24)
 
 
