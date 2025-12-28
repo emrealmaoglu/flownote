@@ -6,6 +6,7 @@ import {
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository, IsNull } from "typeorm";
 import * as bcrypt from "bcrypt";
+import { v4 as uuidv4 } from "uuid";
 import { User } from "../auth/entities/user.entity";
 import { CreateUserDto, UpdateUserDto, UserResponseDto } from "./dto";
 
@@ -14,7 +15,7 @@ export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-  ) {}
+  ) { }
 
   /**
    * Create a new user with hashed password
@@ -44,8 +45,12 @@ export class UsersService {
       username,
       email,
       passwordHash,
+
       name,
       team: teamId ? { id: teamId } : null,
+      id: uuidv4(),
+      createdAt: new Date(),
+      updatedAt: new Date(),
     });
 
     const savedUser = await this.userRepository.save(user);
