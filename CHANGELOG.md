@@ -18,6 +18,13 @@ Commit Convention:
 - BREAKING CHANGE: 💥 Breaking changes (major version)
 -->
 
+## [3.1.11](https://github.com/emrealmaoglu/flownote/compare/v3.1.10...v3.1.11) (2025-12-28)
+
+
+### 🐛 Bug Fixes
+
+* **api:** explicit uuid for note creation to fix ci ([88a6d10](https://github.com/emrealmaoglu/flownote/commit/88a6d10b5a6df195dbae56e18eea7c8713380c74))
+
 ## [3.1.10](https://github.com/emrealmaoglu/flownote/compare/v3.1.9...v3.1.10) (2025-12-28)
 
 
