@@ -5,6 +5,7 @@ import { User } from "../auth/entities/user.entity";
 import { Team } from "../users/entities/team.entity";
 import { Note } from "../notes/entities/note.entity";
 import * as bcrypt from "bcrypt";
+import { v4 as uuidv4 } from "uuid";
 
 @Injectable()
 export class SeedService implements OnModuleInit {
@@ -15,7 +16,7 @@ export class SeedService implements OnModuleInit {
     private readonly teamRepository: Repository<Team>,
     @InjectRepository(Note)
     private readonly noteRepository: Repository<Note>,
-  ) {}
+  ) { }
 
   async onModuleInit() {
     await this.seed();
@@ -37,7 +38,12 @@ export class SeedService implements OnModuleInit {
         where: { name: tData.name },
       });
       if (!team) {
-        team = await this.teamRepository.save(tData);
+        team = await this.teamRepository.save({
+          ...tData,
+          id: uuidv4(),
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        });
         console.log(`Created team: ${tData.name}`);
       } else {
         console.log(`Team already exists: ${tData.name}`);
@@ -81,7 +87,11 @@ export class SeedService implements OnModuleInit {
         name: userData.name,
         role: userData.role as any,
         passwordHash,
+        passwordHash,
         team: assignedTeam,
+        id: uuidv4(),
+        createdAt: new Date(),
+        updatedAt: new Date(),
       });
 
       await this.userRepository.save(user);
