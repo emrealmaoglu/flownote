@@ -86,7 +86,7 @@ describe("AuthController", () => {
 
       expect(service.register).toHaveBeenCalledWith(registerDto);
       expect(mockResponse.cookie).toHaveBeenCalledWith(
-        "access_token",
+        "jwt",
         mockServiceResponse.accessToken,
         expect.objectContaining({
           httpOnly: true,
@@ -217,7 +217,7 @@ describe("AuthController", () => {
 
       expect(service.login).toHaveBeenCalledWith(loginDto);
       expect(mockResponse.cookie).toHaveBeenCalledWith(
-        "access_token",
+        "jwt",
         mockServiceResponse.accessToken,
         expect.objectContaining({
           httpOnly: true,
@@ -225,15 +225,18 @@ describe("AuthController", () => {
         }),
       );
       expect(result).toEqual({
+        accessToken: mockServiceResponse.accessToken,
         user: {
           id: mockServiceResponse.user.id,
           username: mockServiceResponse.user.username,
           email: mockServiceResponse.user.email,
           name: mockServiceResponse.user.name,
           role: mockServiceResponse.user.role,
+          createdAt: mockServiceResponse.user.createdAt,
+          updatedAt: mockServiceResponse.user.updatedAt,
         },
       });
-      expect(result).not.toHaveProperty("accessToken");
+      expect(result).toHaveProperty("accessToken");
     });
 
     it("should login successfully with email", async () => {
@@ -250,7 +253,7 @@ describe("AuthController", () => {
       );
 
       expect(service.login).toHaveBeenCalledWith(emailLoginDto);
-      expect(result).not.toHaveProperty("accessToken");
+      expect(result).toHaveProperty("accessToken");
       expect(result).toHaveProperty("user");
     });
 
@@ -259,7 +262,7 @@ describe("AuthController", () => {
 
       const result = await controller.login(loginDto, mockResponse as Response);
 
-      expect(result).not.toHaveProperty("accessToken");
+      expect(result).toHaveProperty("accessToken");
       expect(result).toHaveProperty("user");
       expect(mockResponse.cookie).toHaveBeenCalled();
     });
@@ -409,13 +412,15 @@ describe("AuthController", () => {
         mockResponse as Response,
       );
 
-      expect(Object.keys(result)).toEqual(["user"]);
+      expect(Object.keys(result)).toEqual(["accessToken", "user"]);
       expect(Object.keys(result.user)).toEqual([
         "id",
         "username",
         "email",
         "name",
         "role",
+        "createdAt",
+        "updatedAt",
       ]);
       expect(mockResponse.cookie).toHaveBeenCalled();
     });

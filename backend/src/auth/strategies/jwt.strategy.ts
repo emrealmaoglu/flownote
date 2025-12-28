@@ -34,7 +34,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       jwtFromRequest: ExtractJwt.fromExtractors([
         // 1. Önce cookie'den dene (HttpOnly)
         (request: Request) => {
-          return request?.cookies?.access_token || null;
+          return request?.cookies?.jwt || null;
         },
         // 2. Fallback: Authorization header (API clients, Postman için)
         ExtractJwt.fromAuthHeaderAsBearerToken(),

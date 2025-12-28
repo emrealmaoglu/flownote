@@ -19,12 +19,10 @@ import {
   ApiBearerAuth,
 } from "@nestjs/swagger";
 import { AuthService } from "./auth.service";
-import { LoginDto } from "./dto/login.dto";
-import { RegisterDto } from "./dto/register.dto";
 import { JwtAuthGuard } from "./guards/jwt-auth.guard";
 import { AuthenticatedRequest } from "../common/interfaces";
 import { ZodValidationPipe } from "../common/pipes/zod-validation.pipe";
-import { LoginSchema, RegisterSchema } from "./dto";
+import { LoginDto, RegisterDto, LoginSchema, RegisterSchema } from "./dto";
 
 @ApiTags("Auth")
 @Controller("auth")

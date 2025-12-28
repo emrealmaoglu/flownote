@@ -43,3 +43,12 @@ thumbs.db
 # Coverage
 coverage/
 TRASH/
+
+# Temporary Logs & Artifacts
+e2e_log*.txt
+pr_body.md
+limit_test.md
+technology_usage.md
+
+# Turbo Cache
+.turbo/

@@ -219,7 +219,7 @@ describe("NotesController", () => {
 
       const result = await controller.search(mockReq, "test", undefined);
 
-      expect(service.search).toHaveBeenCalledWith("test", 10);
+      expect(service.search).toHaveBeenCalledWith("test", "user-123", 10);
       expect(result).toEqual({
         query: "test",
         results: searchResults,
@@ -232,7 +232,7 @@ describe("NotesController", () => {
 
       await controller.search(mockReq, "query", "25");
 
-      expect(service.search).toHaveBeenCalledWith("query", 25);
+      expect(service.search).toHaveBeenCalledWith("query", "user-123", 25);
     });
 
     it("should enforce maximum limit of 50", async () => {
@@ -240,7 +240,7 @@ describe("NotesController", () => {
 
       await controller.search(mockReq, "query", "100");
 
-      expect(service.search).toHaveBeenCalledWith("query", 50);
+      expect(service.search).toHaveBeenCalledWith("query", "user-123", 50);
     });
 
     it("should default to limit 10 when not specified", async () => {
@@ -248,7 +248,7 @@ describe("NotesController", () => {
 
       await controller.search(mockReq, "query", undefined);
 
-      expect(service.search).toHaveBeenCalledWith("query", 10);
+      expect(service.search).toHaveBeenCalledWith("query", "user-123", 10);
     });
 
     it("should handle empty query string", async () => {
@@ -256,7 +256,7 @@ describe("NotesController", () => {
 
       const result = await controller.search(mockReq, "", undefined);
 
-      expect(service.search).toHaveBeenCalledWith("", 10);
+      expect(service.search).toHaveBeenCalledWith("", "user-123", 10);
       expect(result.query).toBe("");
     });
 
@@ -279,7 +279,7 @@ describe("NotesController", () => {
 
       const result = await controller.findOne(mockReq, mockNote.id);
 
-      expect(service.findOne).toHaveBeenCalledWith(mockNote.id);
+      expect(service.findOne).toHaveBeenCalledWith(mockNote.id, "user-123");
       expect(result).toEqual({
         id: mockNote.id,
         title: mockNote.title,
@@ -316,7 +316,7 @@ describe("NotesController", () => {
 
       const result = await controller.update(mockReq, mockNote.id, updateDto);
 
-      expect(service.update).toHaveBeenCalledWith(mockNote.id, updateDto);
+      expect(service.update).toHaveBeenCalledWith(mockNote.id, updateDto, "user-123");
       expect(result.title).toBe("Updated Title");
     });
 
@@ -394,6 +394,7 @@ describe("NotesController", () => {
         mockNote.id,
         "block-1",
         2,
+        "user-123",
       );
       expect(result.id).toBe(mockNote.id);
       expect(result.content).toEqual(mockNote.content);
@@ -440,7 +441,7 @@ describe("NotesController", () => {
 
       const result = await controller.getBacklinks(mockReq, mockNote.id);
 
-      expect(service.getBacklinks).toHaveBeenCalledWith(mockNote.id);
+      expect(service.getBacklinks).toHaveBeenCalledWith(mockNote.id, "user-123");
       expect(result.noteId).toBe(mockNote.id);
       expect(result.backlinks).toHaveLength(2);
       expect(result.count).toBe(2);
@@ -478,7 +479,7 @@ describe("NotesController", () => {
 
       const result = await controller.getOutlinks(mockReq, mockNote.id);
 
-      expect(service.getOutlinks).toHaveBeenCalledWith(mockNote.id);
+      expect(service.getOutlinks).toHaveBeenCalledWith(mockNote.id, "user-123");
       expect(result.noteId).toBe(mockNote.id);
       expect(result.outlinks).toHaveLength(1);
       expect(result.count).toBe(1);
@@ -520,7 +521,7 @@ describe("NotesController", () => {
 
       await controller.remove(mockReq, mockNote.id);
 
-      expect(service.remove).toHaveBeenCalledWith(mockNote.id);
+      expect(service.remove).toHaveBeenCalledWith(mockNote.id, "user-123");
     });
 
     it("should not return any value (204 No Content)", async () => {

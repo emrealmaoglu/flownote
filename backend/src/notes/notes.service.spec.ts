@@ -141,6 +141,7 @@ describe("NotesService", () => {
 
       expect(mockNoteRepository.find).toHaveBeenCalledWith({
         order: { createdAt: "DESC" },
+        where: { userId: "user-123" },
       });
       expect(result).toEqual(notes);
       expect(result).toHaveLength(2);

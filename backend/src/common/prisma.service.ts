@@ -20,6 +20,10 @@ export class PrismaService implements OnModuleInit, OnModuleDestroy {
   }
 
   async onModuleInit() {
+    if (!prisma) {
+      this.logger.warn("Prisma client not available - skipping connection");
+      return;
+    }
     await prisma.$connect();
     this.logger.log("Prisma connected");
   }

@@ -13,7 +13,8 @@ export { ConflictResolver } from './conflict-resolver';
 export { OfflineQueue } from './offline-queue';
 export { LocalStorageAdapter } from './storage-adapter';
 export { IndexedDBAdapter } from './storage-adapter';
-export { ILogger, ConsoleLogger, NoopLogger } from './logger';
+export type { ILogger } from './logger';
+export { ConsoleLogger, NoopLogger } from './logger';
 
 // Export types
 export type {

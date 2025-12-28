@@ -8,7 +8,7 @@ import { SyncPullDto, SyncPushDto, SyncRequestDto } from "./dto/sync.dto";
  */
 @Injectable()
 export class SyncService {
-  constructor(private prisma: PrismaService) { }
+  constructor(private prisma: PrismaService) {}
 
   /**
    * Pull changes from server since last sync

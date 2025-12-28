@@ -13,13 +13,15 @@ const prisma = new PrismaClient();
 beforeAll(async () => {
   // Clean DB before each test suite
   try {
-    const tablenames = await prisma.$queryRaw<Array<{ tablename: string }>>`SELECT tablename FROM pg_tables WHERE schemaname='public'`;
+    const tablenames = await prisma.$queryRaw<
+      Array<{ tablename: string }>
+    >`SELECT tablename FROM pg_tables WHERE schemaname='public'`;
 
     const tables = tablenames
       .map(({ tablename }: { tablename: string }) => tablename)
-      .filter((name: string) => name !== '_prisma_migrations')
+      .filter((name: string) => name !== "_prisma_migrations")
       .map((name: string) => `"public"."${name}"`)
-      .join(', ');
+      .join(", ");
 
     console.log(`Cleaning tables: ${tables}`);
 
