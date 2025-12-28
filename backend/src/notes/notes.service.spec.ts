@@ -95,6 +95,9 @@ describe("NotesService", () => {
         title: createDto.title,
         content: createDto.content,
         userId: userId,
+        id: expect.any(String),
+        createdAt: expect.any(Date),
+        updatedAt: expect.any(Date),
       });
       expect(mockNoteRepository.save).toHaveBeenCalled();
       expect(result).toEqual(mockNote);

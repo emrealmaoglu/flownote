@@ -7,6 +7,7 @@ import { CreateNoteDto } from "./dto/create-note.dto";
 import { UpdateNoteDto } from "./dto/update-note.dto";
 import { SearchResultDto } from "./dto/search-result.dto";
 import { extractLinksFromBlocks } from "./utils/link-parser";
+import { v4 as uuidv4 } from "uuid";
 
 /**
  * Notes Service
@@ -21,7 +22,7 @@ export class NotesService {
     private readonly notesRepository: Repository<Note>,
     @InjectRepository(NoteLink)
     private readonly noteLinkRepository: Repository<NoteLink>,
-  ) {}
+  ) { }
 
   private readonly logger = new Logger(NotesService.name);
 
@@ -82,9 +83,12 @@ export class NotesService {
    */
   async create(createNoteDto: CreateNoteDto, userId: string): Promise<Note> {
     const note = this.notesRepository.create({
+      id: uuidv4(),
       title: createNoteDto.title,
       content: createNoteDto.content,
       userId: userId,
+      createdAt: new Date(),
+      updatedAt: new Date(),
     });
     return this.notesRepository.save(note);
   }
