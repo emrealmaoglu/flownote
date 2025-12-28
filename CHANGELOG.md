@@ -18,6 +18,14 @@ Commit Convention:
 - BREAKING CHANGE: 💥 Breaking changes (major version)
 -->
 
+## [3.1.9](https://github.com/emrealmaoglu/flownote/compare/v3.1.8...v3.1.9) (2025-12-28)
+
+
+### 🐛 Bug Fixes
+
+* **api:** explicit uuid/timestamp generation for postgresql ci ([3791b4d](https://github.com/emrealmaoglu/flownote/commit/3791b4da3aba7bd581a13dcb45d06a0e991e0b27))
+* **auth:** explicit uuids for register ([be8ba64](https://github.com/emrealmaoglu/flownote/commit/be8ba6427fe2485dd669d1054b30f17b4365fa13))
+
 ## [3.1.8](https://github.com/emrealmaoglu/flownote/compare/v3.1.7...v3.1.8) (2025-12-28)
 
 
