@@ -18,6 +18,13 @@ Commit Convention:
 - BREAKING CHANGE: 💥 Breaking changes (major version)
 -->
 
+## [3.1.10](https://github.com/emrealmaoglu/flownote/compare/v3.1.9...v3.1.10) (2025-12-28)
+
+
+### 🐛 Bug Fixes
+
+* **auth:** remove redundant seed logic causing race condition ([874fff1](https://github.com/emrealmaoglu/flownote/commit/874fff135ebb818777db1b797fa77de02a7c2087))
+
 ## [3.1.9](https://github.com/emrealmaoglu/flownote/compare/v3.1.8...v3.1.9) (2025-12-28)
 
 
