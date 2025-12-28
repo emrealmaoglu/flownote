@@ -2,7 +2,6 @@ import {
   Injectable,
   UnauthorizedException,
   ConflictException,
-  OnModuleInit,
   Logger,
 } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
@@ -21,7 +20,7 @@ import { v4 as uuidv4 } from "uuid";
  * @SecOps - Şifre hashleme zorunlu!
  */
 @Injectable()
-export class AuthService implements OnModuleInit {
+export class AuthService {
   private readonly logger = new Logger(AuthService.name);
 
   constructor(
@@ -30,66 +29,6 @@ export class AuthService implements OnModuleInit {
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
   ) { }
-
-  /**
-   * Module başlatıldığında default kullanıcıları oluştur
-   */
-  async onModuleInit() {
-    await this.seedDefaultUsers();
-  }
-
-  /**
-   * Default kullanıcıları seed et
-   */
-  private async seedDefaultUsers() {
-    // Admin kullanıcısı
-    const adminExists = await this.usersRepository.findOne({
-      where: { username: "admin" },
-    });
-
-    if (!adminExists) {
-      const adminPassword =
-        this.configService.get<string>("SEED_ADMIN_PASSWORD") || "admin";
-      const passwordHash = await bcrypt.hash(adminPassword, 10);
-
-      const admin = this.usersRepository.create({
-        id: uuidv4(),
-        username: "admin",
-        email: "admin@flownote.local",
-        passwordHash,
-        name: "Admin",
-        role: "admin" as UserRole,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      });
-
-      await this.usersRepository.save(admin);
-      this.logger.log("Admin user seeded: admin / [SEED_ADMIN_PASSWORD]");
-    }
-
-    // Emre kullanıcısı
-    const emreExists = await this.usersRepository.findOne({
-      where: { username: "emre" },
-    });
-
-    if (!emreExists) {
-      const passwordHash = await bcrypt.hash("emre", 10);
-
-      const emre = this.usersRepository.create({
-        id: "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11", // Fixed ID to prevent token invalidation on DB reset
-        username: "emre",
-        email: "emrealmaogluu@gmail.com", // Corrected typo in logic if needed, but keeping existing email
-        passwordHash,
-        name: "Emre",
-        role: "user" as UserRole,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      });
-
-      await this.usersRepository.save(emre);
-      this.logger.log("User seeded: emre / emre");
-    }
-  }
 
   /**
    * Kullanıcı kaydı

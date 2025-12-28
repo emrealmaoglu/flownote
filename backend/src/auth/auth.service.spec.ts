@@ -112,6 +112,9 @@ describe("AuthService", () => {
         passwordHash: "hashedPassword123",
         name: registerDto.name,
         role: "user",
+        id: expect.any(String),
+        createdAt: expect.any(Date),
+        updatedAt: expect.any(Date),
       });
       expect(mockUserRepository.save).toHaveBeenCalled();
       expect(result).toHaveProperty("accessToken", expectedToken);
