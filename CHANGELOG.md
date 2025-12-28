@@ -18,6 +18,13 @@ Commit Convention:
 - BREAKING CHANGE: 💥 Breaking changes (major version)
 -->
 
+## [3.1.4](https://github.com/emrealmaoglu/flownote/compare/v3.1.3...v3.1.4) (2025-12-28)
+
+
+### 🐛 Bug Fixes
+
+* **auth:** explicitly set timestamps during seeding ([5aa73e8](https://github.com/emrealmaoglu/flownote/commit/5aa73e86186afed75240532b34083e7055beceab))
+
 ## [3.1.3](https://github.com/emrealmaoglu/flownote/compare/v3.1.2...v3.1.3) (2025-12-28)
 
 
