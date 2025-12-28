@@ -18,6 +18,13 @@ Commit Convention:
 - BREAKING CHANGE: 💥 Breaking changes (major version)
 -->
 
+## [3.1.5](https://github.com/emrealmaoglu/flownote/compare/v3.1.4...v3.1.5) (2025-12-28)
+
+
+### 🐛 Bug Fixes
+
+* **database:** add is_builtin and user relation to template in schema ([bb0e37f](https://github.com/emrealmaoglu/flownote/commit/bb0e37f2b535aaf9b4075a1f6c0b3910c149178d))
+
 ## [3.1.4](https://github.com/emrealmaoglu/flownote/compare/v3.1.3...v3.1.4) (2025-12-28)
 
 
