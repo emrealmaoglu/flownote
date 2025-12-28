@@ -12,7 +12,6 @@ import { Repository } from "typeorm";
 import * as bcrypt from "bcrypt";
 import { User, UserRole } from "./entities/user.entity";
 import { LoginDto } from "./dto/login.dto";
-import { LoginDto } from "./dto/login.dto";
 import { RegisterDto } from "./dto/register.dto";
 import { v4 as uuidv4 } from "uuid";
 
