@@ -59,6 +59,8 @@ export class AuthService implements OnModuleInit {
         passwordHash,
         name: "Admin",
         role: "admin" as UserRole,
+        createdAt: new Date(),
+        updatedAt: new Date(),
       });
 
       await this.usersRepository.save(admin);
@@ -80,6 +82,8 @@ export class AuthService implements OnModuleInit {
         passwordHash,
         name: "Emre",
         role: "user" as UserRole,
+        createdAt: new Date(),
+        updatedAt: new Date(),
       });
 
       await this.usersRepository.save(emre);
