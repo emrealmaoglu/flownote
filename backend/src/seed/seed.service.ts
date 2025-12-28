@@ -87,7 +87,7 @@ export class SeedService implements OnModuleInit {
         name: userData.name,
         role: userData.role as any,
         passwordHash,
-        passwordHash,
+
         team: assignedTeam,
         id: uuidv4(),
         createdAt: new Date(),
