@@ -249,6 +249,7 @@ export class SeedService implements OnModuleInit {
     return userNotes.map((n) => ({
       ...n,
       userId,
+      id: uuidv4(),
       // Fake dates to make dashboard look alive
       createdAt: new Date(
         Date.now() - Math.random() * 10 * 24 * 60 * 60 * 1000,
