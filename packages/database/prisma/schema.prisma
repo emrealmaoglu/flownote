@@ -37,6 +37,7 @@ model User {
   // Relations
   notes        Note[]
   folders      Folder[]
+  templates    Template[]
 
   @@index([username])
   @@index([email])
@@ -164,6 +165,11 @@ model Template {
 
   // Usage stats
   usageCount  Int     @default(0) @map("usage_count")
+
+  isBuiltin   Boolean @default(false) @map("is_builtin")
+
+  userId      String? @map("user_id")
+  user        User?   @relation(fields: [userId], references: [id])
 
   // Timestamps
   createdAt   DateTime @default(now()) @map("created_at")
